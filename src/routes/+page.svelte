@@ -1,6 +1,11 @@
 <script>
-    let prompt = '';
     let generatedImageUrl = '';
+    let imageRequest = {
+        prompt: '',
+        steps: 20,
+        width: 1024,
+        height: 1024
+    };
     
     async function generateImage() {
         const response = await fetch('http://localhost:4000/generate-image', {
@@ -8,7 +13,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ prompt })
+            body: JSON.stringify(imageRequest) // Send the entire object
         });
         
         const data = await response.json();
@@ -20,7 +25,7 @@
     <h1>Stable Diffusion Image Generator</h1>
     <input
         type="text"
-        bind:value={prompt}
+        bind:value={imageRequest.prompt}
         placeholder="Enter your prompt"
     />
     <button on:click={generateImage}>Generate</button>
@@ -29,26 +34,3 @@
         <img src={generatedImageUrl} alt="Generated Image" />
     {/if}
 </main>
-
-<style>
-    main {
-        text-align: center;
-        margin: 2rem auto;
-        max-width: 600px;
-    }
-    input {
-        width: 100%;
-        padding: 1rem;
-        margin-bottom: 1rem;
-    }
-    button {
-        padding: 0.5rem 1rem;
-        font-size: 1rem;
-        cursor: pointer;
-    }
-    img {
-        margin-top: 2rem;
-        max-width: 100%;
-        height: auto;
-    }
-</style>
