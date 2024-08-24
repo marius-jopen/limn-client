@@ -8,16 +8,25 @@
     };
     
     async function generateImage() {
-        const response = await fetch('http://localhost:4000/generate-image-1111-local', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(imageRequest) // Send the entire object
-        });
-        
-        const data = await response.json();
-        generatedImageUrl = data.imageUrl; // Adjusted to match the response from your server
+        try {
+            const response = await fetch('http://localhost:4000/api/generate-image-1111-local', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(imageRequest)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            generatedImageUrl = data.imageUrl;
+        } catch (error) {
+            console.error('Error generating image:', error);
+            alert('Failed to generate image. Please check the server logs for more details.');
+        }
     }
 </script>
 
@@ -31,6 +40,7 @@
     <button on:click={generateImage}>Generate</button>
     
     {#if generatedImageUrl}
-        <img src={generatedImageUrl} alt="Generated Image" />
+        <!-- svelte-ignore a11y-img-redundant-alt -->
+        <img src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" />
     {/if}
 </main>
