@@ -9,7 +9,7 @@
     
     async function generateImage() {
         try {
-            const response = await fetch('http://localhost:4000/api/generate-image-1111-runpod', {
+            const response = await fetch('http://localhost:4000/api/generate-image-1111-runpod-serverless', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -31,7 +31,7 @@
 </script>
 
 <main>
-    <h1>Generate Image 1111 on RunPod</h1>
+    <h1>Generate Image 1111 on RunPod Serverless</h1>
     <input
         type="text"
         bind:value={imageRequest.prompt}
