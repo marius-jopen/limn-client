@@ -31,16 +31,17 @@
 </script>
 
 <main>
-    <h1>Generate Image 1111 Local</h1>
+    <h1 class="pb-4">Generate Image 1111 Local</h1>
     <input
+        class="text-input"
         type="text"
         bind:value={imageRequest.prompt}
         placeholder="Enter your prompt"
     />
-    <button on:click={generateImage}>Generate</button>
+    <button class="button" on:click={generateImage}>Generate</button>
     
     {#if generatedImageUrl}
         <!-- svelte-ignore a11y-img-redundant-alt -->
-        <img src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" />
+        <img class="pt-4" src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" />
     {/if}
 </main>
