@@ -1,6 +1,7 @@
 <script>
     import { API_URLS } from '../../config';
 
+    let selectedApiUrl = API_URLS.runpodPod; // Default to runpodPod
     let generatedImageUrl = '';
     let imageRequest = {
         prompt: '',
@@ -8,10 +9,10 @@
         width: 1024,
         height: 1024
     };
-    
+
     async function generateImage() {
         try {
-            const response = await fetch(API_URLS.local, {
+            const response = await fetch(selectedApiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -33,7 +34,23 @@
 </script>
 
 <main>
-    <h1 class="pb-4">Generate Image 1111 Local</h1>
+    <h1 class="pb-4">Generate Image 1111 Select</h1>
+    
+    <div class="pb-4 flex gap-4">
+        <label>
+            <input type="radio" bind:group={selectedApiUrl} value={API_URLS.runpodPod}>
+            RunPod Pod
+        </label>
+        <label>
+            <input type="radio" bind:group={selectedApiUrl} value={API_URLS.runpodServerless}>
+            RunPod Serverless
+        </label>
+        <label>
+            <input type="radio" bind:group={selectedApiUrl} value={API_URLS.local}>
+            Local
+        </label>
+    </div>
+
     <input
         class="text-input"
         type="text"
@@ -43,7 +60,6 @@
     <button class="button" on:click={generateImage}>Generate</button>
     
     {#if generatedImageUrl}
-        <!-- svelte-ignore a11y-img-redundant-alt -->
         <img class="pt-4" src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" />
     {/if}
 </main>

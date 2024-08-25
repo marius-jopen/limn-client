@@ -1,4 +1,6 @@
 <script>
+    import { API_URLS } from '../../config';
+
     let generatedImageUrl = '';
     let imageRequest = {
         prompt: '',
@@ -9,7 +11,7 @@
     
     async function generateImage() {
         try {
-            const response = await fetch('http://localhost:4000/api/generate-image-1111-runpod-serverless', {
+            const response = await fetch(API_URLS.runpodServerless, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -31,7 +33,7 @@
 </script>
 
 <main>
-    <h1 class="pb-4">Generate Image 1111 on RunPod Serverless</h1>
+    <h1 class="pb-4">Generate Image 1111 RunPod Serverless</h1>
     <input
         class="text-input"
         type="text"
