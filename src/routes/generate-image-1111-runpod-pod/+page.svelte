@@ -1,0 +1,46 @@
+<script>
+    let generatedImageUrl = '';
+    let imageRequest = {
+        prompt: '',
+        steps: 20,
+        width: 1024,
+        height: 1024
+    };
+
+    async function generateImage() {
+        try {
+            const response = await fetch('http://localhost:4000/api/generate-image-1111-runpod-pod', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(imageRequest)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            generatedImageUrl = data.imageUrl;
+        } catch (error) {
+            console.error('Error generating image:', error);
+            alert('Failed to generate image. Please check the server logs for more details.');
+        }
+    }
+</script>
+
+<main>
+    <h1>Generate Image 1111 on RunPod Pod</h1>
+    <input
+        type="text"
+        bind:value={imageRequest.prompt}
+        placeholder="Enter your prompt"
+    />
+    <button on:click={generateImage}>Generate</button>
+    
+    {#if generatedImageUrl}
+        <!-- svelte-ignore a11y-img-redundant-alt -->
+        <img src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" />
+    {/if}
+</main>
