@@ -11,7 +11,7 @@
     
     async function generateImage() {
         try {
-            const response = await fetch(API_URLS.local, {
+            const response = await fetch(API_URLS.local + "/generate-image-1111-local", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

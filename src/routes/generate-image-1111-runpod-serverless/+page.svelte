@@ -11,7 +11,7 @@
     
     async function generateImage() {
         try {
-            const response = await fetch(API_URLS.runpodServerless, {
+            const response = await fetch(API_URLS.server + "/generate-image-1111-runpod-serverless", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
