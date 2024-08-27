@@ -1,8 +1,8 @@
 <script>
-    import { API_URLS } from '../../lib/config';
     import { deforumDefaultParams } from '../../lib/deforumParameters';
     import { getCurrentTimestamp } from '../../lib/helper.js';
     import DeforumPrompts from '../../lib/deforumPrompts.svelte';
+    import { generateVideo } from '../../lib/api.js';  // Import the generateVideo function
 
     // Initialize variables with default values
     let maxFrames = 50;
@@ -19,43 +19,30 @@
         promptEntries = event.detail.promptEntries;
     }
 
-    async function generateVideo() {
-        let imageRequest = {
+    async function handleGenerateVideo() {
+        let videoRequest = {
             ...deforumDefaultParams,
-            max_frames: maxFrames,
+            max_frames: parseInt(maxFrames, 10),  // Ensure max_frames is an integer
             prompts: promptEntries,
             batch_name: "Deforum_" + getCurrentTimestamp(),
         };
 
-        console.log("Generated Image Request:", imageRequest);
-        console.log("Prompts:", imageRequest.prompts);
+        console.log("Generated Video Request:", videoRequest);
+        console.log("Prompts:", videoRequest.prompts);
 
         try {
-            const response = await fetch(API_URLS.server + "/generate-deforum-1111-runpod-pod", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(imageRequest)
-            });
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.statusText}`);
-            }
-
-            console.log('Image generation request sent successfully.');
+            await generateVideo(videoRequest);  // Use the generateVideo function from api.js
         } catch (error) {
-            console.error('Error generating image:', error);
-            console.log('Failed to generate image. Please check the server logs for more details.');
+            console.error('Failed to generate video. Please check the server logs for more details.');
         }
     }
+
 </script>
 
 <main>
     <h1 class="pb-4">Generate Video with Deforum on RunPod Pod</h1>
 
-    <!-- DeforumPrompts component is correctly bound to update the main component's state -->
+    <button class="mt-4 button" on:click={handleGenerateVideo}>Generate Video</button>
+    
     <DeforumPrompts on:update={handleUpdate} />
-
-    <button class="mt-4 button" on:click={generateVideo}>Generate</button>
 </main>
