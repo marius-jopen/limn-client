@@ -1,5 +1,5 @@
 <script>
-    import { API_URLS } from '../../config';
+    import { API_URLS } from '../../lib/config';
 
     let generatedImageUrl = '';
     let imageRequest = {

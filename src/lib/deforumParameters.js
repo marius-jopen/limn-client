@@ -31,10 +31,11 @@ export const deforumDefaultParams = {
     reroll_patience: 10.0,
     motion_preview_mode: false,
     prompts: {
-        "0": "tiny cute bunny, vibrant diffraction, highly detailed, intricate, ultra hd, sharp photo, crepuscular rays, in focus --neg nsfw, nude",
-        "30": "anthropomorphic clean cat, surrounded by fractals, epic angle and pose, symmetrical, 3d, depth of field --neg nsfw, nude",
-        "60": "a beautiful coconut --neg photo, realistic nsfw, nude",
-        "90": "a beautiful durian, award winning photography --neg nsfw, nude"
+        "0": "house",
+        "10": "computer",
+        "20": "coconut",
+        "30": "cat",
+        "40": "spaceship"
     },
     positive_prompts: "masterpiece",
     negative_prompts: "nsfw, nude",
