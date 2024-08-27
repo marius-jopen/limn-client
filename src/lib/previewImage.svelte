@@ -37,7 +37,7 @@
 </script>
 
 <div class="flex h-full gap-1">
-    <button class="mr-2 button" on:click={handleGenerateImage}>Preview</button>
+    <button class="mr-2 button" on:click={handleGenerateImage}>Generate Preview</button>
 
     {#if generatedImageUrl}
         <img class="h-10 w-10 rounded-xl cursor-pointer" src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" on:click={toggleFullscreen} />
