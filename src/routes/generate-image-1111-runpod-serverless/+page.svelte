@@ -15,7 +15,7 @@
             const response = await fetch(`${API_URLS.server}/images-1111-runpod-serverless`);
             if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
             const data = await response.json();
-            generatedImages = data.images.map(url => ({ url })).reverse();  // Added .reverse()
+            generatedImages = data.images.map(url => ({ url })).reverse();
         } catch (error) {
             console.error('Error loading images:', error);
         }
