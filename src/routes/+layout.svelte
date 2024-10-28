@@ -1,12 +1,6 @@
 <script>
     import "../app.css";
-  </script>
-
-<nav class="flex gap-4 py-4 px-4 bg-gray-100">
-    <a href="/generate-image-1111-baseten-serverless" class="button">
-        Generate Image 1111 Baseten Serverless
-    </a>
-</nav>
+</script>
 
 <main class="py-4 px-4">
     <slot></slot>
