@@ -42,3 +42,25 @@ export async function generateVideo(videoRequest) {
         throw error;
     }
 }
+
+export async function generateText(textRequest) {
+    try {
+        const response = await fetch(API_URLS.server + "/generate-text-llama-runpod-serverless", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(textRequest)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return data;  // assuming the text generation API returns the generated text in the response
+    } catch (error) {
+        console.error('Error generating text:', error);
+        throw error;
+    }
+}
