@@ -1,7 +1,7 @@
 <script>
     import { deforumDefaultParams } from '../../lib/deforumParameters';
     import { getCurrentTimestamp } from '../../lib/helper.js';
-    import DeforumPrompts from '../../lib/deforumPrompts.svelte';
+    import DeforumControl from '../../lib/deforumControl.svelte';
     import { generateVideo } from '../../lib/api.js';  // Import the generateVideo function
 
     // Initialize variables with default values
@@ -44,5 +44,5 @@
 
     <button class="mt-4 button" on:click={handleGenerateVideo}>Generate Video</button>
     
-    <DeforumPrompts on:update={handleUpdate} />
+    <DeforumControl on:update={handleUpdate} />
 </main>

@@ -44,6 +44,6 @@
     
     {#if generatedImageUrl}
         <!-- svelte-ignore a11y-img-redundant-alt -->
-        <img class="pt-4" src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" />
+        <img class="pt-4 h-[300px]" src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" />
     {/if}
 </main>

@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte';
-    import PreviewImage from '../lib/previewImage.svelte';
+    import PreviewImage from './previewImage.svelte';
 
     let maxFrames = 50;
     let globalPositivePrompt = 'masterpiece, hyperdetailed';
