@@ -40,7 +40,11 @@
 </script>
 
 <main>
-    <h1 class="pb-4">Generate Video with Deforum on RunPod Pod</h1>
+    <div class="border-b border-gray-200 pb-4 mb-8 w-full">
+        <h1 class="pb-4">
+            Generate Video with Deforum on RunPod Pod
+        </h1>
+    </div>
 
     <button class="mt-4 button" on:click={handleGenerateVideo}>Generate Video</button>
     
