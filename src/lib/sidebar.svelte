@@ -28,7 +28,7 @@
           </li>
           <li>
             <a href="/generate-deforum-1111-runpod-pod" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-              Deforum 1111 RunPod Pod
+              Deforum 1111 Serverless
             </a>
           </li>
         </ul>
