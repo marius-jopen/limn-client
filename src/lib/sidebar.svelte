@@ -11,11 +11,11 @@
               Dashboard
             </a>
           </li>
-          <!-- <li>
+          <li>
             <a href="/generate-image-1111-local" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
               Image 1111 Local
             </a>
-          </li> -->
+          </li>
           <li>
             <a href="/generate-image-1111-runpod-serverless" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
               Image 1111 RunPod Serverless
