@@ -1,6 +1,8 @@
 <script>
     import { config } from '$lib/config.js';
-   
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+    
     export let prefix = '';
     export let refreshTrigger = 0;
 
@@ -17,7 +19,8 @@
             
             const filteredImages = data.images
                 .filter(imageUrl => imageUrl.includes(prefix))
-                .map(imageUrl => `${config.server}/output/${imageUrl}`);
+                .filter(imageUrl => /\.(jpg|jpeg|png|gif|webp)$/i.test(imageUrl))
+                .map(imageUrl => `${config.server}/output${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`);
             
             images = filteredImages.reverse();
         } catch (err) {
@@ -27,6 +30,26 @@
     }
     
     $: refreshTrigger, fetchImages();
+
+    async function handleImageClick(imageUrl) {
+        try {
+            const relativePath = imageUrl.replace(config.server + '/output', '');
+            const parameterUrl = `${config.server}/output${relativePath.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '.txt')}`;
+            
+            const response = await fetch(parameterUrl);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load parameters: ${response.statusText}`);
+            }
+            
+            const textContent = await response.text();
+            const parameters = JSON.parse(textContent);
+            
+            dispatch('parameterSelect', parameters);
+        } catch (err) {
+            console.error('Error loading parameters:', err);
+        }
+    }
 </script>
 
 <div class="image-gallery">
@@ -38,7 +61,12 @@
     
     <div class="grid grid-cols-3 gap-4 mt-8">
         {#each images as image}
-            <img class="rounded-md" src={image} alt="Generated image" />
+            <img 
+                class="rounded-md cursor-pointer" 
+                src={image} 
+                alt="Generated image" 
+                on:click={() => handleImageClick(image)}
+            />
         {/each}
     </div>
 </div>

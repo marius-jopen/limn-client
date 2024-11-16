@@ -15,6 +15,13 @@
             alert('Failed to generate image. Please check the server logs for more details.');
         }
     }
+
+    function handleParameterSelect(event) {
+        const parameters = event.detail.parameters;
+        Object.keys(parameters).forEach(key => {
+            imageDefaultParams[key] = parameters[key];
+        });
+    }
 </script>
 
 <main>
@@ -26,5 +33,9 @@
         Generate
     </button>
     
-    <ImageGallery prefix="image-1111-runpod-serverless" refreshTrigger={galleryRefreshTimestamp} />
+    <ImageGallery 
+        prefix="image-1111-runpod-serverless" 
+        refreshTrigger={galleryRefreshTimestamp}
+        on:parameterSelect={handleParameterSelect}
+    />
 </main>
