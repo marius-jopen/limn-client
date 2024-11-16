@@ -1,3 +1,3 @@
-export const API_URLS = {
+export const config = {
     server: 'http://localhost:4000/api'
 };

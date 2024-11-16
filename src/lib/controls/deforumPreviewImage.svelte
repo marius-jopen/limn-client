@@ -1,5 +1,5 @@
 <script>
-    import { generateImage } from '../lib/api';
+    import { generateImage } from '$lib/api/videoGeneration';
 
     export let basePrompt = '';  // These props should be passed correctly
     export let globalPositivePrompt = '';

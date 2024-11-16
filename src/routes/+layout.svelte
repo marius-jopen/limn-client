@@ -1,15 +1,14 @@
 <script>
     import "../app.css";
-    import Sidebar from "../lib/sidebar.svelte";
-  </script>
+    import Navigation from "$lib/layout/navigation.svelte";
+</script>
 
-
-<main class="flex">
-    <div>
-        <Sidebar />
-    </div>
+<div>
+    <Navigation />
     
-    <div class="px-4 py-6 w-full">
-        <slot></slot>
-    </div>
-</main>
+    <main class="py-10 lg:pl-72">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <slot></slot>
+        </div>
+    </main>
+</div>

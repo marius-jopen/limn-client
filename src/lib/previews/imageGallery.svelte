@@ -1,5 +1,5 @@
 <script>
-    import { API_URLS } from '../lib/config.js';
+    import { config } from '$lib/config.js';
     
     export let prefix = '';
     export let refreshTrigger = 0;
@@ -9,7 +9,7 @@
     
     async function fetchImages() {
         try {
-            const response = await fetch(API_URLS.server + "/output");
+            const response = await fetch(config.server + "/output");
             if (!response.ok) {
                 throw new Error(`Server error: ${response.statusText}`);
             }
@@ -17,7 +17,7 @@
             
             const filteredImages = data.images
                 .filter(imageUrl => imageUrl.includes(prefix))
-                .map(imageUrl => `${API_URLS.server}/output/${imageUrl}`);
+                .map(imageUrl => `${config.server}/output/${imageUrl}`);
             
             images = filteredImages.reverse();
         } catch (err) {
@@ -26,7 +26,6 @@
         }
     }
     
-    // Update reactive statement to explicitly watch refreshTrigger
     $: refreshTrigger, fetchImages();
 </script>
 

@@ -1,8 +1,8 @@
 <script>
-    import { deforumDefaultParams } from '../../lib/deforumParameters';
-    import { getCurrentTimestamp } from '../../lib/helper.js';
-    import DeforumControl from '../../lib/deforumControl.svelte';
-    import { generateVideo } from '../../lib/api.js';  // Import the generateVideo function
+    import { deforumDefaultParams } from '$lib/parameters/deforumParameters';
+    import { getCurrentTimestamp } from '$lib/helpers/getCurrentTimestamp';
+    import DeforumControl from '$lib/parameters/deforumParameters';
+    import { generateVideo } from '$lib/api/videoGeneration.js'; 
 
     // Initialize variables with default values
     let maxFrames = 50;
