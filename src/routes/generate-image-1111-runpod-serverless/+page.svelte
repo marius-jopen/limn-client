@@ -1,13 +1,15 @@
 <script>
     import { API_URLS } from '../../lib/config';
+    import ImageGallery from '../../lib/imageGallery.svelte';
 
-    let generatedImageUrl = '';
     let imageRequest = {
         prompt: '',
         steps: 20,
         width: 1024,
         height: 1024
     };
+
+    let galleryRefreshTimestamp = 0;
     
     async function generateImage() {
         try {
@@ -22,9 +24,7 @@
             if (!response.ok) {
                 throw new Error(`Server error: ${response.statusText}`);
             }
-            
-            const data = await response.json();
-            generatedImageUrl = data.imageUrl;
+            galleryRefreshTimestamp = Date.now();
         } catch (error) {
             console.error('Error generating image:', error);
             alert('Failed to generate image. Please check the server logs for more details.');
@@ -47,8 +47,5 @@
     />
     <button class="button" on:click={generateImage}>Generate</button>
     
-    {#if generatedImageUrl}
-        <!-- svelte-ignore a11y-img-redundant-alt -->
-        <img class="pt-4 h-[300px]" src={`http://localhost:4000${generatedImageUrl}`} alt="Generated Image" />
-    {/if}
+    <ImageGallery prefix="image-1111-runpod-serverless" refreshTrigger={galleryRefreshTimestamp} />
 </main>
