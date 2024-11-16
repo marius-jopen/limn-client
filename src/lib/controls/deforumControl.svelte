@@ -107,7 +107,7 @@
     }
 </script>
 
-<main>
+<main class="pt-12">
     <div>
         <div class="mt-2">
             <label for="globalPositivePrompt">Global Positive Prompt:</label>

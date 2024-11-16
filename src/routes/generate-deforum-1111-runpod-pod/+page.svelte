@@ -1,11 +1,12 @@
 <script>
+    import Header from '$lib/layout/header.svelte';
     import { deforumDefaultParams } from '$lib/parameters/deforumParameters';
     import { getCurrentTimestamp } from '$lib/helpers/getCurrentTimestamp';
-    import DeforumControl from '$lib/parameters/deforumParameters';
+    import DeforumControl from '$lib/controls/deforumControl.svelte';
     import { generateVideo } from '$lib/api/videoGeneration.js'; 
 
-    // Initialize variables with default values
     let maxFrames = 50;
+
     let promptEntries = {
         "0": "house",
         "10": "computer",
@@ -31,7 +32,7 @@
         console.log("Prompts:", videoRequest.prompts);
 
         try {
-            await generateVideo(videoRequest);  // Use the generateVideo function from api.js
+            await generateVideo('generate-deforum-1111-runpod-pod', videoRequest);
         } catch (error) {
             console.error('Failed to generate video. Please check the server logs for more details.');
         }
@@ -40,11 +41,7 @@
 </script>
 
 <main>
-    <div class="border-b border-gray-200 pb-4 mb-8 w-full">
-        <h1 class="pb-4">
-            Generate Video with Deforum on RunPod Pod
-        </h1>
-    </div>
+    <Header text="Generate Video with Deforum on RunPod Pod" />
 
     <button class="mt-4 button" on:click={handleGenerateVideo}>Generate Video</button>
     

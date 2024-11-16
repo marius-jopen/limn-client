@@ -1,6 +1,6 @@
 <script>
     import { config } from '$lib/config.js';
-    
+   
     export let prefix = '';
     export let refreshTrigger = 0;
 

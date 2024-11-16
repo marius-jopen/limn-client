@@ -1,5 +1,5 @@
 <script>
-    import { generateImage } from '$lib/api/videoGeneration';
+    import { generateImage } from '$lib/api/imageGeneration';
 
     export let basePrompt = '';  // These props should be passed correctly
     export let globalPositivePrompt = '';
@@ -25,7 +25,7 @@
 
             console.log("Generated Image Request:", imageRequest); // Debugging log
 
-            generatedImageUrl = await generateImage(imageRequest);
+            generatedImageUrl = await generateImage('generate-image-1111-runpod-pod', imageRequest)
         } catch (error) {
             alert('Failed to generate image. Please check the server logs for more details.');
         }
