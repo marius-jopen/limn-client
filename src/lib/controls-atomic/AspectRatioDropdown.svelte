@@ -28,12 +28,12 @@
     }
 </script>
 
-<div class="flex flex-col gap-2 pb-4">
+<div class="flex flex-col gap-2 pb-6">
     <label class="text-xs block" for="prompt">
         Ratio
     </label>
 
-    <select class="text-input" value={currentRatio} on:change={handleAspectRatioChange}>
+    <select class="select-input" value={currentRatio} on:change={handleAspectRatioChange}>
         {#each aspectRatios as ratio, i}
             <option value={i}>{ratio.label} ({ratio.width}x{ratio.height})</option>
         {/each}

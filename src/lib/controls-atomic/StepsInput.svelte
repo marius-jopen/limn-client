@@ -2,7 +2,7 @@
     export let imageDefaultParams;
 </script>
 
-<div class="flex flex-col gap-2 w-1/4 pb-4">
+<div class="flex flex-col gap-2 w-1/4 pb-6">
     <label class="text-xs block" for="prompt">
         Steps
     </label>

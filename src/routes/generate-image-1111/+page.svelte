@@ -28,13 +28,15 @@
 
 <main class="flex gap-8">
     <div class="pl-8 w-3/5 h-screen overflow-y-scroll">
-        <Header text="Generate Image 1111 RunPod Serverless" />
+        <Header text="Generate Image 1111" />
 
-        <button class="button w-1/2" on:click={handleGenerateImage}>
-            Generate
-        </button>
-        
-        <EndpointSelector bind:selectedEndpoint />
+        <div class="flex gap-4">
+            <button class="button w-1/2" on:click={handleGenerateImage}>
+                Generate
+            </button>
+            
+            <EndpointSelector bind:selectedEndpoint />
+        </div>
  
         <ImageControl {imageDefaultParams} />
     </div>

@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    import ParameterCopyButton from '$lib/previews/ParameterCopyButton.svelte';
     
     const SERVER_URL = import.meta.env.SERVER_URL || 'http://localhost:4000/api';
     const dispatch = createEventDispatcher();
@@ -9,6 +10,7 @@
 
     let images = [];
     let error = null;
+    let selectedImage = null;
     
     async function fetchImages() {
         try {
@@ -32,24 +34,16 @@
     
     $: refreshTrigger, fetchImages();
 
-    async function handleImageClick(imageUrl) {
-        try {
-            const relativePath = imageUrl.replace(SERVER_URL + '/output', '');
-            const parameterUrl = `${SERVER_URL}/output${relativePath.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '.txt')}`;
-            
-            const response = await fetch(parameterUrl);
-            
-            if (!response.ok) {
-                throw new Error(`Failed to load parameters: ${response.statusText}`);
-            }
-            
-            const textContent = await response.text();
-            const parameters = JSON.parse(textContent);
-            
-            dispatch('parameterSelect', parameters);
-        } catch (err) {
-            console.error('Error loading parameters:', err);
-        }
+    function handleParameterSelect(event) {
+        dispatch('parameterSelect', event.detail);
+    }
+    
+    function openPreview(image) {
+        selectedImage = image;
+    }
+    
+    function closePreview() {
+        selectedImage = null;
     }
 </script>
 
@@ -62,12 +56,42 @@
     
     <div class="grid grid-cols-1 gap-4 my-8">
         {#each images as image}
-            <img 
-                class="rounded-md cursor-pointer" 
-                src={image} 
-                alt="Generated image" 
-                on:click={() => handleImageClick(image)}
-            />
+            <div class="relative group">
+                <img 
+                    class="rounded-md w-full cursor-pointer" 
+                    src={image} 
+                    alt="Generated image" 
+                    on:click={() => openPreview(image)}
+                />
+
+                <ParameterCopyButton 
+                    {image} 
+                    on:parameterSelect={handleParameterSelect}
+                />
+            </div>
         {/each}
     </div>
+
+    {#if selectedImage}
+        <div 
+            class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center"
+            on:click={closePreview}
+        >
+            <div class=" max-w-[90vw] max-h-[90vh]">
+                <button
+                    class="absolute top-1 right-4 text-3xl text-white"
+                    on:click|stopPropagation={closePreview}
+                >
+                    ×
+                </button>
+
+                <img 
+                    src={selectedImage} 
+                    alt="Preview" 
+                    class="max-w-full max-h-[90vh] object-contain"
+                    on:click|stopPropagation
+                />
+            </div>
+        </div>
+    {/if}
 </div>
