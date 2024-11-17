@@ -7,16 +7,12 @@
     export let imageDefaultParams;
 </script>
 
-<div class="pb-4">
-    <div class="flex gap-4 pb-4">
-        <PromptInput {imageDefaultParams} />
-        <NegativePromptInput {imageDefaultParams} />
-    </div>
-
-    <div class="flex gap-4 pb-4">
+<div class="pt-8 mt-8 border-t border-gray-200">
+    <PromptInput {imageDefaultParams} />
+    <NegativePromptInput {imageDefaultParams} />
+    
+    <div class="flex gap-4">
         <StepsInput {imageDefaultParams} />
         <AspectRatioDropdown {imageDefaultParams} />
     </div>
-    
-
-</div>    
+</div>

@@ -12,30 +12,15 @@
             </a>
           </li>
           <li>
-            <a href="/generate-image-1111-local" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-              Image 1111 Local
-            </a>
-          </li>
-          <li>
-            <a href="/generate-image-1111-runpod-serverless" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-              Image 1111 RunPod Serverless
-            </a>
-          </li>
-          <li>
-            <a href="/generate-image-1111-runpod-pod" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-              Image 1111 RunPod Pod
+            <a href="/generate-image-1111" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
+              Generate Image 1111
             </a>
           </li>
           <li>
             <a href="/generate-deforum-1111-runpod-pod" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-              Deforum 1111 RunPod Pod
+              Generate Video Deforum
             </a>
           </li>
-          <!-- <li>
-            <a href="/generate-deforum-1111-runpod-pod" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-              Deforum 1111 Serverless
-            </a>
-          </li> -->
         </ul>
       </li>
       

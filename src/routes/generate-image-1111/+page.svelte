@@ -4,12 +4,14 @@
     import { generateImage } from '$lib/api/imageGeneration';
     import ImageGallery from '$lib/previews/imageGallery.svelte';
     import ImageControl from '$lib/controls/ImageControl.svelte';
+    import EndpointSelector from '$lib/controls/EndpointSelector.svelte';
 
     let galleryRefreshTimestamp = 0;
+    let selectedEndpoint = 'generate-image-1111-runpod-serverless';
     
     async function handleGenerateImage() {
         try {
-            await generateImage('generate-image-1111-runpod-serverless', imageDefaultParams);
+            await generateImage(selectedEndpoint, imageDefaultParams);
             galleryRefreshTimestamp = Date.now();
         } catch (error) {
             alert('Failed to generate image. Please check the server logs for more details.');
@@ -24,18 +26,24 @@
     }
 </script>
 
-<main>
-    <Header text="Generate Image 1111 RunPod Serverless" />
+<main class="flex gap-8">
+    <div class="pl-8 w-3/5 h-screen overflow-y-scroll">
+        <Header text="Generate Image 1111 RunPod Serverless" />
 
-    <ImageControl {imageDefaultParams} />
+        <button class="button w-1/2" on:click={handleGenerateImage}>
+            Generate
+        </button>
+        
+        <EndpointSelector bind:selectedEndpoint />
+ 
+        <ImageControl {imageDefaultParams} />
+    </div>
 
-    <button class="button" on:click={handleGenerateImage}>
-        Generate
-    </button>
-    
-    <ImageGallery 
-        prefix="image-1111-runpod-serverless" 
-        refreshTrigger={galleryRefreshTimestamp}
-        on:parameterSelect={handleParameterSelect}
-    />
+    <div class="pr-8 w-2/5 h-screen overflow-y-scroll">
+        <ImageGallery 
+            prefix="image-1111-runpod-serverless" 
+            refreshTrigger={galleryRefreshTimestamp}
+            on:parameterSelect={handleParameterSelect}
+        />
+    </div>
 </main>

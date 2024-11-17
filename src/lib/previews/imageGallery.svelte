@@ -1,6 +1,7 @@
 <script>
-    import { config } from '$lib/config.js';
     import { createEventDispatcher } from 'svelte';
+    
+    const SERVER_URL = import.meta.env.SERVER_URL || 'http://localhost:4000/api';
     const dispatch = createEventDispatcher();
     
     export let prefix = '';
@@ -11,7 +12,7 @@
     
     async function fetchImages() {
         try {
-            const response = await fetch(config.server + "/output");
+            const response = await fetch(SERVER_URL + "/output");
             if (!response.ok) {
                 throw new Error(`Server error: ${response.statusText}`);
             }
@@ -20,7 +21,7 @@
             const filteredImages = data.images
                 .filter(imageUrl => imageUrl.includes(prefix))
                 .filter(imageUrl => /\.(jpg|jpeg|png|gif|webp)$/i.test(imageUrl))
-                .map(imageUrl => `${config.server}/output${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`);
+                .map(imageUrl => `${SERVER_URL}/output${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`);
             
             images = filteredImages.reverse();
         } catch (err) {
@@ -33,8 +34,8 @@
 
     async function handleImageClick(imageUrl) {
         try {
-            const relativePath = imageUrl.replace(config.server + '/output', '');
-            const parameterUrl = `${config.server}/output${relativePath.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '.txt')}`;
+            const relativePath = imageUrl.replace(SERVER_URL + '/output', '');
+            const parameterUrl = `${SERVER_URL}/output${relativePath.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '.txt')}`;
             
             const response = await fetch(parameterUrl);
             
@@ -59,7 +60,7 @@
         </div>
     {/if}
     
-    <div class="grid grid-cols-3 gap-4 mt-8">
+    <div class="grid grid-cols-1 gap-4 my-8">
         {#each images as image}
             <img 
                 class="rounded-md cursor-pointer" 

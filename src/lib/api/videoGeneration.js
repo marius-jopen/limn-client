@@ -1,8 +1,8 @@
-import { config } from '$lib/config.js';
+const SERVER_URL = import.meta.env.SERVER_URL || 'http://localhost:4000/api';
 
 export async function generateVideo(endpoint, params) {
     try {
-        const response = await fetch(`${config.server}/${endpoint}`, {
+        const response = await fetch(`${SERVER_URL}/${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

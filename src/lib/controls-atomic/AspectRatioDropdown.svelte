@@ -15,12 +15,11 @@
         { label: "2:1", width: 1024, height: 512 }
     ];
 
-    // Set default to 1:1 on component initialization
-    const defaultRatio = aspectRatios.findIndex(ratio => ratio.label === "1:1");
-
-    // Update initial values
-    imageDefaultParams.width = aspectRatios[defaultRatio].width;
-    imageDefaultParams.height = aspectRatios[defaultRatio].height;
+    // Convert defaultRatio to a reactive variable using $: 
+    $: currentRatio = aspectRatios.findIndex(ratio => 
+        ratio.width === imageDefaultParams.width && 
+        ratio.height === imageDefaultParams.height
+    );
 
     function handleAspectRatioChange(event) {
         const selected = aspectRatios[event.target.value];
@@ -29,12 +28,12 @@
     }
 </script>
 
-<div class="flex flex-col gap-2 w-1/4">
+<div class="flex flex-col gap-2 pb-4">
     <label class="text-xs block" for="prompt">
-        Steps
+        Ratio
     </label>
 
-    <select class="text-input" value={defaultRatio} on:change={handleAspectRatioChange}>
+    <select class="text-input" value={currentRatio} on:change={handleAspectRatioChange}>
         {#each aspectRatios as ratio, i}
             <option value={i}>{ratio.label} ({ratio.width}x{ratio.height})</option>
         {/each}
