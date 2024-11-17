@@ -1,6 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     import ParameterCopyButton from '$lib/previews/ParameterCopyButton.svelte';
+    import DeleteButton from '$lib/previews/DeleteImageButton.svelte';
     
     const SERVER_URL = import.meta.env.SERVER_URL || 'http://localhost:4000/api';
     const dispatch = createEventDispatcher();
@@ -45,6 +46,11 @@
     function closePreview() {
         selectedImage = null;
     }
+
+    function handleImageDeleted(event) {
+        const deletedImage = event.detail.image;
+        images = images.filter(img => img !== deletedImage);
+    }
 </script>
 
 <div class="image-gallery">
@@ -67,6 +73,11 @@
                 <ParameterCopyButton 
                     {image} 
                     on:parameterSelect={handleParameterSelect}
+                />
+
+                <DeleteButton 
+                    {image} 
+                    on:imageDeleted={handleImageDeleted}
                 />
             </div>
         {/each}
