@@ -26,12 +26,12 @@
     }
 </script>
 
-<main class="flex gap-8">
-    <div class="pl-8 w-3/5 h-screen overflow-y-scroll">
+<main class="md:flex gap-8">
+    <div class="pl-8 pr-8 md:pr-0 md:w-3/5 md:h-screen overflow-y-scroll">
         <Header text="Generate Image 1111" />
 
-        <div class="flex gap-4">
-            <button class="button w-1/2" on:click={handleGenerateImage}>
+        <div class="flex flex-col md:flex-row gap-4">
+            <button class="button md:w-1/2" on:click={handleGenerateImage}>
                 Generate
             </button>
             
@@ -41,7 +41,7 @@
         <ImageControl {imageDefaultParams} />
     </div>
 
-    <div class="pr-8 w-2/5 h-screen overflow-y-scroll">
+    <div class="pl-8 md:pl-0 pr-8 md:w-2/5 md:h-screen overflow-y-scroll">
         <ImageGallery 
             prefix="image-1111-runpod-serverless" 
             refreshTrigger={galleryRefreshTimestamp}

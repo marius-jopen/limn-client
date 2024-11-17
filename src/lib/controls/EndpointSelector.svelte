@@ -10,7 +10,7 @@
 
 <select 
     bind:value={selectedEndpoint}
-    class="select-input select select-bordered w-1/2 max-w-xs"
+    class="select-input select select-bordered md:w-1/2 md:max-w-xs"
 >
     {#each endpoints as endpoint}
         <option value={endpoint.value}>{endpoint.label}</option>
