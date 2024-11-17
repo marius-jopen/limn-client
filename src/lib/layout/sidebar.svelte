@@ -16,11 +16,11 @@
               Generate Image 1111
             </a>
           </li>
-          <!-- <li>
+          <li>
             <a href="/generate-deforum-1111-runpod-pod" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
               Generate Video Deforum
             </a>
-          </li> -->
+          </li>
         </ul>
       </li>
       
