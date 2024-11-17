@@ -23,17 +23,18 @@
     </div>
 {:else}
     <div class="h-screen flex items-center justify-center">
-        <div class="p-8 bg-white rounded shadow-md">
-            <h1 class="text-xl mb-4">Enter Password</h1>
+        <div class="px-8 pt-4 pb-8 bg-white rounded-2xl border border-gray-200">
+            <h1 class="text-xl mb-4 text-center pb-2 pt-1">Enter Password</h1>
             <input 
                 type="password" 
                 bind:value={password}
-                class="border p-2 mb-4 w-full"
+                class="text-input mr-2"
                 placeholder="Password"
             />
+
             <button 
                 on:click={checkPassword}
-                class="bg-blue-500 text-white px-4 py-2 rounded w-full"
+                class="button"
             >
                 Submit
             </button>
