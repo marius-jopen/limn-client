@@ -1,15 +1,15 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     
-    const SERVER_URL = import.meta.env.SERVER_URL;
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
     const dispatch = createEventDispatcher();
     
     export let image;
 
     async function handleImageClick() {
         try {
-            const relativePath = image.replace(SERVER_URL + '/output', '');
-            const parameterUrl = `${SERVER_URL}/output${relativePath.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '.txt')}`;
+            const relativePath = image.replace(serverUrl + '/output', '');
+            const parameterUrl = `${serverUrl}/output${relativePath.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '.txt')}`;
             
             const response = await fetch(parameterUrl);
             

@@ -4,7 +4,7 @@
     import ParameterCopyButton from '$lib/previews/ParameterCopyButton.svelte';
     import DeleteButton from '$lib/previews/DeleteImageButton.svelte';
     
-    const SERVER_URL = import.meta.env.SERVER_URL;
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
     const dispatch = createEventDispatcher();
     
     export let prefix = '';
@@ -25,8 +25,8 @@
                 // console.log('User not authenticated');
             }
             
-            const response = await fetch(`${SERVER_URL}/output?userId=${userId}`);
-            // console.log(`${SERVER_URL}/output?userId=${userId}`);
+            const response = await fetch(`${serverUrl}/output?userId=${userId}`);
+            // console.log(`${VITE_SERVER_URL}/output?userId=${userId}`);
             if (!response.ok) {
                 throw new Error(`Server error: ${response.statusText}`);
             }
@@ -35,7 +35,7 @@
             const filteredImages = data.images
                 .filter(imageUrl => imageUrl.includes(prefix))
                 .filter(imageUrl => /\.(jpg|jpeg|png|gif|webp)$/i.test(imageUrl))
-                .map(imageUrl => `${SERVER_URL}/output${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`);
+                .map(imageUrl => `${serverUrl}/output${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`);
             
             images = filteredImages.reverse();
         } catch (err) {

@@ -3,15 +3,15 @@
     import { user } from '$lib/stores/auth';
     const dispatch = createEventDispatcher();
     
-    const SERVER_URL = import.meta.env.SERVER_URL;
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
     
     export let image;
 
     async function handleDelete() {
         try {
             const userId = $user?.id;
-            const relativePath = image.replace(SERVER_URL + '/output', '');
-            const deleteUrl = `${SERVER_URL}/output${relativePath}?userId=${userId}`;
+            const relativePath = image.replace(serverUrl + '/output', '');
+            const deleteUrl = `${serverUrl}/output${relativePath}?userId=${userId}`;
             
             const response = await fetch(deleteUrl, {
                 method: 'DELETE'

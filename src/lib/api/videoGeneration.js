@@ -1,8 +1,8 @@
-const SERVER_URL = import.meta.env.SERVER_URL;
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 export async function generateVideo(endpoint, params) {
     try {
-        const response = await fetch(`${SERVER_URL}/${endpoint}`, {
+        const response = await fetch(`${serverUrl}/${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
