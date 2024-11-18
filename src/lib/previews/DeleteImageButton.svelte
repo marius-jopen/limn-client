@@ -3,7 +3,7 @@
     import { user } from '$lib/stores/auth';
     const dispatch = createEventDispatcher();
     
-    const SERVER_URL = import.meta.env.SERVER_URL || 'http://localhost:4000/api';
+    const SERVER_URL = import.meta.env.SERVER_URL;
     
     export let image;
 

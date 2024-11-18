@@ -4,7 +4,7 @@
     import ParameterCopyButton from '$lib/previews/ParameterCopyButton.svelte';
     import DeleteButton from '$lib/previews/DeleteImageButton.svelte';
     
-    const SERVER_URL = import.meta.env.SERVER_URL || 'http://localhost:4000/api';
+    const SERVER_URL = import.meta.env.SERVER_URL;
     const dispatch = createEventDispatcher();
     
     export let prefix = '';

@@ -1,4 +1,4 @@
-const SERVER_URL = import.meta.env.SERVER_URL || 'http://localhost:4000/api';
+const SERVER_URL = import.meta.env.SERVER_URL;
 
 export async function generateImage(endpoint, params, userId) {
     try {
