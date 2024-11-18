@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    import { user } from '$lib/stores/auth';
     import ParameterCopyButton from '$lib/previews/ParameterCopyButton.svelte';
     import DeleteButton from '$lib/previews/DeleteImageButton.svelte';
     
@@ -15,7 +16,17 @@
     
     async function fetchImages() {
         try {
-            const response = await fetch(SERVER_URL + "/output");
+            const userId = $user?.id;
+            // console.log('Current user:', $user);
+            // console.log('UserId:', userId);
+            
+            if (!userId) {
+                // throw new Error('User not authenticated');
+                // console.log('User not authenticated');
+            }
+            
+            const response = await fetch(`${SERVER_URL}/output?userId=${userId}`);
+            // console.log(`${SERVER_URL}/output?userId=${userId}`);
             if (!response.ok) {
                 throw new Error(`Server error: ${response.statusText}`);
             }
@@ -50,6 +61,11 @@
     function handleImageDeleted(event) {
         const deletedImage = event.detail.image;
         images = images.filter(img => img !== deletedImage);
+    }
+
+    $: if ($user) {
+        // console.log('User store updated:', $user);
+        fetchImages();
     }
 </script>
 

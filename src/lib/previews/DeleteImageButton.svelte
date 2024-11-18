@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    import { user } from '$lib/stores/auth';
     const dispatch = createEventDispatcher();
     
     const SERVER_URL = import.meta.env.SERVER_URL || 'http://localhost:4000/api';
@@ -8,8 +9,9 @@
 
     async function handleDelete() {
         try {
+            const userId = $user?.id;
             const relativePath = image.replace(SERVER_URL + '/output', '');
-            const deleteUrl = `${SERVER_URL}/output${relativePath}`;
+            const deleteUrl = `${SERVER_URL}/output${relativePath}?userId=${userId}`;
             
             const response = await fetch(deleteUrl, {
                 method: 'DELETE'

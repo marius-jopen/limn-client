@@ -5,13 +5,20 @@
     import ImageGallery from '$lib/previews/imageGallery.svelte';
     import ImageControl from '$lib/controls/ImageControl.svelte';
     import EndpointSelector from '$lib/controls/EndpointSelector.svelte';
+    import { user } from '$lib/stores/auth';
 
     let galleryRefreshTimestamp = 0;
     let selectedEndpoint = 'generate-image-1111-runpod-serverless';
     
     async function handleGenerateImage() {
         try {
-            await generateImage(selectedEndpoint, imageDefaultParams);
+            const currentUser = $user;
+            if (!currentUser) {
+                alert('Please log in to generate images');
+                return;
+            }
+            
+            await generateImage(selectedEndpoint, imageDefaultParams, currentUser.id);
             galleryRefreshTimestamp = Date.now();
         } catch (error) {
             alert('Failed to generate image. Please check the server logs for more details.');
