@@ -48,14 +48,14 @@
                     </button>
                 </div>
 
-                <Sidebar {signOut} />
+                <Sidebar {signOut} {closeMobileMenu} />
             </div>
         </div>
     </div>
 
     <!-- Static sidebar for desktop -->
     <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <Sidebar {signOut} />
+        <Sidebar {signOut} {closeMobileMenu} />
     </div>
 
     <!-- Mobile header -->
@@ -71,13 +71,13 @@
             </svg>
         </button>
 
-        <div class="flex-1 text-sm/6 font-semibold text-gray-900">
+        <!-- <div class="flex-1 text-sm/6 font-semibold text-gray-900">
             Dashboard
-        </div>
+        </div> -->
 
-        <a href="#">
+        <!-- <a href="#">
             <span class="sr-only">Your profile</span>
             <img class="size-8 rounded-full bg-gray-50" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-        </a>
+        </a> -->
     </div>
 </div>

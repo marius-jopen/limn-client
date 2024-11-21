@@ -1,26 +1,34 @@
 <script>
   import { user } from '$lib/stores/auth';
+  import { page } from '$app/stores';
   
   export let signOut;
+  export let closeMobileMenu;
 </script>
 
 <div class="min-h-screen h-[100dvh] flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
-  <div class="flex h-16 shrink-0 items-center border-b border-gray-200 pb-4">
-    <div class="text-xl font-bold pt-4">
-      Limn
-    </div>
+  <div class="flex h-16 shrink-0 items-center">
+    <img class="h-8 w-auto" src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
   </div>
   <nav class="flex flex-1 flex-col">
     <ul role="list" class="flex flex-1 flex-col gap-y-7">
       <li>
         <ul role="list" class="-mx-2 space-y-1">
           <li>
-            <a href="/dashboard" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
+            <a 
+              href="/dashboard" 
+              on:click={closeMobileMenu}
+              class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold {$page.url.pathname === '/dashboard' ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600'}"
+            >
               Dashboard
             </a>
           </li>
           <li>
-            <a href="/generate-image-1111" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
+            <a 
+              href="/generate-image-1111" 
+              on:click={closeMobileMenu}
+              class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold {$page.url.pathname === '/generate-image-1111' ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600'}"
+            >
               Generate Image 1111
             </a>
           </li>

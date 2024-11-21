@@ -1,3 +1,5 @@
-<div class="px-8">
-    Home
-</div> 
+<script>
+    import HeroSection from '$lib/layout/HeroSection.svelte';
+</script>
+
+<HeroSection />
