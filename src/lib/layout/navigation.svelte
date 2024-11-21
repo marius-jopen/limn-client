@@ -7,6 +7,9 @@
     // Toggle handlers
     const openMobileMenu = () => isMobileMenuOpen = true;
     const closeMobileMenu = () => isMobileMenuOpen = false;
+
+    // Add signOut prop
+    export let signOut;
 </script>
 
 <div>
@@ -45,14 +48,14 @@
                     </button>
                 </div>
 
-                <Sidebar />
+                <Sidebar {signOut} />
             </div>
         </div>
     </div>
 
     <!-- Static sidebar for desktop -->
     <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <Sidebar />
+        <Sidebar {signOut} />
     </div>
 
     <!-- Mobile header -->

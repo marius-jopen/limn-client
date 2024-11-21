@@ -1,27 +1,36 @@
 <script>
     import "../app.css";
     import Navigation from "$lib/layout/navigation.svelte";
+    import MainNavigation from "$lib/layout/MainNavigation.svelte";
     import { page } from '$app/stores';
     import { user } from '$lib/stores/auth';
+    import { goto } from '$app/navigation';
+    import { supabase } from '$lib/supabaseClient';
 
-    // Debug logs
-    $: console.log('Layout - Page Session:', {
-        session: $page.data.session,
-        user: $page.data.session?.user,
-        timestamp: new Date().toISOString()
-    });
-
-    // Only set user if we have session data
+    // Set user when session data is available
     $: if ($page.data.session?.user) {
-        console.log('Layout - Setting user store:', $page.data.session.user);
         user.set($page.data.session.user);
+    }
+
+    async function signOut() {
+        await supabase.auth.signOut();
+        user.set(null);
+        await goto('/');
     }
 </script>
 
 <div>
-    <Navigation />
-    
-    <main class="lg:pl-72">
-        <slot></slot>
-    </main>
+    {#if $user}
+        <Navigation {signOut} />
+        
+        <main class="lg:pl-72">
+            <slot></slot>
+        </main>
+    {:else}
+        <MainNavigation />
+
+        <main>
+            <slot></slot>
+        </main>
+    {/if}
 </div>

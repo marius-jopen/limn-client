@@ -1,3 +1,3 @@
 <div class="px-8">
-    Home
+    About
 </div> 
