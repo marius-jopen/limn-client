@@ -55,6 +55,7 @@
     
     function openPreview(image) {
         selectedImage = image;
+        currentIndex = images.findIndex(img => img === image);
     }
     
     function closePreview() {
@@ -70,7 +71,36 @@
         // console.log('User store updated:', $user);
         fetchImages();
     }
+
+    let currentIndex = 0;
+
+    function nextImage(event) {
+        event.stopPropagation();
+        currentIndex = (currentIndex + 1) % images.length;
+        selectedImage = images[currentIndex];
+    }
+
+    function previousImage(event) {
+        event.stopPropagation();
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        selectedImage = images[currentIndex];
+    }
+
+    // Add keyboard navigation
+    function handleKeydown(event) {
+        if (!selectedImage) return;
+        
+        if (event.key === 'ArrowRight') {
+            nextImage(event);
+        } else if (event.key === 'ArrowLeft') {
+            previousImage(event);
+        } else if (event.key === 'Escape') {
+            closePreview();
+        }
+    }
 </script>
+
+<svelte:window on:keydown={handleKeydown}/>
 
 <div class="image-gallery">
     {#if error}
@@ -104,10 +134,24 @@
 
     {#if selectedImage}
         <div 
-            class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center"
+            class="fixed inset-0 bg-black bg-opacity-85 z-50 flex items-center justify-center"
             on:click={closePreview}
         >
-            <div class=" max-w-[90vw] max-h-[90vh]">
+            <button
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-4xl opacity-75 hover:opacity-100"
+                on:click|stopPropagation={previousImage}
+            >
+                ‹
+            </button>
+
+            <button
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white text-4xl opacity-75 hover:opacity-100"
+                on:click|stopPropagation={nextImage}
+            >
+                ›
+            </button>
+
+            <div class="max-w-[90vw] max-h-[90vh]">
                 <button
                     class="absolute top-1 right-4 text-3xl text-white"
                     on:click|stopPropagation={closePreview}
