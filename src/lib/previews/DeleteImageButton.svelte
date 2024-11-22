@@ -10,8 +10,12 @@
     async function handleDelete() {
         try {
             const userId = $user?.id;
-            const relativePath = image.replace(serverUrl + '/output', '');
-            const deleteUrl = `${serverUrl}/output${relativePath}?userId=${userId}`;
+            
+            let relativePath = image.replace(serverUrl + '/output/', '');
+            relativePath = relativePath.replace(`${userId}/`, '');
+            
+            const deleteUrl = `${serverUrl}/output/${relativePath}?userId=${userId}`;
+            console.log('Attempting to delete:', deleteUrl);
             
             const response = await fetch(deleteUrl, {
                 method: 'DELETE'
@@ -21,7 +25,6 @@
                 throw new Error(`Failed to delete image: ${response.statusText}`);
             }
 
-            // Dispatch event after successful deletion
             dispatch('imageDeleted', { image });
         } catch (err) {
             console.error('Error deleting image:', err);

@@ -35,7 +35,10 @@
             const filteredImages = data.images
                 .filter(imageUrl => imageUrl.includes(prefix))
                 .filter(imageUrl => /\.(jpg|jpeg|png|gif|webp)$/i.test(imageUrl))
-                .map(imageUrl => `${serverUrl}/output${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`);
+                .map(imageUrl => {
+                    const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+                    return `${serverUrl}/output/${cleanPath}`;
+                });
             
             images = filteredImages.reverse();
         } catch (err) {
