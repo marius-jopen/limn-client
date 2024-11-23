@@ -1,3 +1,9 @@
+/**
+ * Helper function that generates a timestamp string in the format: YYYYMMDD_HHMMSS
+ * Used for creating unique, chronological identifiers or filenames
+ * Example output: "20240320_143022" (for March 20, 2024 at 14:30:22)
+ */
+
 export function getCurrentTimestamp() {
     const now = new Date();
     const year = now.getFullYear();

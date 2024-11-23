@@ -1,5 +1,5 @@
 <script>
-    import Sidebar from "$lib/layout/sidebar.svelte";
+    import Sidebar from "$lib/layout/menus/sidebar.svelte";
     
     // Add state for mobile menu
     let isMobileMenuOpen = false;

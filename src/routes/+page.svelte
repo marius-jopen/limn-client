@@ -1,5 +1,5 @@
 <script>
-    import HeroSection from '$lib/layout/HeroSection.svelte';
+    import HeroSection from '$lib/layout/basic-frontend/HeroSection.svelte';
 </script>
 
 <HeroSection />

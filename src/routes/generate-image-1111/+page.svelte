@@ -2,7 +2,7 @@
     import Header from '$lib/layout/header.svelte';
     import { imageDefaultParams } from '$lib/parameters/imageParameters';
     import { generateImage } from '$lib/api/imageGeneration';
-    import ImageGallery from '$lib/previews/imageGallery.svelte';
+    import ImageGallery from '$lib/image-gallery/imageGallery.svelte';
     import ImageControl from '$lib/controls/ImageControl.svelte';
     import EndpointSelector from '$lib/controls/EndpointSelector.svelte';
     import { user } from '$lib/stores/auth';

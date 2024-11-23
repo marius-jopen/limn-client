@@ -1,3 +1,17 @@
+<!--
+    ParameterCopyButton Component
+    
+    This component creates a button that appears when hovering over an image in the gallery.
+    It's designed to fetch and copy the generation parameters associated with an image.
+
+    Functionality:
+    - Takes an image URL as a prop
+    - When clicked, fetches a corresponding .txt file containing the image's parameters
+    - The .txt file is expected to be in the same location as the image but with a .txt extension
+    - Dispatches a 'parameterSelect' event with the parsed parameters when successful
+    - Button is styled to be semi-transparent and only visible on hover (using group-hover)
+-->
+
 <script>
     import { createEventDispatcher } from 'svelte';
     

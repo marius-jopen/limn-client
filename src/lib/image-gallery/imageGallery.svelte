@@ -1,8 +1,30 @@
 <script>
+    /**
+     * Image Gallery Component
+     * 
+     * This component provides a responsive gallery view for displaying and managing images.
+     * 
+     * Features:
+     * - Displays a grid of user-generated images
+     * - Supports image preview with modal view
+     * - Navigation between images using arrow keys or on-screen buttons
+     * - Image deletion functionality
+     * - Parameter copy functionality for each image
+     * - Automatic refresh when user state changes
+     * - Filters images based on file extensions and optional prefix
+     * 
+     * Props:
+     * - prefix: string - Optional filter to show only images containing this prefix
+     * - refreshTrigger: number - Trigger to force gallery refresh
+     * 
+     * Events:
+     * - parameterSelect: Dispatched when image parameters are selected
+     */
+
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/auth';
-    import ParameterCopyButton from '$lib/previews/ParameterCopyButton.svelte';
-    import DeleteButton from '$lib/previews/DeleteImageButton.svelte';
+    import ParameterCopyButton from '$lib/image-gallery/ParameterCopyButton.svelte';
+    import DeleteButton from '$lib/image-gallery/DeleteImageButton.svelte';
     
     const serverUrl = import.meta.env.VITE_SERVER_URL;
     const dispatch = createEventDispatcher();

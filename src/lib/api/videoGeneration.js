@@ -1,3 +1,12 @@
+/**
+ * This module handles video generation API requests to the server.
+ * It provides functionality to send video generation parameters to a specified endpoint.
+ * 
+ * The server URL is configured through the VITE_SERVER_URL environment variable.
+ * 
+ * @module videoGeneration
+ */
+
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 export async function generateVideo(endpoint, params) {

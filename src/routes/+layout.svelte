@@ -1,11 +1,11 @@
 <script>
     import "../app.css";
-    import Navigation from "$lib/layout/navigation.svelte";
-    import MainNavigation from "$lib/layout/MainNavigation.svelte";
+    import Navigation from "$lib/layout/menus/navigation.svelte";
+    import MainNavigation from "$lib/layout/menus/MainNavigation.svelte";
     import { page } from '$app/stores';
     import { user } from '$lib/stores/auth';
     import { goto } from '$app/navigation';
-    import { supabase } from '$lib/supabaseClient';
+    import { supabase } from '$lib/supabase/supabaseClient';
 
     // Set user when session data is available
     $: if ($page.data.session?.user) {

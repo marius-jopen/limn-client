@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { supabase } from '$lib/supabaseClient';
+    import { supabase } from '$lib/supabase/supabaseClient';
     import { goto } from '$app/navigation';
     import Header from '$lib/layout/header.svelte';
 
