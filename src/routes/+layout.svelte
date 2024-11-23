@@ -7,6 +7,12 @@
     import { goto } from '$app/navigation';
     import { supabase } from '$lib/supabase/supabaseClient';
 
+    let isCollapsed = false;
+
+    function toggleCollapse() {
+        isCollapsed = !isCollapsed;
+    }
+
     // Set user when session data is available
     $: if ($page.data.session?.user) {
         user.set($page.data.session.user);
@@ -21,9 +27,9 @@
 
 <div>
     {#if $user}
-        <Navigation {signOut} />
+        <Navigation {signOut} bind:isCollapsed {toggleCollapse} />
         
-        <main class="lg:pl-72">
+        <main class="transition-[padding] duration-300 {isCollapsed ? 'lg:pl-16' : 'lg:pl-72'}">
             <slot></slot>
         </main>
     {:else}
