@@ -14,6 +14,7 @@
 
 <script>
     import { createEventDispatcher } from 'svelte';
+    import { user } from '$lib/stores/auth';
     
     const serverUrl = import.meta.env.VITE_SERVER_URL;
     const dispatch = createEventDispatcher();
@@ -22,21 +23,26 @@
 
     async function handleImageClick() {
         try {
-            const relativePath = image.replace(serverUrl + '/output', '');
-            const parameterUrl = `${serverUrl}/output${relativePath.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '.txt')}`;
+            const imageName = image.split('/').pop();
+            const userId = $user?.id;
             
-            const response = await fetch(parameterUrl);
+            const response = await fetch(`${serverUrl}/api/parameters`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    imageName,
+                    userId
+                })
+            });
             
             if (!response.ok) {
                 throw new Error(`Failed to load parameters: ${response.statusText}`);
             }
             
-            const textContent = await response.text();
-            const parameters = JSON.parse(textContent);
-
-            console.log(parameters);
-            
-            dispatch('parameterSelect', parameters);
+            const parameters = await response.json();
+            dispatch('parameterSelect', { parameters });
         } catch (err) {
             console.error('Error loading parameters:', err);
         }

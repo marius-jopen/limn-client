@@ -26,10 +26,14 @@
     }
 
     function handleParameterSelect(event) {
-        const parameters = event.detail.parameters;
+        const parameters = event.detail.parameters.input;
         Object.keys(parameters).forEach(key => {
-            imageDefaultParams[key] = parameters[key];
+            if (key !== 'userId') {
+                imageDefaultParams[key] = parameters[key];
+            }
         });
+        
+        console.log('Updated parameters:', imageDefaultParams);
     }
 </script>
 
