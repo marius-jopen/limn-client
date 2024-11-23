@@ -7,7 +7,7 @@
   export let isCollapsed;
 </script>
 
-<div class="min-h-screen h-[100dvh] flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white transition-all duration-300 {isCollapsed ? 'px-2 w-16' : 'px-6 w-64'}">
+<div class="fixed inset-0 flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white transition-all duration-300 {isCollapsed ? 'px-2 w-16' : 'px-6 w-full'} lg:relative lg:h-[100dvh] lg:min-h-screen lg:{isCollapsed ? 'w-16' : 'w-64'}">
   <div class="flex h-16 shrink-0 items-center justify-between">
     <div class="flex justify-between w-full {isCollapsed ? 'flex-col pt-8' : 'flex-row'}">
       <a href="/" class="{isCollapsed ? 'mx-auto' : ''}">
@@ -49,7 +49,7 @@
           <li>
             <a 
               href="/generate-image-1111" 
-              on:click={closeMobileMenu}
+              on:click={closeMobileMenu}  
               class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold {$page.url.pathname === '/generate-image-1111' ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600'}"
             >
               <span class="material-icons {isCollapsed ? 'mx-auto' : ''}">image</span>

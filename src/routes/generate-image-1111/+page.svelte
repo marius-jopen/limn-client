@@ -38,7 +38,7 @@
 </script>
 
 <main class="md:flex gap-8">
-    <div class="pl-8 pr-8 md:pr-0 md:w-3/5 md:h-screen overflow-y-scroll">
+    <div class="px-4 md:px-8 md:pr-0 md:w-3/5 md:h-screen overflow-y-scroll">
         <Header text="Generate Image 1111" />
 
         <div class="flex flex-col md:flex-row gap-4">
@@ -52,7 +52,7 @@
         <ImageControl {imageDefaultParams} />
     </div>
 
-    <div class="pl-8 md:pl-0 pr-8 md:w-2/5 md:h-screen overflow-y-scroll">
+    <div class="px-4 md:px-8 md:w-2/5 md:h-screen overflow-y-scroll">
         <ImageGallery 
             prefix="image-1111-runpod-serverless" 
             refreshTrigger={galleryRefreshTimestamp}

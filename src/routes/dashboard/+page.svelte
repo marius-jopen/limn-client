@@ -13,7 +13,7 @@
     });
 </script>
 
-<div class="px-8">
+<div class="px-4 md:px-8">
     <Header text="Dashboard" />
 
     {#if user}
