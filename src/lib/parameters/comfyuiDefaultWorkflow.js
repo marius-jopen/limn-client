@@ -31,7 +31,7 @@ export const comfyUIDefaultWorkflow = {
     },
     "4": {
       "inputs": {
-        "ckpt_name": "1.5/v1-5-pruned-emaonly.ckpt"
+        "ckpt_name": "xl/Jugg_XI_by_RunDiffusion.safetensors"
       },
       "class_type": "CheckpointLoaderSimple",
       "_meta": {
@@ -40,8 +40,8 @@ export const comfyUIDefaultWorkflow = {
     },
     "5": {
       "inputs": {
-        "width": 512,
-        "height": 512,
+        "width": 1024,
+        "height": 1024,
         "batch_size": 1
       },
       "class_type": "EmptyLatentImage",
@@ -64,7 +64,7 @@ export const comfyUIDefaultWorkflow = {
     },
     "7": {
       "inputs": {
-        "text": "text, watermark",
+        "text": "{{COMFYUI_NEGATIVE_PROMPT}}",
         "clip": [
           "4",
           1

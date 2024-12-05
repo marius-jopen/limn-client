@@ -10,6 +10,7 @@
     let galleryRefreshTimestamp = 0;
     let selectedEndpoint = 'generate-image-comfy-runpod-serverless';
     let userPrompt = '';
+    let userNegativePrompt = '';
     
     async function handleGenerateImage() {
         try {
@@ -22,6 +23,7 @@
             const modifiedWorkflow = JSON.parse(JSON.stringify(comfyUIDefaultWorkflow));
             
             modifiedWorkflow['6'].inputs.text = modifiedWorkflow['6'].inputs.text.replace('{{COMFYUI_PROMPT}}', userPrompt);
+            modifiedWorkflow['7'].inputs.text = modifiedWorkflow['7'].inputs.text.replace('{{COMFYUI_NEGATIVE_PROMPT}}', userNegativePrompt);
             console.log('Modified workflow:', modifiedWorkflow);
             
             await generateImage(selectedEndpoint, modifiedWorkflow, currentUser.id);
@@ -53,6 +55,13 @@
                 type="text"
                 bind:value={userPrompt}
                 placeholder="Enter your prompt..."
+                class="input w-full md:w-1/2"
+            />
+
+            <input
+                type="text"
+                bind:value={userNegativePrompt}
+                placeholder="Enter your negative prompt..."
                 class="input w-full md:w-1/2"
             />
             <button class="button md:w-1/2" on:click={handleGenerateImage}>
