@@ -9,6 +9,7 @@
 
     let galleryRefreshTimestamp = 0;
     let selectedEndpoint = 'generate-image-comfy-runpod-serverless';
+    let userPrompt = '';
     
     async function handleGenerateImage() {
         try {
@@ -18,11 +19,15 @@
                 return;
             }
 
-            console.log('imageDefaultParams', comfyUIDefaultWorkflow);
+            const modifiedWorkflow = JSON.parse(JSON.stringify(comfyUIDefaultWorkflow));
             
-            await generateImage(selectedEndpoint, comfyUIDefaultWorkflow, currentUser.id);
+            modifiedWorkflow['6'].inputs.text = modifiedWorkflow['6'].inputs.text.replace('{{COMFYUI_PROMPT}}', userPrompt);
+            console.log('Modified workflow:', modifiedWorkflow);
+            
+            await generateImage(selectedEndpoint, modifiedWorkflow, currentUser.id);
             galleryRefreshTimestamp = Date.now();
         } catch (error) {
+            console.error('Error:', error);
             alert('Failed to generate image. Please check the server logs for more details.');
         }
     }
@@ -44,11 +49,15 @@
         <Header text="Generate Image 1111" />
 
         <div class="flex flex-col md:flex-row gap-4">
+            <input
+                type="text"
+                bind:value={userPrompt}
+                placeholder="Enter your prompt..."
+                class="input w-full md:w-1/2"
+            />
             <button class="button md:w-1/2" on:click={handleGenerateImage}>
                 Generate
             </button>
-            
-            <!-- <EndpointSelector bind:selectedEndpoint /> -->
         </div>
  
         <!-- <ImageControl {imageDefaultParams} /> -->
@@ -56,7 +65,7 @@
 
     <div class="px-4 md:px-8 md:w-2/5 md:h-screen overflow-y-scroll">
         <ImageGallery 
-            prefix="image-1111-runpod-serverless" 
+            prefix="image-comfy-runpod-serverless" 
             refreshTrigger={galleryRefreshTimestamp}
             on:parameterSelect={handleParameterSelect}
         />

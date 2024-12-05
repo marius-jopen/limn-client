@@ -51,7 +51,7 @@ export const comfyUIDefaultWorkflow = {
     },
     "6": {
       "inputs": {
-        "text": "beautiful scenery nature glass bottle landscape, , purple galaxy bottle,",
+        "text": "{{COMFYUI_PROMPT}}",
         "clip": [
           "4",
           1
