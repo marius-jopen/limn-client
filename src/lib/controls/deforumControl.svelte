@@ -164,12 +164,12 @@
                 </div>
 
                 <!-- Include the PreviewImage component -->
-                <PreviewImage 
+                <!-- <PreviewImage 
                     {basePrompt} 
                     {negativePrompt} 
                     {globalPositivePrompt} 
                     {globalNegativePrompt} 
-                />
+                /> -->
             </div>
         {/each}
     </div>

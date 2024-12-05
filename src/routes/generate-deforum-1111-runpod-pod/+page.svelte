@@ -40,8 +40,8 @@
 
 </script>
 
-<main>
-    <Header text="Generate Video with Deforum on RunPod Pod" />
+<main class="px-4 md:px-8" >
+    <Header text="Generate Video with Deforum on RunPod Serverless" />
 
     <button class="mt-4 button" on:click={handleGenerateVideo}>Generate Video</button>
     

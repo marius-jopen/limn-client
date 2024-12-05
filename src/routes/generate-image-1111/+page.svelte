@@ -39,14 +39,14 @@
 
 <main class="md:flex gap-8">
     <div class="px-4 md:px-8 md:pr-0 md:w-3/5 md:h-screen overflow-y-scroll">
-        <Header text="Generate Image 1111" />
+        <Header text="Generate Image 1111 on RunPod Serverless" />
 
         <div class="flex flex-col md:flex-row gap-4">
             <button class="button md:w-1/2" on:click={handleGenerateImage}>
                 Generate
             </button>
             
-            <EndpointSelector bind:selectedEndpoint />
+            <!-- <EndpointSelector bind:selectedEndpoint /> -->
         </div>
  
         <ImageControl {imageDefaultParams} />
