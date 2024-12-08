@@ -68,6 +68,16 @@
           </li>
           <li>
             <a 
+              href="/generate-image-comfy-new" 
+              on:click={closeMobileMenu}  
+              class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold {$page.url.pathname === '/generate-image-1111' ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600'}"
+            >
+              <span class="material-icons {isCollapsed ? 'mx-auto' : ''}">image</span>
+              {#if !isCollapsed}Generate Image Comfy New{/if}
+            </a>
+          </li>
+          <li>
+            <a 
               href="/generate-deforum-1111-runpod-pod" 
               on:click={closeMobileMenu}  
               class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold {$page.url.pathname === '/generate-image-1111' ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600'}"
