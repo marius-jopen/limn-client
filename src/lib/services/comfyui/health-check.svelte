@@ -12,7 +12,6 @@
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             data = await response.json();
-            console.log(data);
             status = data.status || 'OK';
             error = null;
         } catch (err) {

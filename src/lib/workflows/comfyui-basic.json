@@ -1,7 +1,7 @@
 {
     "3": {
       "inputs": {
-        "seed": 222,
+        "seed": "${SEED}",
         "steps": 20,
         "cfg": 8,
         "sampler_name": "euler",
@@ -16,7 +16,7 @@
     },
     "4": {
       "inputs": {
-        "ckpt_name": "sd_xl_base_1.0.safetensors"
+        "ckpt_name": "xl/Jugg_XI_by_RunDiffusion.safetensors"
       },
       "class_type": "CheckpointLoaderSimple"
     },
@@ -30,14 +30,14 @@
     },
     "6": {
       "inputs": {
-        "text": "{{INPUT_PROMPT}}",
+        "text": "${INPUT_PROMPT}",
         "clip": ["4", 1]
       },
       "class_type": "CLIPTextEncode"
     },
     "7": {
       "inputs": {
-        "text": "text, watermark",
+        "text": "${INPUT_NEGATIVEPROMPT}",
         "clip": ["4", 1]
       },
       "class_type": "CLIPTextEncode"
