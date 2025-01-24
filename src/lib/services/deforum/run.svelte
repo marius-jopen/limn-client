@@ -1,5 +1,5 @@
 <script>
-    import DEFAULT_WORKFLOW from '../../workflows/deforum-basic.json';
+    import DEFAULT_WORKFLOW from '../../workflows/deforum/deforum-test.json';
 
     // State variables
     let status = 'Idle';
@@ -9,8 +9,10 @@
     let images = [];
     
     // Input variables
-    let userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes";
-    let negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed";
+    let positivePrompt1 = "beautiful lady, (freckles), big smile, brown hazel eyes";
+    let positivePrompt2 = "beautiful alien";
+    let negativePrompt1 = "bad eyes, cgi, airbrushed, plastic, deformed";
+    let negativePrompt2 = "ugly, blurry, low quality, distorted features";
     let seed = 1;
     let username = "marius";
 
@@ -110,19 +112,25 @@
 
             const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
             
-            const workflowWithPrompt = {
-                ...DEFAULT_WORKFLOW,
-                prompt: userPrompt,
-                negative_prompt: negativePrompt,
-                seed: actualSeed
-            };
+            // Create a deep copy of the default workflow
+            const workflowWithPrompt = JSON.parse(JSON.stringify(DEFAULT_WORKFLOW));
+
+            // Replace the template variables
+            const stringified = JSON.stringify(workflowWithPrompt)
+                .replace('${INPUT_PROMPT_1}', positivePrompt1)
+                .replace('${INPUT_PROMPT_2}', positivePrompt2)
+                .replace('${INPUT_NEGATIVEPROMPT_1}', negativePrompt1)
+                .replace('${INPUT_NEGATIVEPROMPT_2}', negativePrompt2)
+                .replace('${SEED}', actualSeed.toString());
+
+            const finalWorkflow = JSON.parse(stringified);
 
             const response = await fetch('http://localhost:4000/api/deforum-runpod-serverless-run', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     input: {
-                        workflow: workflowWithPrompt,
+                        workflow: finalWorkflow,
                         user: username
                     }
                 })
@@ -151,19 +159,37 @@
         <!-- Prompt inputs -->
         <div class="flex flex-col gap-4">
             <div class="flex flex-col gap-2">
-                <label for="prompt" class="font-medium">Prompt:</label>
+                <label for="prompt1" class="font-medium">Prompt 1:</label>
                 <textarea
-                    id="prompt"
-                    bind:value={userPrompt}
+                    id="prompt1"
+                    bind:value={positivePrompt1}
                     class="w-full p-2 rounded border border-gray-300"
                 ></textarea>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label for="negative-prompt" class="font-medium">Negative prompt:</label>
+                <label for="negative-prompt1" class="font-medium">Negative prompt 1:</label>
                 <textarea
-                    id="negative-prompt"
-                    bind:value={negativePrompt}
+                    id="negative-prompt1"
+                    bind:value={negativePrompt1}
+                    class="w-full p-2 rounded border border-gray-300"
+                ></textarea>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label for="prompt2" class="font-medium">Prompt 2:</label>
+                <textarea
+                    id="prompt2"
+                    bind:value={positivePrompt2}
+                    class="w-full p-2 rounded border border-gray-300"
+                ></textarea>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label for="negative-prompt2" class="font-medium">Negative prompt 2:</label>
+                <textarea
+                    id="negative-prompt2"
+                    bind:value={negativePrompt2}
                     class="w-full p-2 rounded border border-gray-300"
                 ></textarea>
             </div>
@@ -233,9 +259,9 @@
                                 <span class="text-sm text-gray-600">
                                     {imageUrl.split('/').pop().split('?')[0]}
                                 </span>
-                                <span class="text-xs text-gray-400 break-all">
+                                <a target="_blank" href={imageUrl} class="text-xs text-gray-400 break-all">
                                     {imageUrl}
-                                </span>
+                                </a>
                             </div>
                         </div>
                     {/each}

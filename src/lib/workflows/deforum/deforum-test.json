@@ -124,8 +124,8 @@
         "cn_5_control_mode": "",
         "cn_5_loopback_mode": "",
         "prompts": {
-            "0": "${INPUT_PROMPT} --neg ${INPUT_NEGATIVEPROMPT}",
-            "5": "A starry night sky with glowing stars"
+            "0": "${INPUT_PROMPT_1} --neg ${INPUT_NEGATIVEPROMPT_1}",
+            "5": "${INPUT_PROMPT_2} --neg ${INPUT_NEGATIVEPROMPT_2}"
         }
     },
     "options_overrides": {}

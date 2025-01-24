@@ -1,5 +1,5 @@
 <script>
-    import DEFAULT_WORKFLOW from '../../workflows/comfyui-basic.json';
+    import DEFAULT_WORKFLOW from '../../workflows/comfyui/comfyui-test.json';
 
     // Group related state variables
     const INITIAL_STATE = {

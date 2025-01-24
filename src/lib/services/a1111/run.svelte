@@ -1,5 +1,5 @@
 <script>
-    import DEFAULT_WORKFLOW from '../../workflows/a1111-basic.json';
+    import DEFAULT_WORKFLOW from '../../workflows/a1111/a1111-test.json';
 
     // Group related state variables
     const INITIAL_STATE = {
