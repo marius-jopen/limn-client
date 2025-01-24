@@ -182,8 +182,8 @@
 
         <button 
             on:click={runWorkflow} 
-            class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700"
-            disabled={status !== 'Idle' && status !== 'COMPLETED' && status !== 'FAILED'}
+            class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
         >
             Generate
         </button>
@@ -218,27 +218,6 @@
     <!-- Add image display -->
     {#if images.length > 0}
         <div class="mt-4">
-            <h4 class="font-semibold mb-2">Generated Images:</h4>
-            <div class="grid grid-cols-4 gap-4">
-                {#each images as imageUrl}
-                    <div class="relative aspect-square flex flex-col gap-2">
-                        <img 
-                            src={imageUrl} 
-                            alt="Generated image" 
-                            class="w-full h-full object-cover rounded"
-                        />
-                        <a 
-                            href={imageUrl} 
-                            class="text-xs text-gray-500 hover:text-gray-700 break-all"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {imageUrl}
-                        </a>
-                    </div>
-                {/each}
-            </div>
-
             <!-- New Image List View -->
             <div class="mt-8">
                 <h4 class="font-semibold mb-2">Image List:</h4>
@@ -248,11 +227,11 @@
                             <img 
                                 src={imageUrl} 
                                 alt="Thumbnail" 
-                                class="w-16 h-16 object-cover rounded"
+                                class="w-48 h-48 object-cover rounded"
                             />
                             <div class="flex flex-col">
                                 <span class="text-sm text-gray-600">
-                                    {imageUrl.split('/').pop().split('?')[0]} <!-- Extract filename without query params -->
+                                    {imageUrl.split('/').pop().split('?')[0]}
                                 </span>
                                 <span class="text-xs text-gray-400 break-all">
                                     {imageUrl}
