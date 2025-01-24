@@ -1,146 +1,115 @@
 <script>
     import DEFAULT_WORKFLOW from '../../workflows/deforum-basic.json';
 
-    // Group related state variables
-    const INITIAL_STATE = {
-        status: 'Idle',
-        error: null,
-        result: null,
-        progress: 0,
-        jobId: null,
-        imageUrl: null,
-        runpodStatus: null,
-        logs: [],
-        generatedImages: []
-    };
+    // State variables
+    let status = 'Idle';
+    let error = null;
+    let jobId = null;
+    let logs = [];
+    let images = [];
+    
+    // Input variables
+    let userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes";
+    let negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed";
+    let seed = 1;
+    let username = "marius";
 
-    // Initialize state
-    let { status, error, result, progress, jobId, imageUrl, runpodStatus, logs, generatedImages } = INITIAL_STATE;
-    let userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
-    let negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
-    let seed = 1; // Changed default from -1 to 1
-    let username = "marius"; // Added username variable here
+    // Reference to the logs container
+    let logsContainer;
 
-    // Constants
-    const POLL_CONFIG = {
-        maxAttempts: 360,
-        interval: 500,
-        estimatedJobTime: 30000 // 30 seconds
-    };
-
-    // Helper functions
-    function resetState() {
-        ({ status, error, result, progress, jobId, imageUrl, runpodStatus, logs, generatedImages } = INITIAL_STATE);
-    }
-
-    function updateProgress(data, attempt) {
-        if (data.status === 'IN_QUEUE') {
-            return 5;
-        } else if (data.status === 'IN_PROGRESS') {
-            if (data.executionTime) {
-                return Math.min(90, (data.executionTime / POLL_CONFIG.estimatedJobTime) * 100);
-            }
-            return Math.min(90, 10 + (attempt * 2));
+    // Function to scroll to bottom
+    function scrollToBottom() {
+        if (logsContainer) {
+            logsContainer.scrollTop = logsContainer.scrollHeight;
         }
-        return data.status === 'COMPLETED' ? 100 : progress;
     }
 
-    function formatTimestamp(timestamp) {
-        if (!timestamp) return '';
-        return new Date(timestamp).toLocaleTimeString();
-    }
+    async function streamJob(id) {
+        try {
+            const eventSource = new EventSource(
+                `http://localhost:4000/api/deforum-runpod-serverless-stream/${id}`
+            );
 
-    function formatProgressBar(message) {
-        // Replace ANSI escape codes and carriage returns with HTML
-        return message
-            .replace(/\r/g, '\n')
-            .replace(/\u001b\[\d+m/g, '');
-    }
+            return new Promise((resolve, reject) => {
+                eventSource.onmessage = (event) => {
+                    try {
+                        const jsonStr = event.data.replace(/^data: /, '');
+                        const data = JSON.parse(jsonStr);
+                        console.log('Stream data:', data);
 
-    async function pollJob(id) {
-        for (let attempt = 0; attempt < POLL_CONFIG.maxAttempts; attempt++) {
-            try {
-                const response = await fetch(`http://localhost:4000/api/deforum-runpod-serverless-status/${id}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                const data = await response.json();
-                runpodStatus = data;
-                
-                // Process streaming images immediately
-                if (data.output && Array.isArray(data.output)) {
-                    for (const output of data.output) {
-                        if (output?.images && Array.isArray(output.images)) {
-                            for (const newImage of output.images) {
-                                // Check if this specific image is already in our array
-                                const exists = generatedImages.some(img => img.url === newImage.url);
-                                if (!exists) {
-                                    // Add new image to the array
-                                    generatedImages = [...generatedImages, newImage];
-                                }
+                        // Update status if available
+                        if (data.status) {
+                            if (data.status === 'IN_PROGRESS') {
+                                status = 'Running...';
+                            } else {
+                                status = data.status;
                             }
                         }
+
+                        // Handle stream data
+                        if (data.stream && Array.isArray(data.stream)) {
+                            data.stream.forEach(streamItem => {
+                                // Handle logs
+                                if (streamItem.output?.log) {
+                                    logs = [...logs, streamItem.output.log];
+                                    // Scroll to bottom after adding new log
+                                    setTimeout(scrollToBottom, 0);
+                                }
+                                
+                                // Handle images
+                                if (streamItem.output?.images && Array.isArray(streamItem.output.images)) {
+                                    streamItem.output.images.forEach(image => {
+                                        if (image.url && !images.includes(image.url)) {
+                                            console.log('New image from stream:', image.url);
+                                            images = [...images, image.url];
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+                        // Check for completion
+                        if (data.status === 'COMPLETED' || data.status === 'FAILED' || data.status === 'CANCELLED') {
+                            console.log(`Job ${id} finished with status: ${data.status}`);
+                            eventSource.close();
+                            resolve();
+                        }
+                    } catch (err) {
+                        console.error('Error parsing stream data:', err);
+                        console.warn('Continuing stream despite parse error');
                     }
-                }
+                };
 
-                // Ensure we scroll to bottom whenever status updates
-                queueMicrotask(() => {
-                    if (responseContainer) {
-                        responseContainer.scrollTop = responseContainer.scrollHeight;
-                    }
-                });
+                eventSource.onerror = (err) => {
+                    console.error('EventSource error:', err);
+                    // Don't close the connection on error, let it auto-reconnect
+                    console.warn('EventSource error occurred, waiting for reconnection');
+                };
 
-                // Update logs
-                if (data.logs?.length > 0) {
-                    const newLogs = data.logs.filter(log => !logs.includes(log));
-                    if (newLogs.length > 0) {
-                        logs = [...logs, ...newLogs];
-                        queueMicrotask(() => {
-                            document.querySelector('.log-container')?.scrollTo(0, Number.MAX_SAFE_INTEGER);
-                        });
-                    }
-                }
+                // Set a timeout of 10 minutes
+                setTimeout(() => {
+                    console.log('Stream timeout reached');
+                    eventSource.close();
+                    reject(new Error('Stream timeout: Job took too long to complete'));
+                }, 10 * 60 * 1000);
+            });
 
-                progress = updateProgress(data, attempt);
-                
-                // Update status and handle completion
-                status = data.status;
-                if (status === 'COMPLETED') {
-                    result = data;
-                    imageUrl = data.output?.[0]?.images?.[0]?.url;
-                    return data;
-                }
-                
-                if (data.status === 'FAILED') {
-                    throw new Error(`Job failed: ${JSON.stringify(data.error)}`);
-                }
-
-                status = data.status === 'IN_QUEUE' ? 'Queued' : 'Processing';
-                await new Promise(resolve => setTimeout(resolve, POLL_CONFIG.interval));
-            } catch (err) {
-                error = err.message;
-                status = 'Error';
-                return;
-            }
+        } catch (err) {
+            console.error('Stream error:', err);
+            error = err.message;
+            status = 'Error';
         }
-
-        throw new Error('Timeout waiting for job completion');
     }
 
     async function runWorkflow() {
-        if (!userPrompt.trim()) {
-            userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
-        }
-        if (!negativePrompt.trim()) {
-            negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
-        }
-
-        resetState();
-        status = 'Starting...';
-        
         try {
+            status = 'Starting...';
+            error = null;
+            logs = [];
+            images = [];
+
             const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
             
-            // Create the workflow with proper JSON escaping
             const workflowWithPrompt = {
                 ...DEFAULT_WORKFLOW,
                 prompt: userPrompt,
@@ -148,64 +117,54 @@
                 seed: actualSeed
             };
 
-            const requestBody = {
-                input: {
-                    workflow: workflowWithPrompt,
-                    user: username
-                }
-            };
-
-            console.log('Sending request:', JSON.stringify(requestBody, null, 2));
-
             const response = await fetch('http://localhost:4000/api/deforum-runpod-serverless-run', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify({
+                    input: {
+                        workflow: workflowWithPrompt,
+                        user: username
+                    }
+                })
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
             jobId = data.data.id;
             
-            await pollJob(jobId);
+            await streamJob(jobId);
         } catch (err) {
             console.error('Workflow error:', err);
-            error = `Error details: ${err.message}`;
+            error = err.message;
             status = 'Error';
-            result = null;
         }
     }
-
-    let responseContainer;
 </script>
 
 <div class="p-4 rounded-lg bg-gray-100">
     <div class="flex flex-col gap-4 mb-4">
         <h1 class="text-xl font-bold">Deforum RunPod Workflow</h1>
         
-        <!-- Prompt input section -->
+        <!-- Prompt inputs -->
         <div class="flex flex-col gap-4">
             <div class="flex flex-col gap-2">
-                <label for="prompt" class="font-medium">Enter your prompt:</label>
+                <label for="prompt" class="font-medium">Prompt:</label>
                 <textarea
                     id="prompt"
                     bind:value={userPrompt}
-                    placeholder="Describe what you want to generate..."
-                    class="w-full p-2 rounded border border-gray-300 min-h-[100px] resize-y"
+                    class="w-full p-2 rounded border border-gray-300"
                 ></textarea>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label for="negative-prompt" class="font-medium">Enter negative prompt:</label>
+                <label for="negative-prompt" class="font-medium">Negative prompt:</label>
                 <textarea
                     id="negative-prompt"
                     bind:value={negativePrompt}
-                    placeholder="Describe what you want to avoid in the generation..."
-                    class="w-full p-2 rounded border border-gray-300 min-h-[100px] resize-y"
+                    class="w-full p-2 rounded border border-gray-300"
                 ></textarea>
             </div>
 
@@ -223,127 +182,85 @@
 
         <button 
             on:click={runWorkflow} 
-            class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={!userPrompt.trim() || (status !== 'Idle' && status !== 'Completed' && status !== 'Error' && progress < 100)}
+            class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700"
+            disabled={status !== 'Idle' && status !== 'COMPLETED' && status !== 'FAILED'}
         >
-            Generate Image
+            Generate
         </button>
     </div>
     
+    <!-- Status and error display -->
     <div class="mb-4">
-        <p class="font-semibold">Status: <span class={status === 'Error' ? 'text-red-600' : 'text-green-600'}>{status}</span></p>
+        <p class="font-semibold">Status: {status}</p>
         {#if jobId}
             <p class="text-sm text-gray-600">Job ID: {jobId}</p>
         {/if}
+        {#if error}
+            <p class="text-red-600">{error}</p>
+        {/if}
     </div>
-    
-    {#if status !== 'Idle' && status !== 'Completed' && status !== 'Error'}
-        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {progress}%"></div>
-        </div>
-    {/if}
-    
-    {#if error}
-        <div class="p-4 bg-red-100 rounded mb-4">
-            <p class="text-red-600 font-semibold">Error:</p>
-            <p class="text-red-800">{error}</p>
-        </div>
-    {/if}
 
+    <!-- Logs display -->
     {#if logs.length > 0}
         <div class="mt-4">
-            <h4 class="font-semibold mb-2">Generation Logs:</h4>
-            <div class="log-container bg-black text-green-400 p-4 rounded shadow-sm font-mono text-sm overflow-y-auto max-h-60">
-                {#if runpodStatus?.endpointId}
-                    <div class="text-blue-400 mb-2">Endpoint ID: {runpodStatus.endpointId}</div>
-                {/if}
-                {#if runpodStatus?.workerId}
-                    <div class="text-blue-400 mb-2">Worker ID: {runpodStatus.workerId}</div>
-                {/if}
+            <h4 class="font-semibold mb-2">Logs:</h4>
+            <div 
+                bind:this={logsContainer}
+                class="bg-black text-green-400 p-4 rounded font-mono text-sm overflow-y-auto max-h-[300px]"
+            >
                 {#each logs as log}
-                    {#if log.type === 'worker'}
-                        <div class="text-yellow-400 whitespace-pre-wrap leading-relaxed">
-                            [{formatTimestamp(log.timestamp)}] [{log.level}] 
-                            <span class="text-white">{formatProgressBar(log.message)}</span>
-                        </div>
-                    {:else if log.type === 'error'}
-                        <div class="text-red-400 whitespace-pre-wrap leading-relaxed">
-                            Error: {log.message}
-                        </div>
-                    {:else}
-                        <div class="text-green-400 whitespace-pre-wrap leading-relaxed">
-                            {log.message}
-                        </div>
-                    {/if}
+                    <div class="whitespace-pre-wrap">{log}</div>
                 {/each}
-                {#if status !== 'Completed' && status !== 'Error'}
-                    <div class="animate-pulse">▋</div>
-                {/if}
             </div>
         </div>
     {/if}
 
-    {#if generatedImages.length > 0}
+    <!-- Add image display -->
+    {#if images.length > 0}
         <div class="mt-4">
             <h4 class="font-semibold mb-2">Generated Images:</h4>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {#each generatedImages as image}
-                    <div class="bg-white p-2 rounded shadow-sm">
+            <div class="grid grid-cols-4 gap-4">
+                {#each images as imageUrl}
+                    <div class="relative aspect-square flex flex-col gap-2">
                         <img 
-                            src={image.url}
+                            src={imageUrl} 
                             alt="Generated image" 
-                            class="w-full h-auto rounded"
+                            class="w-full h-full object-cover rounded"
                         />
-                        <a href={image.url} target="_blank" class="text-blue-500 hover:underline text-sm truncate block">
-                            {image.name}
+                        <a 
+                            href={imageUrl} 
+                            class="text-xs text-gray-500 hover:text-gray-700 break-all"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {imageUrl}
                         </a>
                     </div>
                 {/each}
             </div>
-        </div>
-    {/if}
 
-    {#if runpodStatus}
-        <div class="mt-4 p-4 bg-white rounded shadow-sm">
-            <h4 class="font-semibold mb-2">RunPod Status:</h4>
-            <div class="text-sm">
-                <p>Status: <span class="font-medium">{runpodStatus.status}</span></p>
-                {#if runpodStatus.delayTime !== undefined}
-                    <p>Delay Time: {runpodStatus.delayTime}ms</p>
-                {/if}
-                {#if runpodStatus.executionTime !== undefined}
-                    <p>Execution Time: {runpodStatus.executionTime}ms</p>
-                {/if}
-                {#if runpodStatus.error}
-                    <p class="text-red-600">Error: {runpodStatus.error}</p>
-                {/if}
-                
-                <!-- Updated complete response section -->
-                <div class="mt-4">
-                    <h5 class="font-semibold mb-2">Complete Response:</h5>
-                    <pre 
-                        class="bg-gray-100 p-4 rounded whitespace-pre-wrap max-h-[480px] overflow-y-auto scroll-smooth"
-                        bind:this={responseContainer}
-                    >
-                        {JSON.stringify(runpodStatus, null, 2)}
-                    </pre>
+            <!-- New Image List View -->
+            <div class="mt-8">
+                <h4 class="font-semibold mb-2">Image List:</h4>
+                <div class="space-y-4">
+                    {#each images as imageUrl}
+                        <div class="flex items-center gap-4 p-2 bg-white rounded-lg shadow">
+                            <img 
+                                src={imageUrl} 
+                                alt="Thumbnail" 
+                                class="w-16 h-16 object-cover rounded"
+                            />
+                            <div class="flex flex-col">
+                                <span class="text-sm text-gray-600">
+                                    {imageUrl.split('/').pop().split('?')[0]} <!-- Extract filename without query params -->
+                                </span>
+                                <span class="text-xs text-gray-400 break-all">
+                                    {imageUrl}
+                                </span>
+                            </div>
+                        </div>
+                    {/each}
                 </div>
-            </div>
-        </div>
-    {/if}
-    
-    {#if imageUrl}
-        <div class="mt-4">
-            <h4 class="font-semibold mb-2">Generated Image:</h4>
-            <div class="bg-white p-2 rounded shadow-sm">
-                <img 
-                    src={imageUrl}
-                    alt="Generated image" 
-                    class="max-w-full h-auto rounded"
-                />
-                <a href="{imageUrl}" target="_blank" class="text-blue-500 hover:underline">
-                    {imageUrl}
-                </a>
             </div>
         </div>
     {/if}
