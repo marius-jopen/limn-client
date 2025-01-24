@@ -10,11 +10,12 @@
         jobId: null,
         imageUrl: null,
         runpodStatus: null,
-        logs: []
+        logs: [],
+        generatedImages: []
     };
 
     // Initialize state
-    let { status, error, result, progress, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE;
+    let { status, error, result, progress, jobId, imageUrl, runpodStatus, logs, generatedImages } = INITIAL_STATE;
     let userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
     let negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
     let seed = 1; // Changed default from -1 to 1
@@ -29,7 +30,7 @@
 
     // Helper functions
     function resetState() {
-        ({ status, error, result, progress, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE);
+        ({ status, error, result, progress, jobId, imageUrl, runpodStatus, logs, generatedImages } = INITIAL_STATE);
     }
 
     function updateProgress(data, attempt) {
@@ -65,6 +66,27 @@
                 const data = await response.json();
                 runpodStatus = data;
                 
+                // Process streaming images from output
+                if (data.output?.length > 0) {
+                    data.output.forEach(output => {
+                        if (output.images) {
+                            const newImages = output.images.filter(img => 
+                                !generatedImages.some(existing => existing.url === img.url)
+                            );
+                            if (newImages.length > 0) {
+                                generatedImages = [...generatedImages, ...newImages];
+                            }
+                        }
+                    });
+                }
+
+                // Ensure we scroll to bottom whenever status updates
+                queueMicrotask(() => {
+                    if (responseContainer) {
+                        responseContainer.scrollTop = responseContainer.scrollHeight;
+                    }
+                });
+
                 // Update logs
                 if (data.logs?.length > 0) {
                     const newLogs = data.logs.filter(log => !logs.includes(log));
@@ -78,11 +100,12 @@
 
                 progress = updateProgress(data, attempt);
                 
-                if (data.status === 'COMPLETED') {
+                // Update status and handle completion
+                status = data.status;
+                if (status === 'COMPLETED') {
                     result = data;
                     imageUrl = data.output?.[0]?.images?.[0]?.url;
-                    status = 'Completed';
-                    return;
+                    return data;
                 }
                 
                 if (data.status === 'FAILED') {
@@ -115,36 +138,47 @@
         try {
             const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
             
-            const workflowWithPrompt = JSON.parse(
-                JSON.stringify(DEFAULT_WORKFLOW)
-                    .replace('"${INPUT_PROMPT}"', JSON.stringify(userPrompt))
-                    .replace('"${INPUT_NEGATIVEPROMPT}"', JSON.stringify(negativePrompt))
-                    .replace('"${SEED}"', actualSeed.toString())
-            );
+            // Create the workflow with proper JSON escaping
+            const workflowWithPrompt = {
+                ...DEFAULT_WORKFLOW,
+                prompt: userPrompt,
+                negative_prompt: negativePrompt,
+                seed: actualSeed
+            };
+
+            const requestBody = {
+                input: {
+                    workflow: workflowWithPrompt,
+                    user: username
+                }
+            };
+
+            console.log('Sending request:', JSON.stringify(requestBody, null, 2));
 
             const response = await fetch('http://localhost:4000/api/deforum-runpod-serverless-run', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    input: { 
-                        workflow: workflowWithPrompt,
-                        user: username
-                    } 
-                })
+                body: JSON.stringify(requestBody)
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+            }
 
             const data = await response.json();
             jobId = data.data.id;
             
             await pollJob(jobId);
         } catch (err) {
-            error = err.message;
+            console.error('Workflow error:', err);
+            error = `Error details: ${err.message}`;
             status = 'Error';
             result = null;
         }
     }
+
+    let responseContainer;
 </script>
 
 <div class="p-4 rounded-lg bg-gray-100">
@@ -247,6 +281,26 @@
         </div>
     {/if}
 
+    {#if generatedImages.length > 0}
+        <div class="mt-4">
+            <h4 class="font-semibold mb-2">Generated Images:</h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {#each generatedImages as image}
+                    <div class="bg-white p-2 rounded shadow-sm">
+                        <img 
+                            src={image.url}
+                            alt="Generated image" 
+                            class="w-full h-auto rounded"
+                        />
+                        <a href={image.url} target="_blank" class="text-blue-500 hover:underline text-sm truncate block">
+                            {image.name}
+                        </a>
+                    </div>
+                {/each}
+            </div>
+        </div>
+    {/if}
+
     {#if runpodStatus}
         <div class="mt-4 p-4 bg-white rounded shadow-sm">
             <h4 class="font-semibold mb-2">RunPod Status:</h4>
@@ -262,10 +316,13 @@
                     <p class="text-red-600">Error: {runpodStatus.error}</p>
                 {/if}
                 
-                <!-- Add complete response section -->
+                <!-- Updated complete response section -->
                 <div class="mt-4">
                     <h5 class="font-semibold mb-2">Complete Response:</h5>
-                    <pre class="bg-gray-100 p-4 rounded whitespace-pre-wrap">
+                    <pre 
+                        class="bg-gray-100 p-4 rounded whitespace-pre-wrap max-h-[480px] overflow-y-auto scroll-smooth"
+                        bind:this={responseContainer}
+                    >
                         {JSON.stringify(runpodStatus, null, 2)}
                     </pre>
                 </div>
