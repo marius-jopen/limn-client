@@ -66,18 +66,20 @@
                 const data = await response.json();
                 runpodStatus = data;
                 
-                // Process streaming images from output
-                if (data.output?.length > 0) {
-                    data.output.forEach(output => {
-                        if (output.images) {
-                            const newImages = output.images.filter(img => 
-                                !generatedImages.some(existing => existing.url === img.url)
-                            );
-                            if (newImages.length > 0) {
-                                generatedImages = [...generatedImages, ...newImages];
+                // Process streaming images immediately
+                if (data.output && Array.isArray(data.output)) {
+                    for (const output of data.output) {
+                        if (output?.images && Array.isArray(output.images)) {
+                            for (const newImage of output.images) {
+                                // Check if this specific image is already in our array
+                                const exists = generatedImages.some(img => img.url === newImage.url);
+                                if (!exists) {
+                                    // Add new image to the array
+                                    generatedImages = [...generatedImages, newImage];
+                                }
                             }
                         }
-                    });
+                    }
                 }
 
                 // Ensure we scroll to bottom whenever status updates
@@ -222,7 +224,7 @@
         <button 
             on:click={runWorkflow} 
             class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={status !== 'Idle' && status !== 'Completed' && status !== 'Error' || !userPrompt.trim()}
+            disabled={!userPrompt.trim() || (status !== 'Idle' && status !== 'Completed' && status !== 'Error' && progress < 100)}
         >
             Generate Image
         </button>

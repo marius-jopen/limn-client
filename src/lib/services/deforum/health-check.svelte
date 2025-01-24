@@ -29,7 +29,7 @@
 
 <div class="p-4 rounded-lg bg-gray-100">
     <div class="flex justify-between items-center mb-4">
-        <h1>Deforum RunPod Health Status</h1>
+        <h1 class="text-xl font-bold">Deforum RunPod Health Status</h1>
         <button 
             on:click={checkHealth} 
             class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 cursor-pointer border-none"

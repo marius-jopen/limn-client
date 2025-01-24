@@ -1,7 +1,7 @@
 {
     "deforum_settings": {
         "animation_mode": "3D",
-        "max_frames": 10,
+        "max_frames": 15,
         "W": 1024,
         "H": 1024,
         "seed": "${SEED}",
