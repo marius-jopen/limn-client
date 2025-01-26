@@ -15,6 +15,7 @@
     let negativePrompt2 = "ugly, blurry, low quality, distorted features";
     let seed = 1;
     let username = "marius";
+    let manualJobId = '';
 
     // Reference to the logs container
     let logsContainer;
@@ -70,8 +71,8 @@
                             });
                         }
 
-                        // Check for completion
-                        if (data.status === 'COMPLETED' || data.status === 'FAILED' || data.status === 'CANCELLED') {
+                        // Check for completion (remove CANCELLED status)
+                        if (data.status === 'COMPLETED' || data.status === 'FAILED') {
                             console.log(`Job ${id} finished with status: ${data.status}`);
                             eventSource.close();
                             resolve();
@@ -204,15 +205,37 @@
                     min="-1"
                 />
             </div>
+
+            <div class="flex flex-col gap-2">
+                <label for="manual-job-id" class="font-medium">Manual Job ID:</label>
+                <div class="flex gap-2">
+                    <input
+                        id="manual-job-id"
+                        type="text"
+                        bind:value={manualJobId}
+                        placeholder="Enter job ID to monitor"
+                        class="flex-1 p-2 rounded border border-gray-300"
+                    />
+                    <button 
+                        on:click={() => { jobId = manualJobId; streamJob(manualJobId); }}
+                        class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        disabled={!manualJobId || status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
+                    >
+                        Monitor
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <button 
-            on:click={runWorkflow} 
-            class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
-        >
-            Generate
-        </button>
+        <div class="flex gap-2">
+            <button 
+                on:click={runWorkflow} 
+                class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
+            >
+                Generate
+            </button>
+        </div>
     </div>
     
     <!-- Status and error display -->
