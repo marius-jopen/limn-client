@@ -66,8 +66,7 @@
             }
 
             const data = await response.json();
-            jobId = data.data.id;
-            
+            jobId = data.data.id;       
             await streamJob(jobId);
         } catch (err) {
             console.error('Workflow error:', err);
@@ -87,7 +86,6 @@
                     try {
                         const jsonStr = event.data.replace(/^data: /, '');
                         const data = JSON.parse(jsonStr);
-                        
                         console.log('Stream data:', data);
 
                         // Update status if available
