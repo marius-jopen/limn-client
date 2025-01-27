@@ -6,10 +6,22 @@
     export let label
     
     // Bind the container for auto-scrolling
-    export let containerRef;
+    let containerRef;
     
     // Dark mode toggle
     export let variant = "dark"; // can be "dark" or "light"
+
+    // Function to scroll to bottom
+    function scrollToBottom() {
+        if (containerRef) {
+            containerRef.scrollTop = containerRef.scrollHeight;
+        }
+    }
+
+    // Watch for changes in logs array and scroll to bottom
+    $: if (logs) {
+        setTimeout(scrollToBottom, 0);
+    }
 
     // Computed classes based on variant
     $: containerClasses = `

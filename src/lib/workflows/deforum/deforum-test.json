@@ -10,7 +10,7 @@
         "seed": "${SEED}",
         "sampler": "Euler a",
         "steps": 25,
-        "batch_name": "Deforum_1",
+        "batch_name": "${BATCH_NAME}",
         "seed_behavior": "iter",
         "seed_iter_N": 1,
         "use_init": false,
