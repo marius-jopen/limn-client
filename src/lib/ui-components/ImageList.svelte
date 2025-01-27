@@ -10,7 +10,7 @@
 
     <div class="space-y-4">
         {#each images as imageUrl}
-            <a target="_blank" href={imageUrl} class="flex items-center gap-4 p-2 bg-white rounded-lg shadow">
+            <a target="_blank" href={imageUrl} class="flex items-center gap-4 p-2 bg-white rounded-lg border border-gray-300 rounded-lg">
                 <img 
                     src={imageUrl} 
                     alt="Thumbnail" 
@@ -18,7 +18,7 @@
                 />
                 
                 <div class="flex flex-col">
-                    <span class="text-sm text-gray-600">
+                    <span class="text-gray-600 pb-2">
                         {imageUrl.split('/').pop().split('?')[0]}
                     </span>
 

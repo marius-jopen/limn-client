@@ -1,5 +1,16 @@
 <script>
     import DEFAULT_WORKFLOW from '../../workflows/a1111/a1111-test.json';
+    import Button from '../../atomic-components/Button.svelte';
+    import InputPrompt from '../../ui-components/InputPrompt.svelte';
+    import InputNumber from '../../ui-components/InputNumber.svelte';
+    import InputText from '../../ui-components/InputText.svelte';
+    import LogViewer from '../../ui-components/LogViewer.svelte';
+    import ImageList from '../../ui-components/ImageList.svelte';
+    import Status from '../../atomic-components/Status.svelte';
+    import Error from '../../atomic-components/Error.svelte';
+    import JobId from '../../atomic-components/JobId.svelte';
+    import JsonViewer from '../../ui-components/JsonViewer.svelte';
+    import ImageDisplay from '../../ui-components/ImageDisplay.svelte';
 
     // Group related state variables
     const INITIAL_STATE = {
@@ -147,145 +158,131 @@
     }
 </script>
 
-<div class="p-4 rounded-lg bg-gray-100">
-    <div class="flex flex-col gap-4 mb-4">
-        <h1 class="text-xl font-bold">A1111 RunPod Workflow</h1>
-        
-        <!-- Prompt input section -->
-        <div class="flex flex-col gap-4">
-            <div class="flex flex-col gap-2">
-                <label for="prompt" class="font-medium">Enter your prompt:</label>
-                <textarea
-                    id="prompt"
-                    bind:value={userPrompt}
-                    placeholder="Describe what you want to generate..."
-                    class="w-full p-2 rounded border border-gray-300 min-h-[100px] resize-y"
-                ></textarea>
-            </div>
+<div class="px-4 pb-8">
+    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
+        <h2>
+            Run Workflow
+        </h2>
 
-            <div class="flex flex-col gap-2">
-                <label for="negative-prompt" class="font-medium">Enter negative prompt:</label>
-                <textarea
-                    id="negative-prompt"
-                    bind:value={negativePrompt}
-                    placeholder="Describe what you want to avoid in the generation..."
-                    class="w-full p-2 rounded border border-gray-300 min-h-[100px] resize-y"
-                ></textarea>
-            </div>
+        <InputPrompt
+            id="prompt1"
+            label="Prompt 1"
+            bind:value={userPrompt}
+        />
 
-            <div class="flex flex-col gap-2">
-                <label for="seed" class="font-medium">Seed (-1 for random):</label>
-                <input
-                    id="seed"
-                    type="number"
-                    bind:value={seed}
-                    class="w-full p-2 rounded border border-gray-300"
-                    min="-1"
-                />
-            </div>
-        </div>
+        <InputPrompt
+            id="negative-prompt1"
+            label="Negative prompt 1"
+            bind:value={negativePrompt}
+        />
 
-        <button 
-            on:click={runWorkflow} 
-            class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={status !== 'Idle' && status !== 'Completed' && status !== 'Error' || !userPrompt.trim()}
-        >
-            Generate Image
-        </button>
+
+        <InputNumber
+            id="seed"
+            label="Seed (-1 for random)"
+            bind:value={seed}
+        />
+
+        <Button
+            onClick={runWorkflow}
+            disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
+            label="Generate"
+        />
     </div>
-    
-    <div class="mb-4">
-        <p class="font-semibold">Status: <span class={status === 'Error' ? 'text-red-600' : 'text-green-600'}>{status}</span></p>
-        {#if jobId}
-            <p class="text-sm text-gray-600">Job ID: {jobId}</p>
+
+    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
+        <h2>
+            Status & Logs
+        </h2>
+
+        <Status {status} />
+        <JobId {jobId} />
+        <Error message={error} />   
+        
+        {#if logs.length > 0}
+            <div class="mt-4">
+                <h4 class="font-semibold mb-2">
+                    Generation Logs:
+                </h4>
+                
+                <div class="log-container bg-black text-green-400 p-4 rounded shadow-sm font-mono text-sm overflow-y-auto max-h-60">
+                    {#if runpodStatus?.endpointId}
+                        <div class="text-blue-400 mb-2">Endpoint ID: {runpodStatus.endpointId}</div>
+                    {/if}
+
+                    {#if runpodStatus?.workerId}
+                        <div class="text-blue-400 mb-2">Worker ID: {runpodStatus.workerId}</div>
+                    {/if}
+
+                    {#each logs as log}
+                        {#if log.type === 'worker'}
+                            <div class="text-yellow-400 whitespace-pre-wrap leading-relaxed">
+                                [{formatTimestamp(log.timestamp)}] [{log.level}] 
+
+                                <span class="text-white">
+                                    {formatProgressBar(log.message)}
+                                </span>
+                            </div>
+                        {:else if log.type === 'error'}
+                            <div class="text-red-400 whitespace-pre-wrap leading-relaxed">
+                                Error: {log.message}
+                            </div>
+                        {:else}
+                            <div class="text-green-400 whitespace-pre-wrap leading-relaxed">
+                                {log.message}
+                            </div>
+                        {/if}
+                    {/each}
+
+                    {#if status !== 'Completed' && status !== 'Error'}
+                        <div class="animate-pulse">
+                            ▋
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        {/if}
+
+        {#if runpodStatus}
+            <div class="mt-4 p-4 bg-white rounded shadow-sm">
+                <h4 class="font-semibold mb-2">
+                    RunPod Status:
+                </h4>
+
+                <div class="text-sm">
+                    <p>
+                        Status: <span class="font-medium">{runpodStatus.status}</span>
+                    </p>
+
+                    {#if runpodStatus.delayTime !== undefined}
+                        <p>
+                            Delay Time: {runpodStatus.delayTime}ms
+                        </p>
+                    {/if}
+
+                    {#if runpodStatus.executionTime !== undefined}
+                        <p>
+                            Execution Time: {runpodStatus.executionTime}ms
+                        </p>
+                    {/if}
+
+                    {#if runpodStatus.error}
+                        <p class="text-red-600">
+                            Error: {runpodStatus.error}
+                        </p>
+                    {/if}
+
+                    <JsonViewer label="Complete Response" data={runpodStatus} />
+                </div>
+            </div>
         {/if}
     </div>
     
-    {#if status !== 'Idle' && status !== 'Completed' && status !== 'Error'}
-        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {progress}%"></div>
-        </div>
-    {/if}
-    
-    {#if error}
-        <div class="p-4 bg-red-100 rounded mb-4">
-            <p class="text-red-600 font-semibold">Error:</p>
-            <p class="text-red-800">{error}</p>
-        </div>
-    {/if}
+    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
+        <h2>
+            Output
+        </h2>
 
-    {#if logs.length > 0}
-        <div class="mt-4">
-            <h4 class="font-semibold mb-2">Generation Logs:</h4>
-            <div class="log-container bg-black text-green-400 p-4 rounded shadow-sm font-mono text-sm overflow-y-auto max-h-60">
-                {#if runpodStatus?.endpointId}
-                    <div class="text-blue-400 mb-2">Endpoint ID: {runpodStatus.endpointId}</div>
-                {/if}
-                {#if runpodStatus?.workerId}
-                    <div class="text-blue-400 mb-2">Worker ID: {runpodStatus.workerId}</div>
-                {/if}
-                {#each logs as log}
-                    {#if log.type === 'worker'}
-                        <div class="text-yellow-400 whitespace-pre-wrap leading-relaxed">
-                            [{formatTimestamp(log.timestamp)}] [{log.level}] 
-                            <span class="text-white">{formatProgressBar(log.message)}</span>
-                        </div>
-                    {:else if log.type === 'error'}
-                        <div class="text-red-400 whitespace-pre-wrap leading-relaxed">
-                            Error: {log.message}
-                        </div>
-                    {:else}
-                        <div class="text-green-400 whitespace-pre-wrap leading-relaxed">
-                            {log.message}
-                        </div>
-                    {/if}
-                {/each}
-                {#if status !== 'Completed' && status !== 'Error'}
-                    <div class="animate-pulse">▋</div>
-                {/if}
-            </div>
-        </div>
-    {/if}
-
-    {#if runpodStatus}
-        <div class="mt-4 p-4 bg-white rounded shadow-sm">
-            <h4 class="font-semibold mb-2">RunPod Status:</h4>
-            <div class="text-sm">
-                <p>Status: <span class="font-medium">{runpodStatus.status}</span></p>
-                {#if runpodStatus.delayTime !== undefined}
-                    <p>Delay Time: {runpodStatus.delayTime}ms</p>
-                {/if}
-                {#if runpodStatus.executionTime !== undefined}
-                    <p>Execution Time: {runpodStatus.executionTime}ms</p>
-                {/if}
-                {#if runpodStatus.error}
-                    <p class="text-red-600">Error: {runpodStatus.error}</p>
-                {/if}
-                
-                <!-- Add complete response section -->
-                <div class="mt-4">
-                    <h5 class="font-semibold mb-2">Complete Response:</h5>
-                    <pre class="bg-gray-100 p-4 rounded whitespace-pre-wrap">
-                        {JSON.stringify(runpodStatus, null, 2)}
-                    </pre>
-                </div>
-            </div>
-        </div>
-    {/if}
-    
-    {#if imageUrl}
-        <div class="mt-4">
-            <h4 class="font-semibold mb-2">Generated Image:</h4>
-            <div class="bg-white p-2 rounded shadow-sm">
-                <img 
-                    src={imageUrl}
-                    alt="Generated image" 
-                    class="max-w-full h-auto rounded"
-                />
-                <a href="{imageUrl}" target="_blank" class="text-blue-500 hover:underline">
-                    {imageUrl}
-                </a>
-            </div>
-        </div>
-    {/if}
+        <ImageDisplay id="image-display" label="Generated Image" {imageUrl} />
+    </div>
 </div>

@@ -1,6 +1,10 @@
 <script>
     import { onMount } from 'svelte';
-
+    import JsonViewer from '../../ui-components/JsonViewer.svelte';
+    import Button from '../../atomic-components/Button.svelte';
+    import Error from '../../atomic-components/Error.svelte';
+    import Status from '../../atomic-components/Status.svelte';
+    
     let status = 'Loading...';
     let error = null;
     let data = null;
@@ -26,25 +30,27 @@
     });
 </script>
 
-<div class="p-4 rounded-lg bg-gray-100">
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-xl font-bold">ComfyUI RunPod Health Status</h1>
-        <button 
-            on:click={checkHealth} 
-            class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 cursor-pointer border-none"
-        >
-            Refresh Status
-        </button>
-    </div>
-    {#if error}
-        <p class="text-red-600">Error: {error}</p>
-    {:else}
-        <p class="text-green-600">Status: {status}</p>
-        {#if data}
-            <div class="mt-4 p-4 bg-gray-50 rounded overflow-x-auto">
-                <h4>Complete Response Data:</h4>
-                <pre class="m-0 whitespace-pre-wrap break-words">{JSON.stringify(data, null, 2)}</pre>
-            </div>
+<div class="px-4 pb-4">
+    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4">
+        <h2>
+            ComfyUi RunPod Health Status
+        </h2>
+
+        {#if error}
+            <Error message={error} />
+        {:else}
+            <Status {status} />
+            
+            {#if data}
+                <JsonViewer id="health-check-data" label="Complete Response Data" {data} />
+            {/if}
         {/if}
-    {/if}
+
+        <Button 
+            onClick={checkHealth}
+            label="Refresh Status"
+            variant="primary"
+            size="md"
+        />
+    </div>
 </div>
