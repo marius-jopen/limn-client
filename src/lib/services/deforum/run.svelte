@@ -27,6 +27,8 @@
     let negativePrompt2 = "ugly, blurry, low quality, distorted features";
     let seed = 1;
     let username = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7";
+    let service = "deforum";
+    let workflow_name = "deforum-test";
 
     function prepareWorkflow({
         positivePrompt1,
@@ -66,9 +68,17 @@
                 seed
             });
 
+            const batchName = new Date().toISOString().replace(/[:.]/g, '-');
+            
             const response = await fetch('http://localhost:4000/api/deforum-runpod-serverless-run', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'user-id': username,
+                    'service': service,
+                    'workflow': workflow_name,
+                    'batch-name': batchName
+                },
                 body: JSON.stringify({
                     input: {
                         workflow: finalWorkflow,
@@ -94,7 +104,7 @@
     async function streamJob(id) {
         try {
             const eventSource = new EventSource(
-                `http://localhost:4000/api/deforum-runpod-serverless-stream/${id}`
+                `http://localhost:4000/api/deforum-runpod-serverless-stream/${id}?userId=${username}&service=${service}&workflow=${workflow_name}`
             );
 
             return new Promise((resolve, reject) => {
