@@ -4,11 +4,8 @@
     import InputPrompt from '../../ui-components/InputPrompt.svelte';
     import InputNumber from '../../ui-components/InputNumber.svelte';
     import InputText from '../../ui-components/InputText.svelte';
-    import LogViewer from '../../ui-components/LogViewer.svelte';
     import ImageList from '../../ui-components/ImageList.svelte';
-    import Status from '../../atomic-components/Status.svelte';
     import Error from '../../atomic-components/Error.svelte';
-    import JobId from '../../atomic-components/JobId.svelte';
     import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';
 
