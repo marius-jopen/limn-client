@@ -3,12 +3,6 @@
     import Button from '../../atomic-components/Button.svelte';
     import InputPrompt from '../../ui-components/InputPrompt.svelte';
     import InputNumber from '../../ui-components/InputNumber.svelte';
-    import InputText from '../../ui-components/InputText.svelte';
-    import LogViewer from '../../ui-components/LogViewer.svelte';
-    import ImageList from '../../ui-components/ImageList.svelte';
-    import Status from '../../atomic-components/Status.svelte';
-    import Error from '../../atomic-components/Error.svelte';
-    import JobId from '../../atomic-components/JobId.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';
     import ImageDisplay from '../../ui-components/ImageDisplay.svelte';
     import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';
@@ -18,19 +12,22 @@
         status: 'Idle',
         error: null,
         result: null,
-        progress: 0,
         jobId: null,
         imageUrl: null,
         runpodStatus: null,
         logs: []
     };
 
+    // Default prompt constants
+    const DEFAULT_USER_PROMPT = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
+    const DEFAULT_NEGATIVE_PROMPT = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
+
     // Initialize state
-    let { status, error, result, progress, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE;
-    let userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
-    let negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
-    let seed = 1; // Changed default from -1 to 1
-    let username = "marius"; // Added username variable here
+    let { status, error, result, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE;
+    let userPrompt = DEFAULT_USER_PROMPT;
+    let negativePrompt = DEFAULT_NEGATIVE_PROMPT;
+    let seed = 1;
+    let username = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7";
 
     // Constants
     const POLL_CONFIG = {
@@ -41,29 +38,34 @@
 
     // Helper functions
     function resetState() {
-        ({ status, error, result, progress, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE);
+        ({ status, error, result, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE);
+    }
+
+    // Workflow preparation function
+    function prepareWorkflow(userPrompt, negativePrompt, seed) {
+        const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
+        
+        return JSON.parse(
+            JSON.stringify(DEFAULT_WORKFLOW)
+                .replace('"${INPUT_PROMPT}"', JSON.stringify(userPrompt))
+                .replace('"${INPUT_NEGATIVEPROMPT}"', JSON.stringify(negativePrompt))
+                .replace('"${SEED}"', actualSeed.toString())
+        );
     }
 
     async function runWorkflow() {
         if (!userPrompt.trim()) {
-            userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
+            userPrompt = DEFAULT_USER_PROMPT;
         }
         if (!negativePrompt.trim()) {
-            negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
+            negativePrompt = DEFAULT_NEGATIVE_PROMPT;
         }
 
         resetState();
         status = 'Starting...';
         
         try {
-            const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
-            
-            const workflowWithPrompt = JSON.parse(
-                JSON.stringify(DEFAULT_WORKFLOW)
-                    .replace('"${INPUT_PROMPT}"', JSON.stringify(userPrompt))
-                    .replace('"${INPUT_NEGATIVEPROMPT}"', JSON.stringify(negativePrompt))
-                    .replace('"${SEED}"', actualSeed.toString())
-            );
+            const workflowWithPrompt = prepareWorkflow(userPrompt, negativePrompt, seed);
 
             const response = await fetch('http://localhost:4000/api/comfyui-runpod-serverless-run', {
                 method: 'POST',
@@ -150,7 +152,6 @@
             label="Negative prompt 1"
             bind:value={negativePrompt}
         />
-
 
         <InputNumber
             id="seed"

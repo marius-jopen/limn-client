@@ -5,50 +5,66 @@
     import InputNumber from '../../ui-components/InputNumber.svelte';
     import InputText from '../../ui-components/InputText.svelte';
     import ImageList from '../../ui-components/ImageList.svelte';
-    import Error from '../../atomic-components/Error.svelte';
     import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';
 
-    // State variables
-    let status = 'Idle';
-    let error = null;
-    let jobId = null;
-    let logs = [];
-    let images = [];
-    let runpodStatus = null;
-    
-    // Input variables
+    // Group related state variables
+    const INITIAL_STATE = {
+        status: 'Idle',
+        error: null,
+        jobId: null,
+        logs: [],
+        images: [],
+        runpodStatus: null,
+        manualJobId: ''
+    };
+
+    // Initialize state
+    let { status, error, jobId, logs, images, runpodStatus, manualJobId } = INITIAL_STATE;
     let positivePrompt1 = "beautiful lady, (freckles), big smile, brown hazel eyes";
     let positivePrompt2 = "beautiful alien";
     let negativePrompt1 = "bad eyes, cgi, airbrushed, plastic, deformed";
     let negativePrompt2 = "ugly, blurry, low quality, distorted features";
     let seed = 1;
-    let username = "marius";
-    let manualJobId = '';
+    let username = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7";
+
+    function prepareWorkflow({
+        positivePrompt1,
+        positivePrompt2,
+        negativePrompt1,
+        negativePrompt2,
+        seed
+    }) {
+        // Generate seed and batch name
+        const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
+        const batchName = new Date().toISOString().replace(/[:.]/g, '-');
+        
+        // Create workflow with variables
+        const workflowCopy = JSON.parse(JSON.stringify(DEFAULT_WORKFLOW));
+        const stringified = JSON.stringify(workflowCopy)
+            .replace('${INPUT_PROMPT_1}', positivePrompt1)
+            .replace('${INPUT_PROMPT_2}', positivePrompt2)
+            .replace('${INPUT_NEGATIVEPROMPT_1}', negativePrompt1)
+            .replace('${INPUT_NEGATIVEPROMPT_2}', negativePrompt2)
+            .replace('${SEED}', actualSeed.toString())
+            .replace('${BATCH_NAME}', batchName);
+        
+        return JSON.parse(stringified);
+    }
 
     async function runWorkflow() {
+        // Reset state at the start of new workflow
+        ({ status, error, jobId, logs, images, runpodStatus } = INITIAL_STATE);
+        status = 'Starting...';
+
         try {
-            status = 'Starting...';
-            error = null;
-            logs = [];
-            images = [];
-
-            const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
-            const batchName = new Date().toISOString().replace(/[:.]/g, '-');
-            
-            // Create a deep copy of the default workflow
-            const workflowWithPrompt = JSON.parse(JSON.stringify(DEFAULT_WORKFLOW));
-
-            // Replace the template variables
-            const stringified = JSON.stringify(workflowWithPrompt)
-                .replace('${INPUT_PROMPT_1}', positivePrompt1)
-                .replace('${INPUT_PROMPT_2}', positivePrompt2)
-                .replace('${INPUT_NEGATIVEPROMPT_1}', negativePrompt1)
-                .replace('${INPUT_NEGATIVEPROMPT_2}', negativePrompt2)
-                .replace('${SEED}', actualSeed.toString())
-                .replace('${BATCH_NAME}', batchName);
-
-            const finalWorkflow = JSON.parse(stringified);
+            const finalWorkflow = prepareWorkflow({
+                positivePrompt1,
+                positivePrompt2,
+                negativePrompt1,
+                negativePrompt2,
+                seed
+            });
 
             const response = await fetch('http://localhost:4000/api/deforum-runpod-serverless-run', {
                 method: 'POST',

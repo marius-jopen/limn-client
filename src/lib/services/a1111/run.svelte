@@ -3,7 +3,6 @@
     import Button from '../../atomic-components/Button.svelte';
     import InputPrompt from '../../ui-components/InputPrompt.svelte';
     import InputNumber from '../../ui-components/InputNumber.svelte';
-    import Error from '../../atomic-components/Error.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';
     import ImageDisplay from '../../ui-components/ImageDisplay.svelte';
     import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';
@@ -13,19 +12,24 @@
         status: 'Idle',
         error: null,
         result: null,
-        progress: 0,
         jobId: null,
         imageUrl: null,
         runpodStatus: null,
         logs: []
     };
 
-    // Initialize state
-    let { status, error, result, progress, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE;
-    let userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
-    let negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
+    // Define constants for default values
+    const DEFAULT_PROMPTS = {
+        positive: "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover",
+        negative: "bad eyes, cgi, airbrushed, plastic, deformed, watermark"
+    };
+
+    // Initialize state with default values
+    let { status, error, result, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE;
+    let userPrompt = DEFAULT_PROMPTS.positive;
+    let negativePrompt = DEFAULT_PROMPTS.negative;
     let seed = 1; // Changed default from -1 to 1
-    let username = "marius"; // Added username variable here
+    let username = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7"; // Added username variable here
 
     // Constants
     const POLL_CONFIG = {
@@ -34,9 +38,21 @@
         estimatedJobTime: 30000 // 30 seconds
     };
 
+    const workflowTemplate = {
+        prepare: (userPrompt, negativePrompt, seed) => {
+            const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
+            return JSON.parse(
+                JSON.stringify(DEFAULT_WORKFLOW)
+                    .replace('"${INPUT_PROMPT}"', JSON.stringify(userPrompt))
+                    .replace('"${INPUT_NEGATIVEPROMPT}"', JSON.stringify(negativePrompt))
+                    .replace('"${SEED}"', actualSeed.toString())
+            );
+        }
+    };
+
     // Helper functions
     function resetState() {
-        ({ status, error, result, progress, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE);
+        ({ status, error, result, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE);
     }
 
     async function pollJob(id) {
@@ -83,26 +99,16 @@
     }
 
     async function runWorkflow() {
-        if (!userPrompt.trim()) {
-            userPrompt = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
-        }
-        if (!negativePrompt.trim()) {
-            negativePrompt = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
-        }
+        // Use trim() to clean input but don't redefine defaults
+        userPrompt = userPrompt.trim() || DEFAULT_PROMPTS.positive;
+        negativePrompt = negativePrompt.trim() || DEFAULT_PROMPTS.negative;
 
         resetState();
         status = 'Starting...';
         
         try {
-            const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
+            const workflowWithPrompt = workflowTemplate.prepare(userPrompt, negativePrompt, seed);
             
-            const workflowWithPrompt = JSON.parse(
-                JSON.stringify(DEFAULT_WORKFLOW)
-                    .replace('"${INPUT_PROMPT}"', JSON.stringify(userPrompt))
-                    .replace('"${INPUT_NEGATIVEPROMPT}"', JSON.stringify(negativePrompt))
-                    .replace('"${SEED}"', actualSeed.toString())
-            );
-
             const response = await fetch('http://localhost:4000/api/a1111-runpod-serverless-run', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
