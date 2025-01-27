@@ -1,5 +1,10 @@
 <script>
     import DEFAULT_WORKFLOW from '../../workflows/deforum/deforum-test.json';
+    import Button from '../../atomic-components/Button.svelte';
+    import InputPrompt from '../../ui-components/InputPrompt.svelte';
+    import InputNumber from '../../ui-components/InputNumber.svelte';
+    import InputText from '../../ui-components/InputText.svelte';
+    import LogViewer from '../../ui-components/LogViewer.svelte';
 
     // State variables
     let status = 'Idle';
@@ -38,6 +43,7 @@
                     try {
                         const jsonStr = event.data.replace(/^data: /, '');
                         const data = JSON.parse(jsonStr);
+                        
                         console.log('Stream data:', data);
 
                         // Update status if available
@@ -155,121 +161,111 @@
 
 <div class="p-4 rounded-lg bg-gray-100">
     <div class="flex flex-col gap-4 mb-4">
-        <h1 class="text-xl font-bold">Deforum RunPod Workflow</h1>
+        <h1>
+            Deforum RunPod Workflow
+        </h1>
         
-        <!-- Prompt inputs -->
-        <div class="flex flex-col gap-4">
-            <div class="flex flex-col gap-2">
-                <label for="prompt1" class="font-medium">Prompt 1:</label>
-                <textarea
-                    id="prompt1"
-                    bind:value={positivePrompt1}
-                    class="w-full p-2 rounded border border-gray-300"
-                ></textarea>
-            </div>
+        <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4">
+            <h2>
+                Generate Video
+            </h2>
 
-            <div class="flex flex-col gap-2">
-                <label for="negative-prompt1" class="font-medium">Negative prompt 1:</label>
-                <textarea
-                    id="negative-prompt1"
-                    bind:value={negativePrompt1}
-                    class="w-full p-2 rounded border border-gray-300"
-                ></textarea>
-            </div>
+            <InputPrompt
+                id="prompt1"
+                label="Prompt 1"
+                bind:value={positivePrompt1}
+            />
 
-            <div class="flex flex-col gap-2">
-                <label for="prompt2" class="font-medium">Prompt 2:</label>
-                <textarea
-                    id="prompt2"
-                    bind:value={positivePrompt2}
-                    class="w-full p-2 rounded border border-gray-300"
-                ></textarea>
-            </div>
+            <InputPrompt
+                id="negative-prompt1"
+                label="Negative prompt 1"
+                bind:value={negativePrompt1}
+            />
 
-            <div class="flex flex-col gap-2">
-                <label for="negative-prompt2" class="font-medium">Negative prompt 2:</label>
-                <textarea
-                    id="negative-prompt2"
-                    bind:value={negativePrompt2}
-                    class="w-full p-2 rounded border border-gray-300"
-                ></textarea>
-            </div>
+            <InputPrompt
+                id="prompt2"
+                label="Prompt 2"
+                bind:value={positivePrompt2}
+            />
 
-            <div class="flex flex-col gap-2">
-                <label for="seed" class="font-medium">Seed (-1 for random):</label>
-                <input
-                    id="seed"
-                    type="number"
-                    bind:value={seed}
-                    class="w-full p-2 rounded border border-gray-300"
-                    min="-1"
-                />
-            </div>
+            <InputPrompt
+                id="negative-prompt2"
+                label="Negative prompt 2"
+                bind:value={negativePrompt2}
+            />
 
-            <div class="flex flex-col gap-2">
-                <label for="manual-job-id" class="font-medium">Manual Job ID:</label>
-                <div class="flex gap-2">
-                    <input
-                        id="manual-job-id"
-                        type="text"
-                        bind:value={manualJobId}
-                        placeholder="Enter job ID to monitor"
-                        class="flex-1 p-2 rounded border border-gray-300"
-                    />
-                    <button 
-                        on:click={() => { jobId = manualJobId; streamJob(manualJobId); }}
-                        class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                        disabled={!manualJobId || status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
-                    >
-                        Monitor
-                    </button>
-                </div>
-            </div>
+            <InputNumber
+                id="seed"
+                label="Seed (-1 for random)"
+                bind:value={seed}
+            />
+
+            <Button
+                onClick={runWorkflow}
+                disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
+                label="Generate"
+            />
         </div>
 
-        <div class="flex gap-2">
-            <button 
-                on:click={runWorkflow} 
-                class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
-            >
-                Generate
-            </button>
+        <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4">
+            <h2>
+                Cancel Current Job
+            </h2>
+
+            <InputText
+                id="manual-job-id"
+                bind:value={manualJobId}
+                placeholder="Enter job ID to monitor"
+            />
+            
+            <Button
+                onClick={() => { jobId = manualJobId; streamJob(manualJobId); }}
+                disabled={!manualJobId || status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
+                label="Cancel"
+            />
         </div>
     </div>
     
-    <!-- Status and error display -->
-    <div class="mb-4">
-        <p class="font-semibold">Status: {status}</p>
+    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
+        <h2>
+            Status & Logs
+        </h2>
+
+        <div class="font-semibold">
+            Status: {status}
+        </div>
+
         {#if jobId}
-            <p class="text-sm text-gray-600">Job ID: {jobId}</p>
+            <div class="text-sm text-gray-600">
+                Job ID: {jobId}
+            </div>
         {/if}
+
         {#if error}
-            <p class="text-red-600">{error}</p>
+            <div class="text-red-600">
+                {error}
+            </div>
         {/if}
+
+        <LogViewer variant="dark" logs={logs} />
     </div>
 
-    <!-- Logs display -->
-    {#if logs.length > 0}
-        <div class="mt-4">
-            <h4 class="font-semibold mb-2">Logs:</h4>
-            <div 
-                bind:this={logsContainer}
-                class="bg-black text-green-400 p-4 rounded font-mono text-sm overflow-y-auto max-h-[300px]"
-            >
-                {#each logs as log}
-                    <div class="whitespace-pre-wrap">{log}</div>
-                {/each}
-            </div>
-        </div>
-    {/if}
+    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4">
+        <h2>
+            Output
+        </h2>
+
+    </div>
 
     <!-- Add image display -->
     {#if images.length > 0}
         <div class="mt-4">
             <!-- New Image List View -->
             <div class="mt-8">
-                <h4 class="font-semibold mb-2">Image List:</h4>
+                <h4 class="font-semibold mb-2">
+                    Image List:
+                </h4>
+
                 <div class="space-y-4">
                     {#each images as imageUrl}
                         <div class="flex items-center gap-4 p-2 bg-white rounded-lg shadow">
@@ -282,6 +278,7 @@
                                 <span class="text-sm text-gray-600">
                                     {imageUrl.split('/').pop().split('?')[0]}
                                 </span>
+
                                 <a target="_blank" href={imageUrl} class="text-xs text-gray-400 break-all">
                                     {imageUrl}
                                 </a>
