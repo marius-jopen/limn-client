@@ -3,14 +3,10 @@
     import Button from '../../atomic-components/Button.svelte';
     import InputPrompt from '../../ui-components/InputPrompt.svelte';
     import InputNumber from '../../ui-components/InputNumber.svelte';
-    import InputText from '../../ui-components/InputText.svelte';
-    import LogViewer from '../../ui-components/LogViewer.svelte';
-    import ImageList from '../../ui-components/ImageList.svelte';
-    import Status from '../../atomic-components/Status.svelte';
     import Error from '../../atomic-components/Error.svelte';
-    import JobId from '../../atomic-components/JobId.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';
     import ImageDisplay from '../../ui-components/ImageDisplay.svelte';
+    import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';
 
     // Group related state variables
     const INITIAL_STATE = {
@@ -43,30 +39,6 @@
         ({ status, error, result, progress, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE);
     }
 
-    function updateProgress(data, attempt) {
-        if (data.status === 'IN_QUEUE') {
-            return 5;
-        } else if (data.status === 'IN_PROGRESS') {
-            if (data.executionTime) {
-                return Math.min(90, (data.executionTime / POLL_CONFIG.estimatedJobTime) * 100);
-            }
-            return Math.min(90, 10 + (attempt * 2));
-        }
-        return data.status === 'COMPLETED' ? 100 : progress;
-    }
-
-    function formatTimestamp(timestamp) {
-        if (!timestamp) return '';
-        return new Date(timestamp).toLocaleTimeString();
-    }
-
-    function formatProgressBar(message) {
-        // Replace ANSI escape codes and carriage returns with HTML
-        return message
-            .replace(/\r/g, '\n')
-            .replace(/\u001b\[\d+m/g, '');
-    }
-
     async function pollJob(id) {
         for (let attempt = 0; attempt < POLL_CONFIG.maxAttempts; attempt++) {
             try {
@@ -86,8 +58,6 @@
                         });
                     }
                 }
-
-                progress = updateProgress(data, attempt);
                 
                 if (data.status === 'COMPLETED') {
                     result = data;
@@ -195,87 +165,63 @@
             Status & Logs
         </h2>
 
-        <Status {status} />
-        <JobId {jobId} />
-        <Error message={error} />   
+        <div class="grid grid-cols-2 rounded-lg border border-gray-200 overflow-hidden bg-white divide-x divide-gray-200">
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Status:</div>
+                <div class="p-3 border-b border-gray-200">{status || 'Idle'}</div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">RunPod Status:</div>
+                <div class="p-3 border-b border-gray-200">{runpodStatus?.status || 'Not started'}</div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Error:</div>
+                <div class="p-3 border-b border-gray-200">{error || 'No Error'}</div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Job ID:</div>
+                <div class="p-3 border-b border-gray-200">{jobId || 'No JobID received'}</div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Delay Time:</div>
+                <div class="p-3 border-b border-gray-200">
+                    {runpodStatus?.delayTime !== undefined ? `${runpodStatus.delayTime}ms` : 'No delay time available'}
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Execution Time:</div>
+                <div class="p-3 border-b border-gray-200">
+                    {runpodStatus?.executionTime !== undefined ? `${runpodStatus.executionTime}ms` : 'No execution time available'}
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Endpoint ID:</div>
+                <div class="p-3 border-b border-gray-200">
+                    {runpodStatus?.endpointId || 'No endpoint ID available'}
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3">Worker ID:</div>
+                <div class="p-3">
+                    {runpodStatus?.workerId || 'No worker ID available'}
+                </div>
+            </div>
+        </div>
         
-        {#if logs.length > 0}
-            <div class="mt-4">
-                <h4 class="font-semibold mb-2">
-                    Generation Logs:
-                </h4>
-                
-                <div class="log-container bg-black text-green-400 p-4 rounded shadow-sm font-mono text-sm overflow-y-auto max-h-60">
-                    {#if runpodStatus?.endpointId}
-                        <div class="text-blue-400 mb-2">Endpoint ID: {runpodStatus.endpointId}</div>
-                    {/if}
+        <AdvancedLogViewer 
+            {logs}
+            {status}
+            {runpodStatus}
+        />
 
-                    {#if runpodStatus?.workerId}
-                        <div class="text-blue-400 mb-2">Worker ID: {runpodStatus.workerId}</div>
-                    {/if}
-
-                    {#each logs as log}
-                        {#if log.type === 'worker'}
-                            <div class="text-yellow-400 whitespace-pre-wrap leading-relaxed">
-                                [{formatTimestamp(log.timestamp)}] [{log.level}] 
-
-                                <span class="text-white">
-                                    {formatProgressBar(log.message)}
-                                </span>
-                            </div>
-                        {:else if log.type === 'error'}
-                            <div class="text-red-400 whitespace-pre-wrap leading-relaxed">
-                                Error: {log.message}
-                            </div>
-                        {:else}
-                            <div class="text-green-400 whitespace-pre-wrap leading-relaxed">
-                                {log.message}
-                            </div>
-                        {/if}
-                    {/each}
-
-                    {#if status !== 'Completed' && status !== 'Error'}
-                        <div class="animate-pulse">
-                            ▋
-                        </div>
-                    {/if}
-                </div>
-            </div>
-        {/if}
-
-        {#if runpodStatus}
-            <div class="mt-4 p-4 bg-white rounded shadow-sm">
-                <h4 class="font-semibold mb-2">
-                    RunPod Status:
-                </h4>
-
-                <div class="text-sm">
-                    <p>
-                        Status: <span class="font-medium">{runpodStatus.status}</span>
-                    </p>
-
-                    {#if runpodStatus.delayTime !== undefined}
-                        <p>
-                            Delay Time: {runpodStatus.delayTime}ms
-                        </p>
-                    {/if}
-
-                    {#if runpodStatus.executionTime !== undefined}
-                        <p>
-                            Execution Time: {runpodStatus.executionTime}ms
-                        </p>
-                    {/if}
-
-                    {#if runpodStatus.error}
-                        <p class="text-red-600">
-                            Error: {runpodStatus.error}
-                        </p>
-                    {/if}
-
-                    <JsonViewer label="Complete Response" data={runpodStatus} />
-                </div>
-            </div>
-        {/if}
+        <JsonViewer label="Complete Response" data={runpodStatus} />
     </div>
     
     <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
