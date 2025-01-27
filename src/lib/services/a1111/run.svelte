@@ -28,8 +28,10 @@
     let { status, error, result, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE;
     let userPrompt = DEFAULT_PROMPTS.positive;
     let negativePrompt = DEFAULT_PROMPTS.negative;
-    let seed = 1; // Changed default from -1 to 1
-    let username = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7"; // Added username variable here
+    let seed = 1;
+    let user_id = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7";
+    let service = "a1111"
+    let workflow_name = "a1111-test"
 
     // Constants
     const POLL_CONFIG = {
@@ -58,7 +60,16 @@
     async function pollJob(id) {
         for (let attempt = 0; attempt < POLL_CONFIG.maxAttempts; attempt++) {
             try {
-                const response = await fetch(`http://localhost:4000/api/a1111-runpod-serverless-status/${id}`);
+                const response = await fetch(
+                    `http://localhost:4000/api/a1111-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`,
+                    {
+                        headers: {
+                            'user-id': user_id,
+                            'service': service,
+                            'workflow': workflow_name
+                        }
+                    }
+                );
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
@@ -115,7 +126,7 @@
                 body: JSON.stringify({ 
                     input: { 
                         workflow: workflowWithPrompt,
-                        user: username
+                        user: user_id
                     } 
                 })
             });
