@@ -9,6 +9,8 @@
     import Status from '../../atomic-components/Status.svelte';
     import Error from '../../atomic-components/Error.svelte';
     import JobId from '../../atomic-components/JobId.svelte';
+    import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';
+    import JsonViewer from '../../ui-components/JsonViewer.svelte';
 
     // State variables
     let status = 'Idle';
@@ -16,6 +18,7 @@
     let jobId = null;
     let logs = [];
     let images = [];
+    let runpodStatus = null;
     
     // Input variables
     let positivePrompt1 = "beautiful lady, (freckles), big smile, brown hazel eyes";
@@ -100,31 +103,75 @@
                         // Handle stream data
                         if (data.stream && Array.isArray(data.stream)) {
                             data.stream.forEach(streamItem => {
-                                // Handle logs
                                 if (streamItem.output?.log) {
-                                    logs = [...logs, streamItem.output.log];
+                                    const logEntry = {
+                                        type: 'worker',
+                                        timestamp: new Date().toISOString(),
+                                        level: 'INFO',
+                                        message: streamItem.output.log
+                                    };
+                                    logs = [...logs, logEntry];
                                 }
-                                
-                                // Handle images
+                            });
+                        }
+
+                        // Handle direct output logs
+                        if (data.output?.log) {
+                            const logEntry = {
+                                type: 'worker',
+                                timestamp: new Date().toISOString(),
+                                level: 'INFO',
+                                message: data.output.log
+                            };
+                            logs = [...logs, logEntry];
+                        }
+
+                        runpodStatus = data;
+
+                        // Handle images
+                        if (data.stream && Array.isArray(data.stream)) {
+                            data.stream.forEach(streamItem => {
                                 if (streamItem.output?.images && Array.isArray(streamItem.output.images)) {
                                     streamItem.output.images.forEach(image => {
                                         if (image.url && !images.includes(image.url)) {
                                             console.log('New image from stream:', image.url);
                                             images = [...images, image.url];
+                                            // Add a log entry for the image
+                                            const imageLogEntry = {
+                                                type: 'worker',
+                                                timestamp: new Date().toISOString(),
+                                                level: 'INFO',
+                                                message: `Generated new image: ${image.url}`
+                                            };
+                                            logs = [...logs, imageLogEntry];
                                         }
                                     });
                                 }
                             });
                         }
 
-                        // Check for completion (remove CANCELLED status)
+                        // Check for completion
                         if (data.status === 'COMPLETED' || data.status === 'FAILED') {
+                            const statusLogEntry = {
+                                type: data.status === 'COMPLETED' ? 'worker' : 'error',
+                                timestamp: new Date().toISOString(),
+                                level: data.status === 'COMPLETED' ? 'INFO' : 'ERROR',
+                                message: `Job ${data.status.toLowerCase()}`
+                            };
+                            logs = [...logs, statusLogEntry];
                             console.log(`Job ${id} finished with status: ${data.status}`);
                             eventSource.close();
                             resolve();
                         }
                     } catch (err) {
                         console.error('Error parsing stream data:', err);
+                        const errorLogEntry = {
+                            type: 'error',
+                            timestamp: new Date().toISOString(),
+                            level: 'ERROR',
+                            message: `Error parsing stream data: ${err.message}`
+                        };
+                        logs = [...logs, errorLogEntry];
                         console.warn('Continuing stream despite parse error');
                     }
                 };
@@ -202,7 +249,7 @@
         <InputText
             id="manual-job-id"
             bind:value={manualJobId}
-            placeholder="Enter job ID to monitor"
+            placeholder="Enter job ID to cancel"
         />
         
         <Button
@@ -211,16 +258,69 @@
             label="Cancel"
         />
     </div>
-    
+
     <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
         <h2>
             Status & Logs
         </h2>
 
-        <Status {status} />
-        <JobId {jobId} />
-        <Error message={error} />   
-        <LogViewer variant="dark" logs={logs} />
+        <div class="grid grid-cols-2 rounded-lg border border-gray-200 overflow-hidden bg-white divide-x divide-gray-200">
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Status:</div>
+                <div class="p-3 border-b border-gray-200">{status || 'Idle'}</div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">RunPod Status:</div>
+                <div class="p-3 border-b border-gray-200">{runpodStatus?.status || 'Not started'}</div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Error:</div>
+                <div class="p-3 border-b border-gray-200">{error || 'No Error'}</div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Job ID:</div>
+                <div class="p-3 border-b border-gray-200">{jobId || 'No JobID received'}</div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Delay Time:</div>
+                <div class="p-3 border-b border-gray-200">
+                    {runpodStatus?.delayTime !== undefined ? `${runpodStatus.delayTime}ms` : 'No delay time available'}
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Execution Time:</div>
+                <div class="p-3 border-b border-gray-200">
+                    {runpodStatus?.executionTime !== undefined ? `${runpodStatus.executionTime}ms` : 'No execution time available'}
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">Endpoint ID:</div>
+                <div class="p-3 border-b border-gray-200">
+                    {runpodStatus?.endpointId || 'No endpoint ID available'}
+                </div>
+            </div>
+
+            <div class="contents">
+                <div class="font-medium p-3">Worker ID:</div>
+                <div class="p-3">
+                    {runpodStatus?.workerId || 'No worker ID available'}
+                </div>
+            </div>
+        </div>
+        
+        <AdvancedLogViewer 
+            {logs}
+            {status}
+            {runpodStatus}
+        />
+        
+        <JsonViewer label="Complete Response" data={runpodStatus} />
     </div>
 
     <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">

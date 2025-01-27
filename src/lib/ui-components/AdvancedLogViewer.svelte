@@ -1,7 +1,18 @@
 <script>
+    import { afterUpdate } from 'svelte';
+    
     export let logs = [];
     export let status = '';
     export let runpodStatus = null;
+
+    let logContainer; // Reference to the log container element
+
+    // Auto-scroll to bottom whenever logs update
+    afterUpdate(() => {
+        if (logContainer) {
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+    });
 
     function formatTimestamp(timestamp) {
         if (!timestamp) return '';
@@ -22,7 +33,10 @@
             Generation Logs:
         </h4>
         
-        <div class="log-container bg-black text-green-400 p-4 rounded shadow-sm font-mono text-sm overflow-y-auto max-h-60">
+        <div 
+            bind:this={logContainer}
+            class="log-container bg-black text-green-400 p-4 rounded shadow-sm font-mono text-sm overflow-y-auto max-h-60"
+        >
             {#if runpodStatus?.endpointId}
                 <div class="text-blue-400 mb-2">Endpoint ID: {runpodStatus.endpointId}</div>
             {/if}
