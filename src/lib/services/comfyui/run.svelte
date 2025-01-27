@@ -27,7 +27,9 @@
     let userPrompt = DEFAULT_USER_PROMPT;
     let negativePrompt = DEFAULT_NEGATIVE_PROMPT;
     let seed = 1;
-    let username = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7";
+    let user_id = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7";
+    let service = "comfyui"
+    let workflow_name = "comfyui-test"
 
     // Constants
     const POLL_CONFIG = {
@@ -73,7 +75,7 @@
                 body: JSON.stringify({ 
                     input: { 
                         workflow: workflowWithPrompt,
-                        user: username
+                        user: user_id
                     } 
                 })
             });
@@ -94,7 +96,13 @@
     async function pollJob(id) {
         for (let attempt = 0; attempt < POLL_CONFIG.maxAttempts; attempt++) {
             try {
-                const response = await fetch(`http://localhost:4000/api/comfyui-runpod-serverless-status/${id}`);
+                const response = await fetch(`http://localhost:4000/api/comfyui-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`, {
+                    headers: {
+                        'user-id': user_id,
+                        'service': service,
+                        'workflow': workflow_name
+                    }
+                });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
