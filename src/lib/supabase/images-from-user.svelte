@@ -57,7 +57,7 @@
     <div class="px-4 pb-4">
         <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4">
             <h2>
-                All Images
+                All Images from {service}
             </h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-4">
