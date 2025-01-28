@@ -1,4 +1,5 @@
 <script>
+    import { user } from '../../stores/auth';
     import DEFAULT_WORKFLOW from '../../workflows/deforum/deforum-test.json';
     import Button from '../../atomic-components/Button.svelte';
     import InputPrompt from '../../ui-components/InputPrompt.svelte';
@@ -26,9 +27,10 @@
     let negativePrompt1 = "bad eyes, cgi, airbrushed, plastic, deformed";
     let negativePrompt2 = "ugly, blurry, low quality, distorted features";
     let seed = 1;
-    let username = "a87ae7bc-6e08-45b7-a464-4f91cb01b1a7";
     let service = "deforum";
     let workflow_name = "deforum-test";
+
+    $: user_id = $user?.id;
 
     function prepareWorkflow({
         positivePrompt1,
@@ -288,6 +290,11 @@
         </h2>
 
         <div class="grid grid-cols-2 rounded-lg border border-gray-200 overflow-hidden bg-white divide-x divide-gray-200">
+            <div class="contents">
+                <div class="font-medium p-3 border-b border-gray-200">User ID:</div>
+                <div class="p-3 border-b border-gray-200">{user_id}</div>
+            </div>
+            
             <div class="contents">
                 <div class="font-medium p-3 border-b border-gray-200">Status:</div>
                 <div class="p-3 border-b border-gray-200">{status || 'Idle'}</div>

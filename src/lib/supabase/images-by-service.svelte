@@ -1,19 +1,22 @@
 <script>
-    import { supabase } from './supabaseClient';
+    import { user } from '../stores/auth';
+    import { supabase } from '../supabase/supabaseClient';
     import { onDestroy } from 'svelte';
     
     export let service;
     
-    const userId = 'a87ae7bc-6e08-45b7-a464-4f91cb01b1a7';
     let resources = [];
     let error = null;
+
+    $: user_id = $user?.id;
+
 
     async function fetchUserImages() {
         try {
             const { data, error: supabaseError } = await supabase
                 .from('resource')
                 .select('*')
-                .eq('user_id', userId)
+                .eq('user_id', user_id)
                 .eq('service', service);
 
             if (supabaseError) throw supabaseError;
@@ -33,7 +36,7 @@
                 event: '*',
                 schema: 'public',
                 table: 'resource',
-                filter: `user_id=eq.${userId} AND service=eq.${service}`
+                filter: `user_id=eq.${user_id} AND service=eq.${service}`
             },
             () => {
                 // Refresh the images when changes occur
