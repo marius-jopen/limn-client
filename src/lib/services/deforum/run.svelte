@@ -76,7 +76,7 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'user-id': username,
+                    'user-id': user_id,
                     'service': service,
                     'workflow': workflow_name,
                     'batch-name': batchName
@@ -84,7 +84,7 @@
                 body: JSON.stringify({
                     input: {
                         workflow: finalWorkflow,
-                        user: username
+                        user: user_id
                     }
                 })
             });
@@ -106,7 +106,7 @@
     async function streamJob(id) {
         try {
             const eventSource = new EventSource(
-                `http://localhost:4000/api/deforum-runpod-serverless-stream/${id}?userId=${username}&service=${service}&workflow=${workflow_name}`
+                `http://localhost:4000/api/deforum-runpod-serverless-stream/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`
             );
 
             return new Promise((resolve, reject) => {

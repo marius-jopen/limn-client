@@ -10,7 +10,6 @@
 
     $: user_id = $user?.id;
 
-
     async function fetchUserImages() {
         try {
             const { data, error: supabaseError } = await supabase
@@ -27,31 +26,47 @@
         }
     }
 
-    // Set up real-time subscription
-    const subscription = supabase
-        .channel('resource_changes')
-        .on(
-            'postgres_changes',
-            {
-                event: '*',
-                schema: 'public',
-                table: 'resource',
-                filter: `user_id=eq.${user_id} AND service=eq.${service}`
-            },
-            () => {
-                // Refresh the images when changes occur
-                fetchUserImages();
-            }
-        )
-        .subscribe();
+    let subscription;
+
+    function setupSubscription() {
+        // Clean up existing subscription if it exists
+        if (subscription) {
+            subscription.unsubscribe();
+        }
+
+        if (user_id) {
+            subscription = supabase
+                .channel('resource_changes')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'resource',
+                        filter: `user_id=eq.${user_id} AND service=eq.${service}`
+                    },
+                    () => {
+                        fetchUserImages();
+                    }
+                )
+                .subscribe();
+        }
+    }
 
     // Clean up subscription when component is destroyed
     onDestroy(() => {
-        subscription.unsubscribe();
+        if (subscription) {
+            subscription.unsubscribe();
+        }
     });
 
-    // Fetch images when component mounts or service changes
-    $: service && fetchUserImages();
+    // Setup subscription and fetch images when user_id or service changes
+    $: {
+        if (user_id && service) {
+            setupSubscription();
+            fetchUserImages();
+        }
+    }
 </script>
 
 {#if error}
