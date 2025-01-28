@@ -1,7 +1,7 @@
 <script>
-    import ComfyUIHealthCheck from '$lib/services/comfyui/health-check.svelte';
-    import ComfyUIRun from '$lib/services/comfyui/run.svelte';
-    import ImagesFromUser from '$lib/supabase/images-from-user.svelte';
+    import ComfyUIHealthCheck from '../../../lib/services/comfyui/health-check.svelte';
+    import ComfyUIRun from '../../../lib/services/comfyui/run.svelte';
+    import ImagesByService from '../../../lib/supabase/images-by-service.svelte';
 </script>
 
 <h1 class="px-4 py-4">
@@ -10,4 +10,4 @@
 
 <ComfyUIHealthCheck />
 <ComfyUIRun />
-<ImagesFromUser service="comfyui" />
+<ImagesByService service="comfyui" />

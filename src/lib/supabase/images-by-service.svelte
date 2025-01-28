@@ -1,5 +1,5 @@
 <script>
-    import { supabase } from '../supabase/supabaseClient';
+    import { supabase } from './supabaseClient';
     import { onDestroy } from 'svelte';
     
     export let service;

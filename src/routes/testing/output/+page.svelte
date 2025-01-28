@@ -1,11 +1,11 @@
 <script>
-    import ImagesFromUser from '$lib/supabase/images-from-user.svelte';
+    import ImagesByService from '../../../lib/supabase/images-by-service.svelte';
 </script>
 
 <h1 class="px-4 py-4">
     Output
 </h1>
 
-<ImagesFromUser service="a1111" />
-<ImagesFromUser service="comfyui" />
-<ImagesFromUser service="deforum" />
+<ImagesByService service="a1111" />
+<ImagesByService service="comfyui" />
+<ImagesByService service="deforum" />
