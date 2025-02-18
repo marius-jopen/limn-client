@@ -2,8 +2,8 @@
     "3": {
       "inputs": {
         "seed": "${SEED}",
-        "steps": 20,
-        "cfg": 8,
+        "steps": "${STEPS}",
+        "cfg": "${CFG}",
         "sampler_name": "euler",
         "scheduler": "normal",
         "denoise": 1,
@@ -16,7 +16,7 @@
     },
     "4": {
       "inputs": {
-        "ckpt_name": "xl/Jugg_XI_by_RunDiffusion.safetensors"
+        "ckpt_name": "${CKPT_NAME}"
       },
       "class_type": "CheckpointLoaderSimple"
     },

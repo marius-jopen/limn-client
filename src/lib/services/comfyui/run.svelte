@@ -28,8 +28,17 @@
     let userPrompt = DEFAULT_USER_PROMPT;
     let negativePrompt = DEFAULT_NEGATIVE_PROMPT;
     let seed = 1;
+    let steps = 20;
+    let cfg = 7;
     let service = "comfyui"
     let workflow_name = "comfyui-test"
+    let selectedCheckpoint = "xl/Jugg_XI_by_RunDiffusion.safetensors"
+
+    const CHECKPOINT_OPTIONS = [
+        { value: "xl/sd_xl_base_1.0.safetensors", label: "SDXL Base 1.0" },
+        { value: "xl/Jugg_XI_by_RunDiffusion.safetensors", label: "Juggernaut XI" },
+        { value: "flux/flux1-dev.safetensors", label: "Flux 1 Dev" },
+    ];
 
     $: user_id = $user?.id;
 
@@ -54,6 +63,9 @@
                 .replace('"${INPUT_PROMPT}"', JSON.stringify(userPrompt))
                 .replace('"${INPUT_NEGATIVEPROMPT}"', JSON.stringify(negativePrompt))
                 .replace('"${SEED}"', actualSeed.toString())
+                .replace('"${CKPT_NAME}"', JSON.stringify(selectedCheckpoint))
+                .replace('"${STEPS}"', steps.toString())
+                .replace('"${CFG}"', cfg.toString())
         );
     }
 
@@ -168,6 +180,31 @@
             label="Seed (-1 for random)"
             bind:value={seed}
         />
+
+        <InputNumber
+            id="steps"
+            label="Steps"
+            bind:value={steps}
+        />
+
+        <InputNumber
+            id="cfg"
+            label="CFG"
+            bind:value={cfg}
+        />
+
+        <div class="flex flex-col gap-2">
+            <label for="checkpoint" class="text-sm font-medium text-gray-700">Checkpoint Model</label>
+            <select
+                id="checkpoint"
+                bind:value={selectedCheckpoint}
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            >
+                {#each CHECKPOINT_OPTIONS as option}
+                    <option value={option.value}>{option.label}</option>
+                {/each}
+            </select>
+        </div>
 
         <Button
             onClick={runWorkflow}

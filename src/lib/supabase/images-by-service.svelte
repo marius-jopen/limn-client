@@ -10,6 +10,9 @@
 
     $: user_id = $user?.id;
 
+    // Add state for selected image
+    let selectedImage = null;
+
     async function fetchUserImages() {
         try {
             const { data, error: supabaseError } = await supabase
@@ -67,6 +70,16 @@
             fetchUserImages();
         }
     }
+
+    // Function to handle image click
+    function handleImageClick(resource) {
+        selectedImage = resource;
+    }
+
+    // Function to close overlay
+    function closeOverlay() {
+        selectedImage = null;
+    }
 </script>
 
 {#if error}
@@ -80,7 +93,13 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-4">
                 {#each resources as resource}
-                    <div class="aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    <div 
+                        class="aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                        on:click={() => handleImageClick(resource)}
+                        on:keydown={(e) => e.key === 'Enter' && handleImageClick(resource)}
+                        role="button"
+                        tabindex="0"
+                    >
                         <img 
                             src={resource.image_url} 
                             alt={resource.name || 'User uploaded image'} 
@@ -90,6 +109,33 @@
                     </div>
                 {/each}
             </div>
+        </div>
+    </div>
+{/if}
+
+{#if selectedImage}
+    <div 
+        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+        on:click={closeOverlay}
+        on:keydown={(e) => e.key === 'Escape' && closeOverlay()}
+        role="button"
+        tabindex="0"
+    >
+        <div 
+            class="relative max-w-4xl max-h-[90vh]"
+            on:click|stopPropagation={() => {}}
+        >
+            <img 
+                src={selectedImage.image_url} 
+                alt={selectedImage.name || 'User uploaded image'} 
+                class="max-w-full max-h-[90vh] object-contain"
+            />
+            <button 
+                class="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
+                on:click={closeOverlay}
+            >
+                ✕
+            </button>
         </div>
     </div>
 {/if}
