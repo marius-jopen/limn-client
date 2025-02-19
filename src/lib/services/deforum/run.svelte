@@ -233,7 +233,7 @@
     }   
 </script>
 
-<div class="px-4 pb-8">
+<div class="px-4 pb-0">
     <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
         <h2>
             Generate Video
