@@ -11,3 +11,4 @@
 <ImagesByService service="comfyui" />
 <ImagesByService service="comfyui-flux" />
 <DeforumVideos service="deforum" />
+<ImagesByService service="deforum" />
