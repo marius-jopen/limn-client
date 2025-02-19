@@ -3,6 +3,22 @@
     export let images = [];
     export let label;
     export let id;
+    
+    // Add state for overlay
+    let showOverlay = false;
+    let selectedImage = '';
+
+    // Function to open overlay
+    function openOverlay(imageUrl) {
+        selectedImage = imageUrl;
+        showOverlay = true;
+    }
+
+    // Function to close overlay
+    function closeOverlay() {
+        showOverlay = false;
+        selectedImage = '';
+    }
 </script>
 
 {#if images.length > 0}
@@ -10,7 +26,11 @@
 
     <div class="space-y-4">
         {#each images as imageUrl}
-            <a target="_blank" href={imageUrl} class="flex items-center gap-4 p-2 bg-white rounded-lg border border-gray-300 rounded-lg">
+            <!-- Changed from <a> to <button> -->
+            <button 
+                on:click={() => openOverlay(imageUrl)} 
+                class="w-full text-left flex items-center gap-4 p-2 bg-white rounded-lg border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
                 <img 
                     src={imageUrl} 
                     alt="Thumbnail" 
@@ -26,7 +46,23 @@
                         {imageUrl}
                     </div>
                 </div>
-            </a>
+            </button>
         {/each}
     </div>
+
+    <!-- Add overlay -->
+    {#if showOverlay}
+        <div 
+            class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+            on:click={closeOverlay}
+        >
+            <div class="max-w-[90vw] max-h-[90vh]">
+                <img 
+                    src={selectedImage} 
+                    alt="Full size" 
+                    class="max-w-full max-h-[90vh] object-contain"
+                />
+            </div>
+        </div>
+    {/if}
 {/if} 

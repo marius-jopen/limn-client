@@ -8,4 +8,5 @@
 
 <ImagesByService service="a1111" />
 <ImagesByService service="comfyui" />
+<ImagesByService service="comfyui-flux" />
 <ImagesByService service="deforum" />

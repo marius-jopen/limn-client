@@ -21,7 +21,7 @@
 
     // Default prompt constants
     const DEFAULT_USER_PROMPT = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
-    const DEFAULT_NEGATIVE_PROMPT = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
+    const DEFAULT_NEGATIVE_PROMPT = "";
 
     // Initialize state
     let { status, error, result, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE;
@@ -29,19 +29,13 @@
     let negativePrompt = DEFAULT_NEGATIVE_PROMPT;
     let seed = 1;
     let steps = 20;
-    let cfg = 7;
-    let service = "comfyui"
+    let cfg = 1;
+    let service = "comfyui-flux"
     let workflow_name = "comfyui-test"
-    let selectedCheckpoint = "xl/Jugg_XI_by_RunDiffusion.safetensors"
-    let width = 1024;  // Add default width
-    let height = 1024; // Add default height
-    let batchSize = 1; // Add default batch size
-
-    const CHECKPOINT_OPTIONS = [
-        { value: "xl/sd_xl_base_1.0.safetensors", label: "SDXL Base 1.0" },
-        { value: "xl/Jugg_XI_by_RunDiffusion.safetensors", label: "Juggernaut XI" },
-        { value: "flux/flux1-dev.safetensors", label: "Flux 1 Dev" },
-    ];
+    let selectedCheckpoint = "flux/flux1-dev.safetensors"
+    let width = 1024;
+    let height = 1024;
+    let batchSize = 1;
 
     $: user_id = $user?.id;
 
@@ -175,12 +169,6 @@
             bind:value={userPrompt}
         />
 
-        <InputPrompt
-            id="negative-prompt1"
-            label="Negative prompt 1"
-            bind:value={negativePrompt}
-        />
-
         <InputNumber
             id="seed"
             label="Seed (-1 for random)"
@@ -216,19 +204,6 @@
             label="Batch Size"
             bind:value={batchSize}
         />
-
-        <div class="flex flex-col gap-2">
-            <label for="checkpoint" class="text-sm font-medium text-gray-700">Checkpoint Model</label>
-            <select
-                id="checkpoint"
-                bind:value={selectedCheckpoint}
-                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-            >
-                {#each CHECKPOINT_OPTIONS as option}
-                    <option value={option.value}>{option.label}</option>
-                {/each}
-            </select>
-        </div>
 
         <Button
             onClick={runWorkflow}

@@ -323,13 +323,6 @@
             </div>
 
             <div class="contents">
-                <div class="font-medium p-3 border-b border-gray-200">Execution Time:</div>
-                <div class="p-3 border-b border-gray-200">
-                    {runpodStatus?.executionTime !== undefined ? `${runpodStatus.executionTime}ms` : 'No execution time available'}
-                </div>
-            </div>
-
-            <div class="contents">
                 <div class="font-medium p-3 border-b border-gray-200">Endpoint ID:</div>
                 <div class="p-3 border-b border-gray-200">
                     {runpodStatus?.endpointId || 'No endpoint ID available'}

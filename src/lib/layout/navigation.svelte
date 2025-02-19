@@ -10,6 +10,7 @@
         {#if $user}
             <a href="/dashboard">Dashboard</a>
             <a href="/testing/comfyui">ComfyUI</a>
+            <a href="/testing/comfyui-flux">ComfyUI Flux</a>
             <a href="/testing/a1111">A1111</a>
             <a href="/testing/deforum">Deforum</a>
             <a href="/testing/output">Output</a>
