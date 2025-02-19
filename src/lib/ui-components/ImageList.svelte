@@ -19,14 +19,24 @@
         showOverlay = false;
         selectedImage = '';
     }
+
+    // Helper function to get image URL from image object or string
+    function getImageUrl(image) {
+        return typeof image === 'object' ? image.url : image;
+    }
+
+    // Helper function to get image filename
+    function getImageFilename(imageUrl) {
+        return imageUrl.split('/').pop().split('?')[0];
+    }
 </script>
 
 {#if images.length > 0}
     <Label for_id={id} {label} />
 
     <div class="space-y-4">
-        {#each images as imageUrl}
-            <!-- Changed from <a> to <button> -->
+        {#each images as image}
+            {@const imageUrl = getImageUrl(image)}
             <button 
                 on:click={() => openOverlay(imageUrl)} 
                 class="w-full text-left flex items-center gap-4 p-2 bg-white rounded-lg border border-gray-300 rounded-lg hover:bg-gray-50"
@@ -39,7 +49,7 @@
                 
                 <div class="flex flex-col">
                     <span class="text-gray-600 pb-2">
-                        {imageUrl.split('/').pop().split('?')[0]}
+                        {getImageFilename(imageUrl)}
                     </span>
 
                     <div class="text-xs text-gray-400 break-all">

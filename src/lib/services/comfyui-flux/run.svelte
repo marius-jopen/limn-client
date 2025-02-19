@@ -5,9 +5,9 @@
     import InputPrompt from '../../ui-components/InputPrompt.svelte';
     import InputNumber from '../../ui-components/InputNumber.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';
-    import ImageDisplay from '../../ui-components/ImageDisplay.svelte';
     import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';
-
+    import ImageList from '../../ui-components/ImageList.svelte';
+    
     // Group related state variables
     const INITIAL_STATE = {
         status: 'Idle',
@@ -15,6 +15,7 @@
         result: null,
         jobId: null,
         imageUrl: null,
+        images: [],
         runpodStatus: null,
         logs: []
     };
@@ -24,7 +25,7 @@
     const DEFAULT_NEGATIVE_PROMPT = "";
 
     // Initialize state
-    let { status, error, result, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE;
+    let { status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE;
     let userPrompt = DEFAULT_USER_PROMPT;
     let negativePrompt = DEFAULT_NEGATIVE_PROMPT;
     let seed = 1;
@@ -48,7 +49,7 @@
 
     // Helper functions
     function resetState() {
-        ({ status, error, result, jobId, imageUrl, runpodStatus, logs } = INITIAL_STATE);
+        ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
     }
 
     // Workflow preparation function
@@ -135,7 +136,8 @@
                 
                 if (data.status === 'COMPLETED') {
                     result = data;
-                    imageUrl = data.output?.[0]?.images?.[0]?.url;
+                    images = data.output?.[0]?.images || [];
+                    imageUrl = images[0]?.url;
                     status = 'Completed';
                     return;
                 }
@@ -279,6 +281,6 @@
             Output
         </h2>
 
-        <ImageDisplay id="image-display" label="Generated Image" {imageUrl} />
+        <ImageList id="image-list" label="Generated Images" {images} />
     </div>
 </div>

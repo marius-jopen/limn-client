@@ -45,13 +45,23 @@
         
         // Create workflow with variables
         const workflowCopy = JSON.parse(JSON.stringify(DEFAULT_WORKFLOW));
-        const stringified = JSON.stringify(workflowCopy)
-            .replace('${INPUT_PROMPT_1}', positivePrompt1)
-            .replace('${INPUT_PROMPT_2}', positivePrompt2)
-            .replace('${INPUT_NEGATIVEPROMPT_1}', negativePrompt1)
-            .replace('${INPUT_NEGATIVEPROMPT_2}', negativePrompt2)
-            .replace('${SEED}', actualSeed.toString())
-            .replace('${BATCH_NAME}', batchName);
+        
+        // Sanitize input strings to prevent JSON parsing issues
+        const sanitizeString = (str) => str.replace(/[\n\r\t\b\f\v]/g, ' ').trim();
+        
+        const replacements = {
+            '${INPUT_PROMPT_1}': sanitizeString(positivePrompt1),
+            '${INPUT_PROMPT_2}': sanitizeString(positivePrompt2),
+            '${INPUT_NEGATIVEPROMPT_1}': sanitizeString(negativePrompt1),
+            '${INPUT_NEGATIVEPROMPT_2}': sanitizeString(negativePrompt2),
+            '${SEED}': actualSeed.toString(),
+            '${BATCH_NAME}': batchName
+        };
+        
+        let stringified = JSON.stringify(workflowCopy);
+        for (const [key, value] of Object.entries(replacements)) {
+            stringified = stringified.replace(key, value);
+        }
         
         return JSON.parse(stringified);
     }
