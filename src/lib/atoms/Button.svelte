@@ -1,17 +1,23 @@
-<script>
+<script lang="ts">
+    import type { ComponentType } from 'svelte';
+
+    // Define valid variants and sizes
+    type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'warning';
+    type ButtonSize = 'sm' | 'md' | 'lg';
+
     // Core functionality
-    export let onClick = () => {};
-    export let disabled = false;
-    export let type = "button";
+    export let onClick: () => void = () => {};
+    export let disabled: boolean = false;
+    export let type: 'button' | 'submit' | 'reset' = "button";
 
     // Content
-    export let label = "Monitor";
-    export let icon = null; // Optional icon component
+    export let label: string = "Monitor";
+    export let icon: ComponentType | null = null; // Optional icon component
 
     // Styling
-    export let variant = "primary"; // primary, secondary, danger, success, warning
-    export let size = "md"; // sm, md, lg
-    export let fullWidth = false;
+    export let variant: ButtonVariant = "primary";
+    export let size: ButtonSize = "md";
+    export let fullWidth: boolean = false;
 
     // Dynamic classes based on props
     const variantClasses = {

@@ -1,6 +1,6 @@
-<script>
-    export let for_id = '';
-    export let label = '';
+<script lang="ts">
+    export let for_id: string = '';
+    export let label: string = '';
 </script>
 
 {#if label}

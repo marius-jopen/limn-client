@@ -2,7 +2,7 @@
     import { user } from './helper/store-supabase';
     import { supabase } from './helper/supabaseClient';
     import { onDestroy } from 'svelte';
-    import { runState } from '../runpod/helper/store-run.js';  // Import the store
+    import { runState } from '../runpod/helper/StoreRun.js';  // Import the store
     
     export let workflow_name;
     

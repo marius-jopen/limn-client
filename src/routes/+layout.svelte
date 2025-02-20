@@ -1,6 +1,6 @@
 <script lang="ts">
     import "../app.css";
-    import Navigation from '$lib/layout/navigation.svelte';
+    import Navigation from '$lib/layout/Navigation.svelte';
     import { onMount } from 'svelte';
     import { supabase } from '$lib/supabase/helper/supabaseClient';
     import { initializeAuth } from '$lib/supabase/helper/store-supabase';

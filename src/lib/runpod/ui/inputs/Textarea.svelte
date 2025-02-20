@@ -1,6 +1,6 @@
 <script>
     import Label from "../../../atoms/Label.svelte";
-    import Textarea from "../../../atoms/Textarea.svelte";
+    import Textarea from "../../../atoms/InputTextarea.svelte";
 
     export let label = "";
     export let value = "";

@@ -1,8 +1,8 @@
-<script>
-    export let id = '';
-    export let value = '';
-    export let placeholder = '';
-    export let disabled = false;
+<script lang="ts">
+    export let id: string = '';
+    export let value: string = '';
+    export let placeholder: string = '';
+    export let disabled: boolean = false;
 </script>
 
 <input

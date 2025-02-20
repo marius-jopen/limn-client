@@ -5,6 +5,7 @@
  * @param {Object} values - Object containing the current values for UI fields
  * @returns {Object} - The prepared workflow with replaced values
  */
+
 export function prepareWorkflow(workflow, uiConfig, values) {
     let workflowStr = JSON.stringify(workflow);
 

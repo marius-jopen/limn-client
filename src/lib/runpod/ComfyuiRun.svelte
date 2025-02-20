@@ -1,16 +1,50 @@
-<script>
-    import { user } from '../supabase/helper/store-supabase';
-    import DEFAULT_WORKFLOW from '../workflows/comfyui/comfyui-test.json';
-    import Button from '../atoms/Button.svelte';
-    import RunUI from './ui/RunUi.svelte';
-    import JsonViewer from './ui/JsonViewer.svelte';
-    import AdvancedLogViewer from './ui/AdvancedLogViewer.svelte';   
-    import ImageList from './ui/LiveImageList.svelte';
-    import StatusGrid from './ui/StatusGrid.svelte';
-    import { prepareWorkflow } from './helper/prepareWorkflow';
-    import { runState } from './helper/store-run.js';
+<script lang="ts">
+    import { user } from '$lib/supabase/helper/store-supabase';
+    import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow';
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import Button from '$lib/atoms/Button.svelte';
+    import RunUI from '$lib/runpod/ui/RunUi.svelte';
 
-    const INITIAL_STATE = {
+    interface UIConfigField {
+        id: string;
+        type: string;
+        default: string | number;
+        label?: string;
+    }
+
+    interface RunpodStatus {
+        status: 'IN_QUEUE' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+        delayTime?: number;
+        endpointId?: string;
+        workerId?: string;
+        logs?: string[];
+        error?: any;
+        output?: Array<{
+            images: Array<{
+                url: string;
+                [key: string]: any;
+            }>;
+        }>;
+    }
+
+    interface StatusField {
+        label: string;
+        value: string;
+        isLast?: boolean;
+    }
+
+    interface InitialState {
+        status: string;
+        error: string | null;
+        result: RunpodStatus | null;
+        jobId: string | null;
+        imageUrl: string | null;
+        images: Array<{ url: string; [key: string]: any }>;
+        runpodStatus: RunpodStatus | null;
+        logs: string[];
+    }
+
+    const INITIAL_STATE: InitialState = {
         status: 'Idle',
         error: null,
         result: null,
@@ -28,11 +62,11 @@
     };
 
     let { status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE;
-    export let service;
-    export let workflow_name;
-    export let ui_config = [];
+    export let service: string;
+    export let workflow_name: string;
+    export let ui_config: UIConfigField[] = [];
     
-    let values = Object.fromEntries(ui_config.map(field => [field.id, field.default]));
+    let values: Record<string, string | number> = Object.fromEntries(ui_config.map(field => [field.id, field.default]));
     
     $: user_id = $user?.id;
 
@@ -45,12 +79,7 @@
         { label: 'Delay Time', value: runpodStatus?.delayTime !== undefined ? `${runpodStatus.delayTime}ms` : 'No delay time available' },
         { label: 'Endpoint ID', value: runpodStatus?.endpointId || 'No endpoint ID available' },
         { label: 'Worker ID', value: runpodStatus?.workerId || 'No worker ID available', isLast: true }
-    ];
-
-    export let showStatus = true;
-    export let showLogs = true;
-    export let showJson = true;
-    export let showImages = true;
+    ] as StatusField[];
 
     // Update the store whenever the state changes
     $: {
@@ -75,7 +104,7 @@
         });
         
         try {
-            const workflowWithPrompt = prepareWorkflow(DEFAULT_WORKFLOW, ui_config, values);
+            const workflowWithPrompt = prepareWorkflow(workflow, ui_config, values);
 
             const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
                 method: 'POST',
@@ -154,20 +183,4 @@
 <div>
     <RunUI UI={ui_config} bind:values />
     <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
-    
-    {#if showStatus}
-        <StatusGrid fields={statusFields} />
-    {/if}
-    
-    {#if showLogs}
-        <AdvancedLogViewer {logs} {status} {runpodStatus} />
-    {/if}
-    
-    {#if showJson}
-        <JsonViewer label="Complete Response" data={runpodStatus} />
-    {/if}
-    
-    {#if showImages}
-        <ImageList id="image-list" label="Generated Images" {images} />
-    {/if}
 </div>

@@ -1,6 +1,6 @@
-<script>
-    export let id = "";
-    export let value = "";
+<script lang="ts">
+    export let id: string = "";
+    export let value: string = "";
 </script>
 
 <textarea
