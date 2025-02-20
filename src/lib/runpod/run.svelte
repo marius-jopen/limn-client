@@ -9,6 +9,7 @@
     import ImageList from '../ui-components/ImageList.svelte';
     import StatusGrid from '../ui-components/StatusGrid.svelte';
     import { prepareWorkflow } from './helper/prepareWorkflow';
+    import { runState } from './stores.js';
 
     const INITIAL_STATE = {
         status: 'Idle',
@@ -45,6 +46,22 @@
         { label: 'Endpoint ID', value: runpodStatus?.endpointId || 'No endpoint ID available' },
         { label: 'Worker ID', value: runpodStatus?.workerId || 'No worker ID available', isLast: true }
     ];
+
+    export let showStatus = true;
+    export let showLogs = true;
+    export let showJson = true;
+    export let showImages = true;
+
+    // Update the store whenever the state changes
+    $: {
+        runState.set({
+            statusFields,
+            logs,
+            status,
+            runpodStatus,
+            images
+        });
+    }
 
     async function runWorkflow() {
         ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
@@ -136,7 +153,19 @@
 
 <RunUI UI={UI_CONFIG} bind:values />
 <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
-<StatusGrid fields={statusFields} />
-<AdvancedLogViewer {logs} {status} {runpodStatus} />
-<JsonViewer label="Complete Response" data={runpodStatus} />
-<ImageList id="image-list" label="Generated Images" {images} />
+
+{#if showStatus}
+    <StatusGrid fields={statusFields} />
+{/if}
+
+{#if showLogs}
+    <AdvancedLogViewer {logs} {status} {runpodStatus} />
+{/if}
+
+{#if showJson}
+    <JsonViewer label="Complete Response" data={runpodStatus} />
+{/if}
+
+{#if showImages}
+    <ImageList id="image-list" label="Generated Images" {images} />
+{/if}

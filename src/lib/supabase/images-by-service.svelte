@@ -2,16 +2,27 @@
     import { user } from '../stores/auth';
     import { supabase } from '../supabase/supabaseClient';
     import { onDestroy } from 'svelte';
+    import { runState } from '../runpod/stores.js';  // Import the store
     
     export let service;
     
     let resources = [];
     let error = null;
+    let currentImages = [];
 
     $: user_id = $user?.id;
 
     // Add state for selected image
     let selectedImage = null;
+
+    // Subscribe to runState to watch for new images
+    runState.subscribe(state => {
+        if (state.images?.length && state.images !== currentImages) {
+            currentImages = state.images;
+            // Fetch updated images when new ones are generated
+            fetchUserImages();
+        }
+    });
 
     async function fetchUserImages() {
         try {
