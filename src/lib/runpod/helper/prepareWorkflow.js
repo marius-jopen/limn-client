@@ -7,20 +7,44 @@
  */
 
 export function prepareWorkflow(workflow, uiConfig, values) {
+    // Convert the workflow settings to string for replacement
     let workflowStr = JSON.stringify(workflow);
+    console.log('Initial values:', values);
 
     uiConfig.forEach(field => {
-        const value = field.type === 'int' 
-            ? (field.id === 'seed' && values[field.id] === -1 
+        const placeholder = field.placeholder;
+        
+        if (field.type === 'int' || field.type === 'number') {
+            // Handle numeric values
+            const value = field.id === 'seed' && values[field.id] === -1 
                 ? Math.floor(Math.random() * 1000000000) 
-                : values[field.id])
-            : JSON.stringify(values[field.id]);
-
-        workflowStr = workflowStr.replace(
-            `"${field.placeholder}"`, 
-            field.type === 'int' ? value : value
-        );
+                : Number(values[field.id]);
+            
+            console.log(`Replacing ${placeholder} with number ${value}`);
+            workflowStr = workflowStr.replace(`"${placeholder}"`, value);
+        } else {
+            // Handle string values
+            const value = values[field.id].toString()
+                .replace(/\\/g, '\\\\')    // Escape backslashes
+                .replace(/"/g, '\\"');      // Escape quotes
+            
+            console.log(`Replacing ${placeholder} with string "${value}"`);
+            workflowStr = workflowStr.replace(placeholder, value);
+        }
+        
+        // Debug: check if replacement worked
+        if (workflowStr.includes(placeholder)) {
+            console.warn(`Warning: ${placeholder} was not fully replaced!`);
+        }
     });
 
-    return JSON.parse(workflowStr);
+    console.log('Final workflow string:', workflowStr);
+
+    try {
+        return JSON.parse(workflowStr);
+    } catch (error) {
+        console.error('JSON parsing error:', error);
+        console.log('Generated workflow string:', workflowStr);
+        throw error;
+    }
 }

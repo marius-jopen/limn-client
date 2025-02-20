@@ -43,7 +43,7 @@
 </script>
 
 {#if logs.length > 0}
-    <div class="mt-4">
+    <div class="mt-4 w-full">
         <Label for_id={id} {label} />
         
         <div 

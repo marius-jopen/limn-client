@@ -1,7 +1,7 @@
 <script lang="ts">
     import { user } from '$lib/supabase/helper/StoreSupabase';
-    import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow.js';
     import Button from '$lib/atoms/Button.svelte';
     import InputRepeater from '$lib/runpod/ui/InputRepeater.svelte';
 
@@ -68,8 +68,7 @@
     export let ui_config: UIConfigField[] = [];
     
     let values: Record<string, string | number> = {
-        ...Object.fromEntries(ui_config.map(field => [field.id, field.default])),
-        seed: -1
+        ...Object.fromEntries(ui_config.map(field => [field.id, field.default]))
     };
     
     $: user_id = $user?.id;
@@ -99,9 +98,7 @@
     async function runWorkflow() {
         // Generate actual seed if needed
         const date = new Date();
-        const batchName = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}${date.getSeconds().toString().padStart(2,'0')}`;
-        const actualSeed = values.seed === -1 ? Math.floor(Math.random() * 1000000000) : Number(values.seed);
-        values.seed = actualSeed;
+        const dateStr = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}${date.getSeconds().toString().padStart(2,'0')}`;
 
         ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
         status = 'Starting...';
@@ -113,22 +110,14 @@
         }
 
         try {
-            // Create a deep copy of the workflow to avoid modifying the original
-            let workflowCopy = JSON.parse(JSON.stringify(workflow));
+            // Create a deep copy of the workflow and replace BATCH_NAME
+            let workflowCopy = JSON.parse(
+                JSON.stringify(workflow).replace('${BATCH_NAME}', dateStr)
+            );
 
-            // Replace all ${PLACEHOLDER} values in the workflow
-            const workflowStr = JSON.stringify(workflowCopy);
-            const dateStr = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}${date.getSeconds().toString().padStart(2,'0')}`;
-            // First replace BATCH_NAME
-            let replacedStr = workflowStr.replace('${BATCH_NAME}', dateStr);
-            
-            // Then replace all other ${} values from the config
-            replacedStr = replacedStr.replace(/\${([^}]+)}/g, (match, placeholder) => {
-                const key = placeholder.toLowerCase();
-                return values[key] !== undefined ? values[key] : match;
-            });
-
-            const workflowWithPrompt = JSON.parse(replacedStr);
+            // Use the imported prepareWorkflow function
+            const workflowWithPrompt = prepareWorkflow(workflowCopy, ui_config, values);
+            console.log('Workflow with prompt:', workflowWithPrompt);
 
             const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
                 method: 'POST',

@@ -17,7 +17,7 @@
 </script>
 
 {#if data}
-    <div class="flex flex-col gap-1">
+    <div class="w-full mt-4">
         <Label for_id={id} {label} />
 
         <pre

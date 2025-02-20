@@ -1,7 +1,7 @@
 {
     "deforum_settings": {
-        "W": 1024,
-        "H": 1024,
+        "W": "${W}",
+        "H": "${H}",
         "show_info_on_ui": true,
         "tiling": false,
         "restore_faces": false,
@@ -9,7 +9,7 @@
         "seed_resize_from_h": 0,
         "seed": "${SEED}",
         "sampler": "Euler a",
-        "steps": 25,
+        "steps": "${STEPS}",
         "batch_name": "${BATCH_NAME}",
         "seed_behavior": "iter",
         "seed_iter_N": 1,
@@ -38,7 +38,7 @@
         "positive_prompts": "",
         "negative_prompts": "",
         "animation_mode": "3D",
-        "max_frames": 10,
+        "max_frames": "${MAX_FRAMES}",
         "border": "replicate",
         "angle": "0: (0)",
         "zoom": "0: (1.0025+0.002*sin(1.25*3.14*t/30))",

@@ -45,8 +45,12 @@
     </div>
 
     <StatusTable fields={statusFields} />
-    <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
-    <JsonViewer label="Complete Response" data={runpodStatus} />
-    <GalleryImages workflow_name="a1111-test" />
+    
+    <div class="flex gap-4 flex-col md:flex-row">
+        <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
+        <JsonViewer label="Complete Response" data={runpodStatus} />
+    </div>
+    
     <HealthCheck service="a1111" />
+    <GalleryImages workflow_name="a1111-test" />
 </div>

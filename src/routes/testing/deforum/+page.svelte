@@ -46,9 +46,13 @@
     </div>
 
     <StatusTable fields={statusFields} />
-    <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
-    <JsonViewer label="Complete Response" data={runpodStatus} />
+    
+    <div class="flex gap-4 flex-col md:flex-row">
+        <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
+        <JsonViewer label="Complete Response" data={runpodStatus} />
+    </div>
+
+    <HealthCheck service="deforum" />
     <GalleryDeforumVideos workflow_name="deforum-test" />
     <GalleryImages workflow_name="deforum-test" />
-    <HealthCheck service="deforum" />
 </div>

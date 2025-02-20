@@ -7,6 +7,34 @@
         "default": 1
     },
     {
+        "id": "w",
+        "type": "int",
+        "placeholder": "${W}",
+        "label": "Width",
+        "default": 1024
+    },
+    {
+        "id": "h",
+        "type": "int",
+        "placeholder": "${H}",
+        "label": "Height",
+        "default": 1024
+    },
+    {
+        "id": "max_frames",
+        "type": "int",
+        "placeholder": "${MAX_FRAMES}",
+        "label": "Max Frames",
+        "default": 10
+    },
+    {
+        "id": "steps",
+        "type": "int",
+        "placeholder": "${STEPS}",
+        "label": "Steps",
+        "default": 20
+    },
+    {
         "id": "input_prompt_1",
         "type": "string",
         "placeholder": "${INPUT_PROMPT_1}",
