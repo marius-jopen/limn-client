@@ -1,62 +1,16 @@
 [
     {
-        "id": "seed",
-        "type": "int",
-        "placeholder": "${SEED}",
-        "label": "Seed (-1 for random)",
-        "default": 1
-    },
-    {
-        "id": "steps",
-        "type": "int",
-        "placeholder": "${STEPS}",
-        "label": "Steps",
-        "default": 20
-    },
-    {
-        "id": "cfg",
-        "type": "int",
-        "placeholder": "${CFG}",
-        "label": "CFG",
-        "default": 1
-    },
-    {
-        "id": "width",
-        "type": "int",
-        "placeholder": "${WIDTH}",
-        "label": "Width",
-        "default": 1024
-    },
-    {
-        "id": "height",
-        "type": "int",
-        "placeholder": "${HEIGHT}",
-        "label": "Height",
-        "default": 1024
-    },
-    {
-        "id": "batchSize",
-        "type": "int",
-        "placeholder": "${BATCH_SIZE}",
-        "label": "Batch Size",
-        "default": 1
-    },
-    {
-        "id": "selectedCheckpoint",
-        "type": "select",
-        "placeholder": "${CKPT_NAME}",
-        "label": "Checkpoint Model",
-        "default": "flux/flux1-dev.safetensors",
-        "hidden": true,
-        "options": [
-            { "value": "flux/flux1-dev.safetensors", "label": "Flux 1 Dev" }
-        ]
-    },
-    {
-        "id": "userPrompt",
+        "id": "prompt",
         "type": "string",
-        "placeholder": "${INPUT_PROMPT}",
-        "label": "Prompt 1",
+        "placeholder": "${PROMPT}",
+        "label": "Prompt",
         "default": "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover"
+    },
+    {
+        "id": "negative_prompt",
+        "type": "string",
+        "placeholder": "${NEGATIVE_PROMPT}",
+        "label": "Negative Prompt",
+        "default": "bad quality, worst quality, low quality"
     }
 ]

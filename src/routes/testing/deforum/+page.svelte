@@ -9,7 +9,7 @@
     import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
     import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
-    import ImageList from '$lib/runpod/ui/LiveImageList.svelte';
+    import PreviewDeforum from '$lib/runpod/ui/PreviewDeforum.svelte';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
 
     let statusFields, logs, status, runpodStatus;
@@ -41,14 +41,14 @@
         </div>
         
         <div class="md:w-1/2">
-            <ImageList {images} />
+            <PreviewDeforum {images} />
         </div>
     </div>
 
     <StatusTable fields={statusFields} />
     <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
     <JsonViewer label="Complete Response" data={runpodStatus} />
-    <GalleryDeforumVideos service="deforum" />
-    <GalleryImages workflow_name="deforum" />
+    <GalleryDeforumVideos workflow_name="deforum-test" />
+    <GalleryImages workflow_name="deforum-test" />
     <HealthCheck service="deforum" />
 </div>

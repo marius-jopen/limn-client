@@ -39,7 +39,8 @@
                 .from('resource')
                 .select('*')
                 .eq('user_id', user_id)
-                .eq('workflow_name', workflow_name);
+                .eq('workflow_name', workflow_name)
+                .order('created_at', { ascending: false });
 
             if (supabaseError) throw supabaseError;
             resources = data;

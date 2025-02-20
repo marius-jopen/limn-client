@@ -8,7 +8,7 @@
     import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
     import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
-    import ImageList from '$lib/runpod/ui/LiveImageList.svelte';
+    import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
 
     let statusFields, logs, status, runpodStatus, images;
@@ -37,7 +37,7 @@
         </div>
         
         <div class="md:w-1/2">
-            <ImageList {images} />
+            <PreviewImages {images} />
         </div>
     </div>
 

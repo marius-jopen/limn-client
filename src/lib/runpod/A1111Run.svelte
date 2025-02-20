@@ -10,6 +10,7 @@
         type: string;
         default: string | number;
         label?: string;
+        placeholder: string;
     }
 
     interface RunpodStatus {
@@ -103,10 +104,6 @@
             return;
         }
 
-        console.log('Debug - workflow:', workflow);
-        console.log('Debug - ui_config:', ui_config);
-        console.log('Debug - values:', values);
-
         // Reset any empty string values to their defaults
         ui_config.forEach(field => {
             if (field.type === 'string' && !values[field.id]?.trim()) {
@@ -116,8 +113,8 @@
         
         try {
             const workflowWithPrompt = prepareWorkflow(workflow, ui_config, values);
-
-            const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
+                        
+            const response = await fetch(`http://localhost:4000/api/${service}-runpod-serverless-run`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -128,7 +125,10 @@
                 })
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
 
             const data = await response.json();
             jobId = data.data.id;
@@ -138,19 +138,23 @@
             error = err.message;
             status = 'Error';
             result = null;
+            console.error('Workflow execution error:', err);
         }
     }
 
     async function pollJob(id) {
         for (let attempt = 0; attempt < POLL_CONFIG.maxAttempts; attempt++) {
             try {
-                const response = await fetch(`http://localhost:4000/api/comfyui-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`, {
-                    headers: {
-                        'user-id': user_id,
-                        'service': service,
-                        'workflow': workflow_name
+                const response = await fetch(
+                    `http://localhost:4000/api/${service}-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`,
+                    {
+                        headers: {
+                            'user-id': user_id,
+                            'service': service,
+                            'workflow': workflow_name
+                        }
                     }
-                });
+                );
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
@@ -168,14 +172,15 @@
                 
                 if (data.status === 'COMPLETED') {
                     result = data;
-                    images = data.output?.[0]?.images || [];
-                    imageUrl = images[0]?.url;
+                    imageUrl = data.output?.[1]?.images?.[0]?.url;
+                    images = data.output?.[1]?.images || [];
                     status = 'Completed';
                     return;
                 }
                 
                 if (data.status === 'FAILED') {
-                    throw new Error(`Job failed: ${JSON.stringify(data.error)}`);
+                    const errorMessage = typeof data.error === 'string' ? data.error : JSON.stringify(data.error);
+                    throw new Error(`Job failed: ${errorMessage}`);
                 }
 
                 status = data.status === 'IN_QUEUE' ? 'Queued' : 'Processing';
@@ -183,11 +188,16 @@
             } catch (err) {
                 error = err.message;
                 status = 'Error';
+                result = null;
+                runpodStatus = { status: 'FAILED', error: err.message };
                 return;
             }
         }
 
-        throw new Error('Timeout waiting for job completion');
+        error = 'Timeout waiting for job completion';
+        status = 'Error';
+        result = null;
+        runpodStatus = { status: 'FAILED', error: 'Timeout waiting for job completion' };
     }
 </script>
 

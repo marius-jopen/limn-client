@@ -67,7 +67,10 @@
     export let workflow = {};
     export let ui_config: UIConfigField[] = [];
     
-    let values: Record<string, string | number> = Object.fromEntries(ui_config.map(field => [field.id, field.default]));
+    let values: Record<string, string | number> = {
+        ...Object.fromEntries(ui_config.map(field => [field.id, field.default])),
+        seed: -1
+    };
     
     $: user_id = $user?.id;
 
@@ -94,6 +97,12 @@
     }
 
     async function runWorkflow() {
+        // Generate actual seed if needed
+        const date = new Date();
+        const batchName = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}${date.getSeconds().toString().padStart(2,'0')}`;
+        const actualSeed = values.seed === -1 ? Math.floor(Math.random() * 1000000000) : Number(values.seed);
+        values.seed = actualSeed;
+
         ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
         status = 'Starting...';
 
@@ -103,23 +112,33 @@
             return;
         }
 
-        console.log('Debug - workflow:', workflow);
-        console.log('Debug - ui_config:', ui_config);
-        console.log('Debug - values:', values);
-
-        // Reset any empty string values to their defaults
-        ui_config.forEach(field => {
-            if (field.type === 'string' && !values[field.id]?.trim()) {
-                values[field.id] = field.default;
-            }
-        });
-        
         try {
-            const workflowWithPrompt = prepareWorkflow(workflow, ui_config, values);
+            // Create a deep copy of the workflow to avoid modifying the original
+            let workflowCopy = JSON.parse(JSON.stringify(workflow));
+
+            // Replace all ${PLACEHOLDER} values in the workflow
+            const workflowStr = JSON.stringify(workflowCopy);
+            const dateStr = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}${date.getSeconds().toString().padStart(2,'0')}`;
+            // First replace BATCH_NAME
+            let replacedStr = workflowStr.replace('${BATCH_NAME}', dateStr);
+            
+            // Then replace all other ${} values from the config
+            replacedStr = replacedStr.replace(/\${([^}]+)}/g, (match, placeholder) => {
+                const key = placeholder.toLowerCase();
+                return values[key] !== undefined ? values[key] : match;
+            });
+
+            const workflowWithPrompt = JSON.parse(replacedStr);
 
             const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'user-id': user_id,
+                    'service': service,
+                    'workflow': workflow_name,
+                    'batch-name': dateStr
+                },
                 body: JSON.stringify({ 
                     input: { 
                         workflow: workflowWithPrompt,
@@ -133,7 +152,7 @@
             const data = await response.json();
             jobId = data.data.id;
             
-            await pollJob(jobId);
+            await streamJob(jobId);
         } catch (err) {
             error = err.message;
             status = 'Error';
@@ -141,53 +160,145 @@
         }
     }
 
-    async function pollJob(id) {
-        for (let attempt = 0; attempt < POLL_CONFIG.maxAttempts; attempt++) {
-            try {
-                const response = await fetch(`http://localhost:4000/api/comfyui-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`, {
-                    headers: {
-                        'user-id': user_id,
-                        'service': service,
-                        'workflow': workflow_name
-                    }
-                });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                const data = await response.json();
-                runpodStatus = data;
-                
-                if (data.logs?.length > 0) {
-                    const newLogs = data.logs.filter(log => !logs.includes(log));
-                    if (newLogs.length > 0) {
-                        logs = [...logs, ...newLogs];
-                        queueMicrotask(() => {
-                            document.querySelector('.log-container')?.scrollTo(0, Number.MAX_SAFE_INTEGER);
-                        });
-                    }
-                }
-                
-                if (data.status === 'COMPLETED') {
-                    result = data;
-                    images = data.output?.[0]?.images || [];
-                    imageUrl = images[0]?.url;
-                    status = 'Completed';
-                    return;
-                }
-                
-                if (data.status === 'FAILED') {
-                    throw new Error(`Job failed: ${JSON.stringify(data.error)}`);
-                }
+    async function streamJob(id) {
+        try {
+            const eventSource = new EventSource(
+                `http://localhost:4000/api/${service}-runpod-serverless-stream/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`
+            );
 
-                status = data.status === 'IN_QUEUE' ? 'Queued' : 'Processing';
-                await new Promise(resolve => setTimeout(resolve, POLL_CONFIG.interval));
-            } catch (err) {
-                error = err.message;
-                status = 'Error';
-                return;
-            }
+            return new Promise((resolve, reject) => {
+                eventSource.onmessage = (event) => {
+                    try {
+                        const jsonStr = event.data.replace(/^data: /, '');
+                        const data = JSON.parse(jsonStr);
+                        console.log('Received data:', data); // Debug log
+                        
+                        // Handle error first
+                        if (data.error) {
+                            const errorLogEntry = {
+                                type: 'error',
+                                timestamp: new Date().toISOString(),
+                                level: 'ERROR',
+                                message: `Job failed: ${JSON.stringify(data.error)}`
+                            };
+                            console.error('Error log entry:', errorLogEntry);
+                            logs = [...logs, errorLogEntry];
+                            status = 'Error';
+                            error = JSON.stringify(data.error);
+                            eventSource.close();
+                            reject(new Error(data.error));
+                            return;
+                        }
+
+                        // Rest of the existing message handling...
+                        if (data.status) {
+                            status = data.status === 'IN_PROGRESS' ? 'Running...' : data.status;
+                        }
+
+                        // Add a status log entry
+                        const statusLogEntry = {
+                            type: 'worker',
+                            timestamp: new Date().toISOString(),
+                            level: 'INFO',
+                            message: `Status: ${status}`
+                        };
+                        logs = [...logs, statusLogEntry];
+
+                        runpodStatus = data;
+
+                        // Handle stream data and logs
+                        if (data.stream && Array.isArray(data.stream)) {
+                            data.stream.forEach(streamItem => {
+                                if (streamItem.output?.log) {
+                                    const logEntry = {
+                                        type: 'worker',
+                                        timestamp: new Date().toISOString(),
+                                        level: 'INFO',
+                                        message: streamItem.output.log
+                                    };
+                                    console.log('Adding log entry:', logEntry); // Debug log
+                                    logs = [...logs, logEntry];
+                                }
+                            });
+                        }
+
+                        // Handle images
+                        if (data.stream && Array.isArray(data.stream)) {
+                            data.stream.forEach(streamItem => {
+                                if (streamItem.output?.images && Array.isArray(streamItem.output.images)) {
+                                    const newImages = streamItem.output.images.filter(img => !images.some(existing => existing.url === img.url));
+                                    if (newImages.length > 0) {
+                                        images = [...images, ...newImages];
+                                        // Add log entries for new images
+                                        newImages.forEach(image => {
+                                            const imageLogEntry = {
+                                                type: 'worker',
+                                                timestamp: new Date().toISOString(),
+                                                level: 'INFO',
+                                                message: `Generated new image: ${image.url}`
+                                            };
+                                            console.log('Adding image log entry:', imageLogEntry); // Debug log
+                                            logs = [...logs, imageLogEntry];
+                                        });
+                                    }
+                                }
+                            });
+                        }
+
+                        // Check for completion
+                        if (data.status === 'COMPLETED' || data.status === 'FAILED') {
+                            const completionLogEntry = {
+                                type: data.status === 'COMPLETED' ? 'worker' : 'error',
+                                timestamp: new Date().toISOString(),
+                                level: data.status === 'COMPLETED' ? 'INFO' : 'ERROR',
+                                message: `Job ${data.status.toLowerCase()}`
+                            };
+                            console.log('Adding completion log entry:', completionLogEntry); // Debug log
+                            logs = [...logs, completionLogEntry];
+                            eventSource.close();
+                            resolve();
+                        }
+                    } catch (err) {
+                        const errorLogEntry = {
+                            type: 'error',
+                            timestamp: new Date().toISOString(),
+                            level: 'ERROR',
+                            message: `Stream error: ${err.message}`
+                        };
+                        console.error('Error log entry:', errorLogEntry);
+                        logs = [...logs, errorLogEntry];
+                        status = 'Error';
+                        error = err.message;
+                        eventSource.close();
+                        reject(err);
+                    }
+                };
+
+                eventSource.onerror = (err) => {
+                    const errorLogEntry = {
+                        type: 'error',
+                        timestamp: new Date().toISOString(),
+                        level: 'ERROR',
+                        message: `EventSource error: ${err.message || 'Unknown error'}`
+                    };
+                    console.error('EventSource error:', err);
+                    logs = [...logs, errorLogEntry];
+                    // Don't close the connection on error, let it auto-reconnect
+                    console.warn('EventSource error occurred, waiting for reconnection');
+                };
+
+                // Set a timeout of 10 minutes
+                setTimeout(() => {
+                    eventSource.close();
+                    reject(new Error('Stream timeout: Job took too long to complete'));
+                }, 10 * 60 * 1000);
+            });
+
+        } catch (err) {
+            error = err.message;
+            status = 'Error';
+            throw err;
         }
-
-        throw new Error('Timeout waiting for job completion');
     }
 </script>
 
