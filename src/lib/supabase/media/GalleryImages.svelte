@@ -145,7 +145,7 @@
                         View
                     </button>
                     <a
-                        href={`/media/${resource.id}`}
+                        href={`/studio/${resource.id}`}
                         class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
                     >
                         Details
