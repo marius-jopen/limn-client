@@ -2,6 +2,7 @@
     import { onDestroy } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
+    import Button from '$lib/atoms/Button.svelte';
     
     interface Resource {
         id: string;
@@ -30,6 +31,9 @@
     let overlayInterval: number | null = null;
     let overlayCurrentIndex = 0;
     let overlayImages: Resource[] = [];
+
+    // Add state for pagination
+    let displayCount = 4;
 
     $: user_id = $user?.id;
 
@@ -157,6 +161,14 @@
             });
         }
     }
+
+    // Function to load more batches
+    function loadMore() {
+        displayCount += 4;
+    }
+    
+    // Calculate if there are more batches to show
+    $: hasMore = Object.keys(groupedResources).length > displayCount;
 </script>
 
 {#if error}
@@ -165,7 +177,7 @@
     <h2>{workflow_name}</h2>
     <div class="flex flex-col">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {#each Object.entries(groupedResources) as [batchName, batchResources]}
+            {#each Object.entries(groupedResources).slice(0, displayCount) as [batchName, batchResources]}
                 <div class="aspect-square w-full overflow-hidden cursor-pointer"
                     on:click={() => handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
                     on:keydown={(e) => e.key === 'Enter' && handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
@@ -180,6 +192,15 @@
                 </div>
             {/each}
         </div>
+        
+        {#if hasMore}
+            <Button 
+                onClick={loadMore}
+                label="Load More"
+                variant="primary"
+                size="md"
+            />
+        {/if}
     </div>
 {/if}
 
