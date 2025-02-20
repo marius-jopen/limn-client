@@ -1,6 +1,6 @@
 <script>
-    import Label from "../atomic-components/Label.svelte";
-    import Textarea from "../atomic-components/Textarea.svelte";
+    import Label from "../atoms/Label.svelte";
+    import Textarea from "../atoms/Textarea.svelte";
 
     export let label = "";
     export let value = "";

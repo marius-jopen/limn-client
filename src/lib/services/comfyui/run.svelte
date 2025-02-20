@@ -2,7 +2,7 @@
     import { user } from '../../stores/auth';
     import DEFAULT_WORKFLOW from '../../workflows/comfyui/comfyui-test.json';
     import UI_CONFIG from '../../workflows/comfyui/comfyui-test-uiconfig.json';
-    import Button from '../../atomic-components/Button.svelte';
+    import Button from '../../atoms/Button.svelte';
     import RunUI from '../../ui-components/run-ui.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';
     import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';   

@@ -4,7 +4,7 @@
 </script>
 
 <textarea
-    class="w-full p-2 rounded border border-gray-300"
+    class="w-full p-2 border border-gray-200"
     bind:value
     {id}
 ></textarea> 

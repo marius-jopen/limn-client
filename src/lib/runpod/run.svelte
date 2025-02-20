@@ -1,15 +1,14 @@
 <script>
     import { user } from '../stores/auth';
     import DEFAULT_WORKFLOW from '../workflows/comfyui/comfyui-test.json';
-    import UI_CONFIG from '../workflows/comfyui/comfyui-test-uiconfig.json';
-    import Button from '../atomic-components/Button.svelte';
+    import Button from '../atoms/Button.svelte';
     import RunUI from '../ui-components/run-ui.svelte';
     import JsonViewer from '../ui-components/JsonViewer.svelte';
     import AdvancedLogViewer from '../ui-components/AdvancedLogViewer.svelte';   
     import ImageList from '../ui-components/ImageList.svelte';
     import StatusGrid from '../ui-components/StatusGrid.svelte';
     import { prepareWorkflow } from './helper/prepareWorkflow';
-    import { runState } from './stores.js';
+    import { runState } from './helper/store-run.js';
 
     const INITIAL_STATE = {
         status: 'Idle',
@@ -29,10 +28,11 @@
     };
 
     let { status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE;
-    let values = Object.fromEntries(UI_CONFIG.map(field => [field.id, field.default]));
+    export let service;
+    export let workflow_name;
+    export let ui_config = [];
     
-    export let service
-    export let workflow_name
+    let values = Object.fromEntries(ui_config.map(field => [field.id, field.default]));
     
     $: user_id = $user?.id;
 
@@ -68,14 +68,14 @@
         status = 'Starting...';
 
         // Reset any empty string values to their defaults
-        UI_CONFIG.forEach(field => {
+        ui_config.forEach(field => {
             if (field.type === 'string' && !values[field.id]?.trim()) {
                 values[field.id] = field.default;
             }
         });
         
         try {
-            const workflowWithPrompt = prepareWorkflow(DEFAULT_WORKFLOW, UI_CONFIG, values);
+            const workflowWithPrompt = prepareWorkflow(DEFAULT_WORKFLOW, ui_config, values);
 
             const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
                 method: 'POST',
@@ -151,7 +151,7 @@
     }
 </script>
 
-<RunUI UI={UI_CONFIG} bind:values />
+<RunUI UI={ui_config} bind:values />
 <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
 
 {#if showStatus}

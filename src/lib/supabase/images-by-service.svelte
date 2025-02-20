@@ -2,7 +2,7 @@
     import { user } from '../stores/auth';
     import { supabase } from '../supabase/supabaseClient';
     import { onDestroy } from 'svelte';
-    import { runState } from '../runpod/stores.js';  // Import the store
+    import { runState } from '../runpod/helper/store-run.js';  // Import the store
     
     export let service;
     
@@ -30,7 +30,8 @@
                 .from('resource')
                 .select('*')
                 .eq('user_id', user_id)
-                .eq('service', service);
+                .eq('service', service)
+                .order('created_at', { ascending: false });
 
             if (supabaseError) throw supabaseError;
             resources = data;
@@ -94,33 +95,25 @@
 </script>
 
 {#if error}
-    <p class="text-red-500 p-4">{error}</p>
+    <p class="text-red-400 p-4">{error}</p>
 {:else}
-    <div class="px-4 pb-4">
-        <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4">
-            <h2>
-                All Images from {service}
-            </h2>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-4">
-                {#each resources as resource}
-                    <div 
-                        class="aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
-                        on:click={() => handleImageClick(resource)}
-                        on:keydown={(e) => e.key === 'Enter' && handleImageClick(resource)}
-                        role="button"
-                        tabindex="0"
-                    >
-                        <img 
-                            src={resource.image_url} 
-                            alt={resource.name || 'User uploaded image'} 
-                            class="w-full h-full object-cover"
-                            loading="lazy"
-                        />
-                    </div>
-                {/each}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
+        {#each resources as resource}
+            <div 
+                class="aspect-square overflow-hidden cursor-pointer"
+                on:click={() => handleImageClick(resource)}
+                on:keydown={(e) => e.key === 'Enter' && handleImageClick(resource)}
+                role="button"
+                tabindex="0"
+            >
+                <img 
+                    src={resource.image_url} 
+                    alt={resource.name || 'User uploaded image'} 
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                />
             </div>
-        </div>
+        {/each}
     </div>
 {/if}
 
@@ -135,6 +128,8 @@
         <div 
             class="relative max-w-4xl max-h-[90vh]"
             on:click|stopPropagation={() => {}}
+            on:keydown|stopPropagation={() => {}}
+            role="presentation"
         >
             <img 
                 src={selectedImage.image_url} 
@@ -142,7 +137,7 @@
                 class="max-w-full max-h-[90vh] object-contain"
             />
             <button 
-                class="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
+                class="absolute top-4 right-4 text-white p-2 hover:bg-opacity-75"
                 on:click={closeOverlay}
             >
                 ✕

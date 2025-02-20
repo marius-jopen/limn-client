@@ -1,5 +1,5 @@
 <script>
-    import Label from '../atomic-components/Label.svelte';
+    import Label from '../atoms/Label.svelte';
     
     export let logs = [];
     export let maxHeight = "300px";

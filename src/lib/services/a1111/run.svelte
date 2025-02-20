@@ -1,7 +1,7 @@
 <script>
     import { user } from '../../stores/auth';
     import DEFAULT_WORKFLOW from '../../workflows/a1111/a1111-test.json';
-    import Button from '../../atomic-components/Button.svelte';
+    import Button from '../../atoms/Button.svelte';
     import InputPrompt from '../../ui-components/InputPrompt.svelte';
     import InputNumber from '../../ui-components/InputNumber.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';

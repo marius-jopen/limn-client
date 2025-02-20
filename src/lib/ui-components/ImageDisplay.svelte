@@ -1,5 +1,5 @@
 <script>
-    import Label from '../atomic-components/Label.svelte';
+    import Label from '../atoms/Label.svelte';
 
     export let imageUrl = null;
     export let id = '';
@@ -14,7 +14,7 @@
 
         <button 
             on:click={() => showOverlay = true} 
-            class="flex items-center gap-4 p-2 bg-white rounded-lg border border-gray-300 rounded-lg"
+            class="w-full text-left flex items-center gap-4"
         >
             <img 
                 src={imageUrl} 

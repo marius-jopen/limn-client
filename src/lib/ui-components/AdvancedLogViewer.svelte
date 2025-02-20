@@ -35,7 +35,7 @@
         
         <div 
             bind:this={logContainer}
-            class="log-container bg-black text-green-400 p-4 rounded shadow-sm font-mono text-sm overflow-y-auto max-h-60"
+            class="log-container bg-black text-green-400 p-4 font-mono text-sm overflow-y-auto max-h-60"
         >
             {#if runpodStatus?.endpointId}
                 <div class="text-blue-400 mb-2">Endpoint ID: {runpodStatus.endpointId}</div>

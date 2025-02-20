@@ -8,6 +8,6 @@
     A1111
 </h1>
 
-<HealthCheck service="a1111" />
+<!-- <HealthCheck service="a1111" /> -->
 <A1111Run />
 <ImagesByService service="a1111" />

@@ -32,7 +32,6 @@
         ${variantClasses[variant]}
         ${sizeClasses[size]}
         ${fullWidth ? 'w-full' : ''}
-        rounded
         font-medium
         transition-colors
         duration-200

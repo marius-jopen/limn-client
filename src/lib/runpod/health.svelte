@@ -1,8 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import Button from '../atomic-components/Button.svelte';
-    import Error from '../atomic-components/Error.svelte';
-    import Status from '../atomic-components/Status.svelte';
+    import Button from '../atoms/Button.svelte';
     import StatusGrid from '../ui-components/StatusGrid.svelte';
 
     export let service;
@@ -32,6 +30,8 @@
     });
 
     $: statusFields = data ? [
+        { label: 'Status', value: status },
+        { label: error ? 'Error' : 'Message', value: error || 'System operational' },
         { label: 'Completed Jobs', value: data.data.jobs.completed },
         { label: 'Failed Jobs', value: data.data.jobs.failed },
         { label: 'Jobs In Progress', value: data.data.jobs.inProgress },
@@ -43,23 +43,5 @@
     ] : [];
 </script>
 
-<h2>
-    {service} RunPod Health Status
-</h2>
-
-{#if error}
-    <Error message={error} />
-{:else}
-    <Status {status} />
-    
-    {#if data}
-        <StatusGrid fields={statusFields} />
-    {/if}
-{/if}
-
-<Button 
-    onClick={checkHealth}
-    label="Refresh Status"
-    variant="primary"
-    size="md"
-/>
+<StatusGrid fields={statusFields} />
+<Button onClick={checkHealth} label="Refresh Status" variant="primary" size="md" />
