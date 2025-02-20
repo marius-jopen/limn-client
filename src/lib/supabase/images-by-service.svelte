@@ -4,7 +4,7 @@
     import { onDestroy } from 'svelte';
     import { runState } from '../runpod/helper/store-run.js';  // Import the store
     
-    export let service;
+    export let workflow_name;
     
     let resources = [];
     let error = null;
@@ -19,8 +19,13 @@
     runState.subscribe(state => {
         if (state.images?.length && state.images !== currentImages) {
             currentImages = state.images;
-            // Fetch updated images when new ones are generated
-            fetchUserImages();
+            // Add the new images to the beginning of resources array
+            resources = [...state.images.map(img => ({
+                image_url: img,
+                user_id: user_id,
+                workflow_name: workflow_name,
+                created_at: new Date().toISOString()
+            })), ...resources];
         }
     });
 
@@ -30,7 +35,7 @@
                 .from('resource')
                 .select('*')
                 .eq('user_id', user_id)
-                .eq('service', service)
+                .eq('workflow_name', workflow_name)
                 .order('created_at', { ascending: false });
 
             if (supabaseError) throw supabaseError;
@@ -58,7 +63,7 @@
                         event: '*',
                         schema: 'public',
                         table: 'resource',
-                        filter: `user_id=eq.${user_id} AND service=eq.${service}`
+                        filter: `user_id=eq.${user_id} AND workflow_name=eq.${workflow_name}`
                     },
                     () => {
                         fetchUserImages();
@@ -75,9 +80,9 @@
         }
     });
 
-    // Setup subscription and fetch images when user_id or service changes
+    // Setup subscription and fetch images when user_id or workflow_name changes
     $: {
-        if (user_id && service) {
+        if (user_id && workflow_name) {
             setupSubscription();
             fetchUserImages();
         }

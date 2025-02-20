@@ -3,12 +3,12 @@
     import DeforumVideos from '../../../lib/supabase/deforum-videos.svelte';
 </script>
 
-<h1 class="px-4 py-4">
-    Output
-</h1>
-
-<ImagesByService service="a1111" />
-<ImagesByService service="comfyui" />
-<ImagesByService service="comfyui-flux" />
-<DeforumVideos service="deforum" />
-<ImagesByService service="deforum" />
+<div class="p-4">
+    <h1>Output</h1>
+    
+    <ImagesByService workflow_name="a1111-test" />
+    <ImagesByService workflow_name="comfyui-test" />
+    <ImagesByService workflow_name="comfyui-flux" />
+    <DeforumVideos workflow_name="deforum-test" />
+    <ImagesByService workflow_name="deforum-test" />
+</div>

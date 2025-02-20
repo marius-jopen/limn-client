@@ -2,7 +2,7 @@
     import Run from '../../../lib/runpod/run.svelte';  
     import ImagesByService from '../../../lib/supabase/images-by-service.svelte';
     import HealthCheck from '../../../lib/runpod/health.svelte';
-    import UI_CONFIG from '../../../lib/workflows/comfyui/comfyui-test-uiconfig.json';
+    import UI_CONFIG from '../../../lib/workflows/comfyui/config-comfyui-test.json';
     
     import StatusGrid from '../../../lib/ui-components/StatusGrid.svelte';
     import AdvancedLogViewer from '../../../lib/ui-components/AdvancedLogViewer.svelte';
@@ -41,5 +41,5 @@
     <AdvancedLogViewer {logs} {status} {runpodStatus} />
     <JsonViewer label="Complete Response" data={runpodStatus} />
     <ImageList {images} />
-    <ImagesByService service="comfyui" />
+    <ImagesByService workflow_name="comfyui-test" />
 </div>

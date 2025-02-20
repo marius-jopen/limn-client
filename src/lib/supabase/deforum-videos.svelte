@@ -3,7 +3,7 @@
     import { supabase } from './supabaseClient';
     import { onDestroy } from 'svelte';
     
-    export let service;
+    export let workflow_name;
     
     let resources = [];
     let error = null;
@@ -28,7 +28,7 @@
                 .from('resource')
                 .select('*')
                 .eq('user_id', user_id)
-                .eq('service', service);
+                .eq('workflow_name', workflow_name);
 
             if (supabaseError) throw supabaseError;
             resources = data;
@@ -55,7 +55,7 @@
                         event: '*',
                         schema: 'public',
                         table: 'resource',
-                        filter: `user_id=eq.${user_id} AND service=eq.${service}`
+                        filter: `user_id=eq.${user_id} AND workflow_name=eq.${workflow_name}`
                     },
                     () => {
                         fetchUserImages();
@@ -74,9 +74,9 @@
         if (overlayInterval) clearInterval(overlayInterval);
     });
 
-    // Setup subscription and fetch images when user_id or service changes
+    // Setup subscription and fetch images when user_id or workflow_name changes
     $: {
-        if (user_id && service) {
+        if (user_id && workflow_name) {
             setupSubscription();
             fetchUserImages();
         }
@@ -148,30 +148,24 @@
 </script>
 
 {#if error}
-    <p class="text-red-500 p-4">{error}</p>
+    <p class="text-red-400 p-4">{error}</p>
 {:else}
-    <div class="px-4 pb-4">
-        <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4">
-            <h2>
-                Animated images from {service}
-            </h2>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {#each Object.entries(groupedResources) as [batchName, batchResources]}
-                    <div class="aspect-square w-full overflow-hidden rounded-lg shadow-md hover:shadow-lg cursor-pointer"
-                        on:click={() => handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
-                        on:keydown={(e) => e.key === 'Enter' && handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
-                        role="button"
-                        tabindex="0"
-                    >
-                        <img 
-                            src={batchResources[batchCurrentIndices.get(batchName) || 0].image_url} 
-                            alt={batchResources[batchCurrentIndices.get(batchName) || 0].name || 'User uploaded image'} 
-                            class="w-full h-full object-cover"
-                        />
-                    </div>
-                {/each}
-            </div>
+    <div class="flex flex-col">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {#each Object.entries(groupedResources) as [batchName, batchResources]}
+                <div class="aspect-square w-full overflow-hidden cursor-pointer"
+                    on:click={() => handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
+                    on:keydown={(e) => e.key === 'Enter' && handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
+                    role="button"
+                    tabindex="0"
+                >
+                    <img 
+                        src={batchResources[batchCurrentIndices.get(batchName) || 0].image_url} 
+                        alt={batchResources[batchCurrentIndices.get(batchName) || 0].name || 'User uploaded image'} 
+                        class="w-full h-full object-cover"
+                    />
+                </div>
+            {/each}
         </div>
     </div>
 {/if}
