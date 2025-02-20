@@ -3,6 +3,7 @@
     import Button from '../atomic-components/Button.svelte';
     import Error from '../atomic-components/Error.svelte';
     import Status from '../atomic-components/Status.svelte';
+    import StatusGrid from '../ui-components/StatusGrid.svelte';
 
     export let service;
 
@@ -30,69 +31,36 @@
     onMount(() => {
         checkHealth();
     });
+
+    $: statusFields = data ? [
+        { label: 'Completed Jobs', value: data.data.jobs.completed },
+        { label: 'Failed Jobs', value: data.data.jobs.failed },
+        { label: 'Jobs In Progress', value: data.data.jobs.inProgress },
+        { label: 'Jobs In Queue', value: data.data.jobs.inQueue },
+        { label: 'Retried Jobs', value: data.data.jobs.retried },
+        { label: 'Idle Workers', value: data.data.workers.idle },
+        { label: 'Ready Workers', value: data.data.workers.ready },
+        { label: 'Running Workers', value: data.data.workers.running, isLast: true }
+    ] : [];
 </script>
 
-<div class="px-4 pb-4">
-    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4">
-        <h2>
-            {service} RunPod Health Status
-        </h2>
+<h2>
+    {service} RunPod Health Status
+</h2>
 
-        {#if error}
-            <Error message={error} />
-        {:else}
-            <Status {status} />
-            
-            {#if data}
-                <div class="grid grid-cols-2 rounded-lg border border-gray-200 overflow-hidden bg-white divide-x divide-gray-200">
-                    <div class="contents">
-                        <div class="font-medium p-3 border-b border-gray-200">Completed Jobs:</div>
-                        <div class="p-3 border-b border-gray-200">{data.data.jobs.completed}</div>
-                    </div>
-                    
-                    <div class="contents">
-                        <div class="font-medium p-3 border-b border-gray-200">Failed Jobs:</div>
-                        <div class="p-3 border-b border-gray-200">{data.data.jobs.failed}</div>
-                    </div>
+{#if error}
+    <Error message={error} />
+{:else}
+    <Status {status} />
+    
+    {#if data}
+        <StatusGrid fields={statusFields} />
+    {/if}
+{/if}
 
-                    <div class="contents">
-                        <div class="font-medium p-3 border-b border-gray-200">Jobs In Progress:</div>
-                        <div class="p-3 border-b border-gray-200">{data.data.jobs.inProgress}</div>
-                    </div>
-
-                    <div class="contents">
-                        <div class="font-medium p-3 border-b border-gray-200">Jobs In Queue:</div>
-                        <div class="p-3 border-b border-gray-200">{data.data.jobs.inQueue}</div>
-                    </div>
-
-                    <div class="contents">
-                        <div class="font-medium p-3 border-b border-gray-200">Retried Jobs:</div>
-                        <div class="p-3 border-b border-gray-200">{data.data.jobs.retried}</div>
-                    </div>
-
-                    <div class="contents">
-                        <div class="font-medium p-3 border-b border-gray-200">Idle Workers:</div>
-                        <div class="p-3 border-b border-gray-200">{data.data.workers.idle}</div>
-                    </div>
-
-                    <div class="contents">
-                        <div class="font-medium p-3 border-b border-gray-200">Ready Workers:</div>
-                        <div class="p-3 border-b border-gray-200">{data.data.workers.ready}</div>
-                    </div>
-
-                    <div class="contents">
-                        <div class="font-medium p-3">Running Workers:</div>
-                        <div class="p-3">{data.data.workers.running}</div>
-                    </div>
-                </div>
-            {/if}
-        {/if}
-
-        <Button 
-            onClick={checkHealth}
-            label="Refresh Status"
-            variant="primary"
-            size="md"
-        />
-    </div>
-</div>
+<Button 
+    onClick={checkHealth}
+    label="Refresh Status"
+    variant="primary"
+    size="md"
+/>
