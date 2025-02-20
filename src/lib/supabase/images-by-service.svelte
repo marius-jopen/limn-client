@@ -1,6 +1,6 @@
 <script>
-    import { user } from '../stores/auth';
-    import { supabase } from '../supabase/supabaseClient';
+    import { user } from './helper/store-supabase';
+    import { supabase } from './helper/supabaseClient';
     import { onDestroy } from 'svelte';
     import { runState } from '../runpod/helper/store-run.js';  // Import the store
     

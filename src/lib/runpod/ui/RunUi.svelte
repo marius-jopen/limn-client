@@ -1,7 +1,7 @@
 <script>
-    import InputPrompt from '../../ui-components/InputPrompt.svelte';
-    import InputNumber from '../../ui-components/InputNumber.svelte';
-    import Dropdown from '../../ui-components/Dropdown.svelte';
+    import Textarea from './inputs/Textarea.svelte';
+    import Number from './inputs/Number.svelte';
+    import Dropdown from './inputs/Dropdown.svelte';
 
     export let UI = [];
     export let values = {};
@@ -11,7 +11,7 @@
     {#each UI as field}
         {#if field.type === 'string'}
             {#if !field.hidden}
-                <InputPrompt
+                <Textarea
                     id={field.id}
                     label={field.label}
                     bind:value={values[field.id]}
@@ -19,7 +19,7 @@
             {/if}
         {:else if field.type === 'int'}
             {#if !field.hidden}
-                <InputNumber
+                <Number
                     id={field.id}
                     label={field.label}
                     bind:value={values[field.id]}

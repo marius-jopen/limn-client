@@ -4,10 +4,10 @@
     import HealthCheck from '../../../lib/runpod/health.svelte';
     import UI_CONFIG from '../../../lib/workflows/comfyui/config-comfyui-flux.json';
     
-    import StatusGrid from '../../../lib/ui-components/StatusGrid.svelte';
-    import AdvancedLogViewer from '../../../lib/runpod/components/AdvancedLogViewer.svelte';
-    import JsonViewer from '../../../lib/ui-components/JsonViewer.svelte';
-    import ImageList from '../../../lib/ui-components/ImageList.svelte';
+    import StatusGrid from '../../../lib/runpod/ui/StatusGrid.svelte';
+    import AdvancedLogViewer from '../../../lib/runpod/ui/AdvancedLogViewer.svelte';
+    import JsonViewer from '../../../lib/runpod/ui/JsonViewer.svelte';
+    import ImageList from '../../../lib/runpod/ui/LiveImageList.svelte';
     import { runState } from '../../../lib/runpod/helper/store-run.js';
 
     let statusFields, logs, status, runpodStatus;

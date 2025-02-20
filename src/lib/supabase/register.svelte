@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { supabase } from '../supabase/supabaseClient';
+    import { supabase } from '../supabase/helper/supabaseClient';
     import { goto } from '$app/navigation';
-    import { initializeAuth } from '../stores/auth';
+    import { initializeAuth } from '../stores/store-supabase';
 
     let email = '';
     let password = '';

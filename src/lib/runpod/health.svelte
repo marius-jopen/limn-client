@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import Button from '../atoms/Button.svelte';
-    import StatusGrid from '../ui-components/StatusGrid.svelte';
+    import StatusGrid from './ui/StatusGrid.svelte';
 
     export let service;
 

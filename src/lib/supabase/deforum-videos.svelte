@@ -1,6 +1,6 @@
 <script>
-    import { user } from '../stores/auth';
-    import { supabase } from './supabaseClient';
+    import { user } from '../stores/store-supabase';
+    import { supabase } from './helper/supabaseClient';
     import { onDestroy } from 'svelte';
     
     export let workflow_name;

@@ -1,5 +1,5 @@
 <script>
-  import { supabase } from './supabaseClient';
+  import { supabase } from './helper/supabaseClient';
   import { goto } from '$app/navigation';
 
   async function handleLogout() {

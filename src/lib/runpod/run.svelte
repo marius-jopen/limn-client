@@ -1,12 +1,12 @@
 <script>
-    import { user } from '../stores/auth';
+    import { user } from '../supabase/helper/store-supabase';
     import DEFAULT_WORKFLOW from '../workflows/comfyui/comfyui-test.json';
     import Button from '../atoms/Button.svelte';
-    import RunUI from './components/RunUi.svelte';
-    import JsonViewer from '../ui-components/JsonViewer.svelte';
-    import AdvancedLogViewer from './components/AdvancedLogViewer.svelte';   
-    import ImageList from '../ui-components/ImageList.svelte';
-    import StatusGrid from '../ui-components/StatusGrid.svelte';
+    import RunUI from './ui/RunUi.svelte';
+    import JsonViewer from './ui/JsonViewer.svelte';
+    import AdvancedLogViewer from './ui/AdvancedLogViewer.svelte';   
+    import ImageList from './ui/LiveImageList.svelte';
+    import StatusGrid from './ui/StatusGrid.svelte';
     import { prepareWorkflow } from './helper/prepareWorkflow';
     import { runState } from './helper/store-run.js';
 

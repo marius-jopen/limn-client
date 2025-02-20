@@ -1,6 +1,6 @@
 <script>
-    import Label from '../atoms/Label.svelte';
-    import Input from '../atoms/Input.svelte';
+    import Label from '../../../atoms/Label.svelte';
+    import Input from '../../../atoms/Input.svelte';
 
     export let id = '';
     export let label = '';

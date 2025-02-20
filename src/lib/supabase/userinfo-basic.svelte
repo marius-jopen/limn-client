@@ -1,5 +1,5 @@
 <script>
-    import { user } from '../../lib/stores/auth';
+    import { user } from '../stores/store-supabase';
 </script>
 
 <div class="px-4">

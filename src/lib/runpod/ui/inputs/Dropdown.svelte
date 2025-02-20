@@ -1,5 +1,5 @@
 <script>
-    import Label from '../atoms/Label.svelte';
+    import Label from '../../../atoms/Label.svelte';
     
     export let id = "";
     export let value = "";
