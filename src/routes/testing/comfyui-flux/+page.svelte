@@ -1,5 +1,5 @@
 <script>
-    import Run from '$lib/runpod/ComfyuiRun.svelte';  
+    import ComfyuiRun from '$lib/runpod/ComfyuiRun.svelte';  
     import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
     import HealthCheck from '$lib/runpod/Health.svelte';
     import UI_CONFIG from '$lib/workflows/comfyui/ComfyuiFluxConfig.json';
@@ -31,7 +31,7 @@
 
     <div class="flex gap-4 flex-col md:flex-row">
         <div class="md:w-1/2">
-            <Run 
+            <ComfyuiRun 
             service="comfyui" 
             workflow_name="comfyui-flux"
             ui_config={UI_CONFIG}
