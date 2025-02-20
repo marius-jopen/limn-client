@@ -50,6 +50,7 @@
         ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
         status = 'Starting...';
 
+        // Reset any empty string values to their defaults
         UI_CONFIG.forEach(field => {
             if (field.type === 'string' && !values[field.id]?.trim()) {
                 values[field.id] = field.default;
@@ -59,7 +60,7 @@
         try {
             const workflowWithPrompt = prepareWorkflow(DEFAULT_WORKFLOW, UI_CONFIG, values);
 
-            const response = await fetch('http://localhost:4000/api/comfyui-runpod-serverless-run', {
+            const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
