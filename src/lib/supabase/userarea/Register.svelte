@@ -1,15 +1,16 @@
 <script lang="ts">
-    import { supabase } from '../supabase/helper/supabaseClient';
     import { goto } from '$app/navigation';
-    import { initializeAuth } from '../stores/store-supabase';
+    import type { AuthError, AuthResponse } from '@supabase/supabase-js';
+    import { supabase } from '$lib/supabase/helper/SupabaseClient';
+    import { initializeAuth } from '$lib/supabase/helper/StoreSupabase';
+    
+    let email: string = '';
+    let password: string = '';
+    let confirmPassword: string = '';
+    let loading: boolean = false;
+    let errorMsg: string = '';
 
-    let email = '';
-    let password = '';
-    let confirmPassword = '';
-    let loading = false;
-    let errorMsg = '';
-
-    async function handleRegister() {
+    async function handleRegister(): Promise<void> {
         try {
             loading = true;
             errorMsg = '';
@@ -18,7 +19,7 @@
                 throw new Error("Passwords don't match");
             }
 
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error }: AuthResponse = await supabase.auth.signUp({
                 email,
                 password,
             });
@@ -32,6 +33,10 @@
         } catch (error) {
             if (error instanceof Error) {
                 errorMsg = error.message;
+            } else if ((error as AuthError).message) {
+                errorMsg = (error as AuthError).message;
+            } else {
+                errorMsg = 'An unexpected error occurred';
             }
         } finally {
             loading = false;

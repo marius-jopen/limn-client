@@ -1,8 +1,8 @@
-<script>
-  import { supabase } from './helper/supabaseClient';
+<script lang="ts">
   import { goto } from '$app/navigation';
+  import { supabase } from '$lib/supabase/helper/SupabaseClient';
 
-  async function handleLogout() {
+  async function handleLogout(): Promise<void> {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Error logging out:', error.message);

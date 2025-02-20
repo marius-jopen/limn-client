@@ -1,11 +1,26 @@
-<script>
+<script lang="ts">
     import { afterUpdate } from 'svelte';
+    import Label from '$lib/atoms/Label.svelte';
     
-    export let logs = [];
-    export let status = '';
-    export let runpodStatus = null;
+    interface RunpodStatus {
+        endpointId?: string;
+        workerId?: string;
+    }
 
-    let logContainer; // Reference to the log container element
+    interface LogEntry {
+        type: 'worker' | 'error' | 'default';
+        timestamp?: number;
+        level?: string;
+        message: string;
+    }
+
+    export let id: string = '';
+    export let label: string = '';
+    export let logs: LogEntry[] = [];
+    export let status: string = '';
+    export let runpodStatus: RunpodStatus | null = null;
+
+    let logContainer: HTMLDivElement; // Reference to the log container element
 
     // Auto-scroll to bottom whenever logs update
     afterUpdate(() => {
@@ -29,9 +44,7 @@
 
 {#if logs.length > 0}
     <div class="mt-4">
-        <h4 class="font-semibold mb-2">
-            Generation Logs:
-        </h4>
+        <Label for_id={id} {label} />
         
         <div 
             bind:this={logContainer}

@@ -1,10 +1,31 @@
-<script>
-    import Textarea from './inputs/Textarea.svelte';
-    import Number from './inputs/Number.svelte';
-    import Dropdown from './inputs/Dropdown.svelte';
+<script lang="ts">
+    import Textarea from '$lib/runpod/ui/inputs/TextareaUi.svelte';
+    import Number from '$lib/runpod/ui/inputs/NumberUi.svelte';
+    import Dropdown from '$lib/runpod/ui/inputs/DropdownUi.svelte';
 
-    export let UI = [];
-    export let values = {};
+    type BaseField = {
+        id: string;
+        label: string;
+        hidden?: boolean;
+    };
+
+    type StringField = BaseField & {
+        type: 'string';
+    };
+
+    type IntField = BaseField & {
+        type: 'int';
+    };
+
+    type SelectField = BaseField & {
+        type: 'select';
+        options: Array<{ label: string; value: string | number }>;
+    };
+
+    type UIField = StringField | IntField | SelectField;
+
+    export let UI: UIField[] = [];
+    export let values: Record<string, string | number> = {};
 </script>
 
 <div>    

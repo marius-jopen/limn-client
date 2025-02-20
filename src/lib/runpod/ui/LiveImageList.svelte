@@ -1,30 +1,38 @@
-<script>
-    export let images = [];
+<script lang="ts">
+    // Define types for the image object
+    type ImageObject = {
+        url: string;
+        // Add other potential properties here if needed
+    };
+
+    type ImageInput = ImageObject | string;
+
+    export let images: ImageInput[] = [];
     
     // Add state for overlay
     let showOverlay = false;
-    let selectedImage = '';
+    let selectedImage: string = '';
 
     // Function to open overlay
-    function openOverlay(imageUrl) {
+    function openOverlay(imageUrl: string): void {
         selectedImage = imageUrl;
         showOverlay = true;
     }
 
     // Function to close overlay
-    function closeOverlay() {
+    function closeOverlay(): void {
         showOverlay = false;
         selectedImage = '';
     }
 
     // Helper function to get image URL from image object or string
-    function getImageUrl(image) {
+    function getImageUrl(image: ImageInput): string {
         return typeof image === 'object' ? image.url : image;
     }
 
     // Helper function to get image filename
-    function getImageFilename(imageUrl) {
-        return imageUrl.split('/').pop().split('?')[0];
+    function getImageFilename(imageUrl: string): string {
+        return imageUrl.split('/').pop()?.split('?')[0] ?? '';
     }
 </script>
 

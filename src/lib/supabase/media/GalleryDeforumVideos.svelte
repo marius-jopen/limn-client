@@ -1,26 +1,37 @@
-<script>
-    import { user } from '../stores/store-supabase';
-    import { supabase } from './helper/supabaseClient';
+<script lang="ts">
     import { onDestroy } from 'svelte';
+    import { user } from '$lib/supabase/helper/StoreSupabase';
+    import { supabase } from '$lib/supabase/helper/SupabaseClient';
     
-    export let workflow_name;
+    interface Resource {
+        id: string;
+        user_id: string;
+        workflow_name: string;
+        batch_name: string | null;
+        name: string | null;
+        image_url: string;
+    }
+
+    interface GroupedResources {
+        [batchName: string]: Resource[];
+    }
     
-    let resources = [];
-    let error = null;
-
-    $: user_id = $user?.id;
-
-    // Add state for selected image
-    let selectedImage = null;
+    export let workflow_name: string;
+    
+    let resources: Resource[] = [];
+    let error: string | null = null;
+    let selectedImage: Resource | null = null;
 
     // Add state for animation intervals and current indices
-    let batchIntervals = new Map();
-    let batchCurrentIndices = new Map();
+    let batchIntervals: Map<string, number> = new Map();
+    let batchCurrentIndices: Map<string, number> = new Map();
 
     // Add state for overlay animation
-    let overlayInterval;
+    let overlayInterval: number | null = null;
     let overlayCurrentIndex = 0;
-    let overlayImages = [];
+    let overlayImages: Resource[] = [];
+
+    $: user_id = $user?.id;
 
     async function fetchUserImages() {
         try {
@@ -83,7 +94,7 @@
     }
 
     // Modify handleImageClick to setup overlay animation
-    function handleImageClick(resource) {
+    function handleImageClick(resource: Resource) {
         const batchName = Object.entries(groupedResources).find(([_, resources]) => 
             resources.includes(resource)
         )[0];
@@ -110,8 +121,8 @@
         overlayCurrentIndex = 0;
     }
 
-    // Add computed property to group resources by batch_name
-    $: groupedResources = resources.reduce((groups, resource) => {
+    // Update the groupedResources computed property type
+    $: groupedResources = resources.reduce<GroupedResources>((groups, resource) => {
         const batchName = resource.batch_name || 'Uncategorized';
         if (!groups[batchName]) {
             groups[batchName] = [];
@@ -121,7 +132,7 @@
     }, {});
 
     // Function to start animation for a batch
-    function startBatchAnimation(batchName, batchResources) {
+    function startBatchAnimation(batchName: string, batchResources: Resource[]) {
         if (batchIntervals.has(batchName)) {
             clearInterval(batchIntervals.get(batchName));
         }

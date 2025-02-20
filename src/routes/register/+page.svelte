@@ -1,5 +1,5 @@
 <script>
-    import Register from '../../lib/supabase/register.svelte';
+    import Register from '$lib/supabase/Register.svelte';
 </script>
 
 <h1 class="px-4 py-4">

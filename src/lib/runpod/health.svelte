@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
-    import Button from '../atoms/Button.svelte';
-    import StatusGrid from './ui/StatusGrid.svelte';
+    import Button from '$lib/atoms/Button.svelte';
+    import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
 
     export let service;
 
@@ -45,6 +45,6 @@
 
 <div>
     <h2>Health</h2>
-    <StatusGrid fields={statusFields} />
+    <StatusTable fields={statusFields} />
     <Button onClick={checkHealth} label="Refresh Status" variant="primary" size="md" />
 </div>

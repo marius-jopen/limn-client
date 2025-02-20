@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Logout from '$lib/supabase/logout.svelte';
-    import { user } from '$lib/supabase/helper/store-supabase';
+    import Logout from '$lib/supabase/userarea/Logout.svelte';
+    import { user } from '$lib/supabase/helper/StoreSupabase';
 </script>
 
 <div class="flex justify-between w-full">

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { user } from '$lib/supabase/helper/store-supabase';
+    import { user } from '$lib/supabase/helper/StoreSupabase';
     import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
     import Button from '$lib/atoms/Button.svelte';
-    import RunUI from '$lib/runpod/ui/RunUi.svelte';
+    import InputRepeater from '$lib/runpod/ui/InputRepeater.svelte';
 
     interface UIConfigField {
         id: string;
@@ -64,6 +64,7 @@
     let { status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE;
     export let service: string;
     export let workflow_name: string;
+    export let workflow = {};
     export let ui_config: UIConfigField[] = [];
     
     let values: Record<string, string | number> = Object.fromEntries(ui_config.map(field => [field.id, field.default]));
@@ -95,6 +96,16 @@
     async function runWorkflow() {
         ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
         status = 'Starting...';
+
+        if (!workflow || Object.keys(workflow).length === 0) {
+            error = 'No workflow configuration provided';
+            status = 'Error';
+            return;
+        }
+
+        console.log('Debug - workflow:', workflow);
+        console.log('Debug - ui_config:', ui_config);
+        console.log('Debug - values:', values);
 
         // Reset any empty string values to their defaults
         ui_config.forEach(field => {
@@ -181,6 +192,6 @@
 </script>
 
 <div>
-    <RunUI UI={ui_config} bind:values />
+    <InputRepeater UI={ui_config} bind:values />
     <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
 </div>

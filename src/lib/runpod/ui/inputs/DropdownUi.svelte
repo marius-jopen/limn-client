@@ -1,10 +1,15 @@
-<script>
-    import Label from '../../../atoms/Label.svelte';
+<script lang="ts">
+    import Label from '$lib/atoms/Label.svelte';
     
-    export let id = "";
-    export let value = "";
-    export let options = [];
-    export let label = "";
+    interface DropdownOption {
+        value: string;
+        label: string;
+    }
+
+    export let id: string = "";
+    export let value: string = "";
+    export let options: DropdownOption[] = [];
+    export let label: string = "";
 </script>
 
 <div class="flex flex-col gap-2">

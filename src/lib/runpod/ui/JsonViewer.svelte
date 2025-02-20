@@ -1,9 +1,9 @@
-<script>
-    import Label from '../../atoms/Label.svelte';
+<script lang="ts">
+    import Label from '$lib/atoms/Label.svelte';
     
-    export let id = '';
-    export let label = '';
-    export let data;
+    export let id: string = '';
+    export let label: string = '';
+    export let data: Record<string, any> | null | undefined;
 </script>
 
 {#if data}

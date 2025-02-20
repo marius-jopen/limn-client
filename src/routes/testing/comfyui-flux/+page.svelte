@@ -1,14 +1,15 @@
 <script>
-    import Run from '../../../lib/runpod/ComfyuiRun.svelte';  
-    import ImagesByService from '../../../lib/supabase/images-by-service.svelte';
-    import HealthCheck from '../../../lib/runpod/Health.svelte';
-    import UI_CONFIG from '../../../lib/workflows/comfyui/config-comfyui-flux.json';
-    
-    import StatusGrid from '../../../lib/runpod/ui/StatusGrid.svelte';
-    import AdvancedLogViewer from '../../../lib/runpod/ui/AdvancedLogViewer.svelte';
-    import JsonViewer from '../../../lib/runpod/ui/JsonViewer.svelte';
-    import ImageList from '../../../lib/runpod/ui/LiveImageList.svelte';
-    import { runState } from '../../../lib/runpod/helper/StoreRun.js';
+    import Run from '$lib/runpod/ComfyuiRun.svelte';  
+    import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
+    import HealthCheck from '$lib/runpod/Health.svelte';
+    import UI_CONFIG from '$lib/workflows/comfyui/ComfyuiFluxConfig.json';
+    import WORKFLOW from '$lib/workflows/comfyui/ComfyuiFlux.json';
+
+    import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
+    import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
+    import ImageList from '$lib/runpod/ui/LiveImageList.svelte';
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
 
     let statusFields, logs, status, runpodStatus;
     let images = [];
@@ -34,10 +35,7 @@
             service="comfyui" 
             workflow_name="comfyui-flux"
             ui_config={UI_CONFIG}
-            showStatus={false}
-            showLogs={false}
-            showJson={false}
-            showImages={false}
+            workflow={WORKFLOW}
             />
         </div>
         
@@ -46,9 +44,9 @@
         </div>
     </div>
 
-    <StatusGrid fields={statusFields} />
-    <AdvancedLogViewer {logs} {status} {runpodStatus} />
+    <StatusTable fields={statusFields} />
+    <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
     <JsonViewer label="Complete Response" data={runpodStatus} />
-    <ImagesByService workflow_name="comfyui-flux" />
+    <GalleryImages workflow_name="comfyui-flux" />
     <HealthCheck service="comfyui" />
 </div>

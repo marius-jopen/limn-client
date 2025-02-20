@@ -1,5 +1,11 @@
-<script>
-    export let fields = [];
+<script lang="ts">
+    interface Field {
+        label: string;
+        value: string | number;
+        isLast?: boolean;
+    }
+
+    export let fields: Field[] = [];
     
     // Optional: Allow customization of the container styles
     export let containerClass = "grid grid-cols-2 border border-gray-200 overflow-hidden bg-white divide-x divide-gray-200";

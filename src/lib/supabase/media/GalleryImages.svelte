@@ -1,19 +1,33 @@
-<script>
-    import { user } from './helper/store-supabase';
-    import { supabase } from './helper/supabaseClient';
+<script lang="ts">
     import { onDestroy } from 'svelte';
-    import { runState } from '../runpod/helper/StoreRun.js';  // Import the store
+    import { user } from '$lib/supabase/helper/StoreSupabase';
+    import { supabase } from '$lib/supabase/helper/SupabaseClient';
+    import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
     
-    export let workflow_name;
+    // Define interfaces for our data structures
+    interface Resource {
+        image_url: string;
+        user_id: string;
+        workflow_name: string;
+        created_at: string;
+        name?: string;
+    }
+
+    interface RunStateImage {
+        url?: string;
+        image_url?: string;
+    }
+
+    export let workflow_name: string;
     
-    let resources = [];
-    let error = null;
-    let currentImages = [];
-    let selectedImage = null;
+    let resources: Resource[] = [];
+    let error: string | null = null;
+    let selectedImage: Resource | null = null;
+    let subscription: any; // Type will depend on your Supabase client type
 
     $: user_id = $user?.id;
 
-    function getImageUrl(img) {
+    function getImageUrl(img: string | RunStateImage | null): string {
         if (!img) return '';
         if (typeof img === 'string') return img;
         return img.url || img.image_url || '';
@@ -56,8 +70,6 @@
         }
     }
 
-    let subscription;
-
     function setupSubscription() {
         // Clean up existing subscription if it exists
         if (subscription) {
@@ -99,12 +111,12 @@
     }
 
     // Function to handle image click
-    function handleImageClick(resource) {
+    function handleImageClick(resource: Resource): void {
         selectedImage = resource;
     }
 
     // Function to close overlay
-    function closeOverlay() {
+    function closeOverlay(): void {
         selectedImage = null;
     }
 </script>
@@ -116,11 +128,8 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
         {#each resources as resource}
             <div 
-                class="aspect-square overflow-hidden cursor-pointer"
-                on:click={() => handleImageClick(resource)}
-                on:keydown={(e) => e.key === 'Enter' && handleImageClick(resource)}
-                role="button"
-                tabindex="0"
+                class="aspect-square overflow-hidden relative group"
+                role="group"
             >
                 <img 
                     src={resource.image_url} 
@@ -128,6 +137,20 @@
                     class="w-full h-full object-cover"
                     loading="lazy"
                 />
+                <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
+                    <button
+                        class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
+                        on:click={() => handleImageClick(resource)}
+                    >
+                        View
+                    </button>
+                    <a
+                        href={`/media/${resource.id}`}
+                        class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
+                    >
+                        Details
+                    </a>
+                </div>
             </div>
         {/each}
     </div>

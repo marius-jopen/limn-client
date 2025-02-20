@@ -1,5 +1,5 @@
-<script>
-    import { user } from '../stores/store-supabase';
+<script lang="ts">
+    import { user } from '$lib/supabase/helper/StoreSupabase';
 </script>
 
 <div class="px-4">

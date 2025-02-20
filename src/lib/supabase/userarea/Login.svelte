@@ -1,14 +1,15 @@
 <script lang="ts">
-    import { supabase } from '../supabase/helper/supabaseClient';
     import { goto } from '$app/navigation';
-    import { initializeAuth } from '../stores/store-supabase';
+    import type { AuthError } from '@supabase/supabase-js';
+    import { supabase } from '$lib/supabase/helper/SupabaseClient';
+    import { initializeAuth } from '$lib/supabase/helper/StoreSupabase';
 
-    let email = '';
-    let password = '';
-    let loading = false;
-    let errorMsg = '';
+    let email: string = '';
+    let password: string = '';
+    let loading: boolean = false;
+    let errorMsg: string = '';
 
-    async function handleLogin() {
+    async function handleLogin(): Promise<void> {
         try {
             loading = true;
             errorMsg = '';
@@ -25,8 +26,8 @@
                 goto('/dashboard');
             }
         } catch (error) {
-            if (error instanceof Error) {
-                errorMsg = error.message;
+            if (error instanceof Error || (error as AuthError).message) {
+                errorMsg = (error as Error | AuthError).message;
             }
         } finally {
             loading = false;
