@@ -8,6 +8,7 @@
     import AdvancedLogViewer from '../ui-components/AdvancedLogViewer.svelte';   
     import ImageList from '../ui-components/ImageList.svelte';
     import StatusGrid from '../ui-components/StatusGrid.svelte';
+    import { prepareWorkflow } from './helper/prepareWorkflow';
 
     const INITIAL_STATE = {
         status: 'Idle',
@@ -45,34 +46,10 @@
         { label: 'Worker ID', value: runpodStatus?.workerId || 'No worker ID available', isLast: true }
     ];
 
-    function resetState() {
-        ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
-    }
-
-    function prepareWorkflow(workflow, uiConfig, values) {
-        let workflowStr = JSON.stringify(workflow);
-
-        uiConfig.forEach(field => {
-            const value = field.type === 'int' 
-                ? (field.id === 'seed' && values[field.id] === -1 
-                    ? Math.floor(Math.random() * 1000000000) 
-                    : values[field.id])
-                : JSON.stringify(values[field.id]);
-
-            workflowStr = workflowStr.replace(
-                `"${field.placeholder}"`, 
-                field.type === 'int' ? value : value
-            );
-        });
-
-        return JSON.parse(workflowStr);
-    }
-
     async function runWorkflow() {
-        resetState();
+        ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
         status = 'Starting...';
 
-        // Reset any empty string values to their defaults
         UI_CONFIG.forEach(field => {
             if (field.type === 'string' && !values[field.id]?.trim()) {
                 values[field.id] = field.default;
@@ -156,30 +133,9 @@
     }
 </script>
 
-<div class="px-4 pb-0">
-    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
-        <RunUI UI={UI_CONFIG} bind:values />
-
-        <Button
-            onClick={runWorkflow}
-            disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
-            label="Generate"
-        />
-    </div>
-
-    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
-        <StatusGrid fields={statusFields} />
-        
-        <AdvancedLogViewer 
-            {logs}
-            {status}
-            {runpodStatus}
-        />
-
-        <JsonViewer label="Complete Response" data={runpodStatus} />
-    </div>
-
-    <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
-        <ImageList id="image-list" label="Generated Images" {images} />
-    </div>
-</div>
+<RunUI UI={UI_CONFIG} bind:values />
+<Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
+<StatusGrid fields={statusFields} />
+<AdvancedLogViewer {logs} {status} {runpodStatus} />
+<JsonViewer label="Complete Response" data={runpodStatus} />
+<ImageList id="image-list" label="Generated Images" {images} />
