@@ -1,14 +1,13 @@
 <script>
     import { user } from '../../stores/auth';
     import DEFAULT_WORKFLOW from '../../workflows/comfyui/comfyui-test.json';
+    import UI_CONFIG from '../../workflows/comfyui/comfyui-test-uiconfig.json';
     import Button from '../../atomic-components/Button.svelte';
-    import InputPrompt from '../../ui-components/InputPrompt.svelte';
-    import InputNumber from '../../ui-components/InputNumber.svelte';
+    import RunUI from '../../ui-components/run-ui.svelte';
     import JsonViewer from '../../ui-components/JsonViewer.svelte';
     import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';   
     import ImageList from '../../ui-components/ImageList.svelte';
 
-    // Group related state variables
     const INITIAL_STATE = {
         status: 'Idle',
         error: null,
@@ -20,75 +19,55 @@
         logs: []
     };
 
-    // Default prompt constants
-    const DEFAULT_USER_PROMPT = "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover";
-    const DEFAULT_NEGATIVE_PROMPT = "bad eyes, cgi, airbrushed, plastic, deformed, watermark";
-
-    // Initialize state
-    let { status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE;
-    let userPrompt = DEFAULT_USER_PROMPT;
-    let negativePrompt = DEFAULT_NEGATIVE_PROMPT;
-    let seed = 1;
-    let steps = 20;
-    let cfg = 7;
-    let service = "comfyui"
-    let workflow_name = "comfyui-test"
-    let selectedCheckpoint = "xl/Jugg_XI_by_RunDiffusion.safetensors"
-    let width = 1024;  // Add default width
-    let height = 1024; // Add default height
-    let batchSize = 1; // Add default batch size
-
-    const CHECKPOINT_OPTIONS = [
-        { value: "xl/sd_xl_base_1.0.safetensors", label: "SDXL Base 1.0" },
-        { value: "xl/Jugg_XI_by_RunDiffusion.safetensors", label: "Juggernaut XI" },
-        { value: "flux/flux1-dev.safetensors", label: "Flux 1 Dev" },
-    ];
-
-    $: user_id = $user?.id;
-
-    // Constants
     const POLL_CONFIG = {
         maxAttempts: 360,
         interval: 500,
         estimatedJobTime: 30000 // 30 seconds
     };
 
-    // Helper functions
+    let { status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE;
+    let values = Object.fromEntries(UI_CONFIG.map(field => [field.id, field.default]));
+    let service = "comfyui"
+    let workflow_name = "comfyui-test"
+
+    $: user_id = $user?.id;
+
     function resetState() {
         ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
     }
 
-    // Workflow preparation function
-    function prepareWorkflow(userPrompt, negativePrompt, seed) {
-        const actualSeed = seed === -1 ? Math.floor(Math.random() * 1000000000) : seed;
-        
-        return JSON.parse(
-            JSON.stringify(DEFAULT_WORKFLOW)
-                .replace('"${INPUT_PROMPT}"', JSON.stringify(userPrompt))
-                .replace('"${INPUT_NEGATIVEPROMPT}"', JSON.stringify(negativePrompt))
-                .replace('"${SEED}"', actualSeed.toString())
-                .replace('"${CKPT_NAME}"', JSON.stringify(selectedCheckpoint))
-                .replace('"${STEPS}"', steps.toString())
-                .replace('"${CFG}"', cfg.toString())
-                .replace('"${WIDTH}"', width.toString())
-                .replace('"${HEIGHT}"', height.toString())
-                .replace('"${BATCH_SIZE}"', batchSize.toString())
-        );
+    function prepareWorkflow(workflow, uiConfig, values) {
+        let workflowStr = JSON.stringify(workflow);
+
+        uiConfig.forEach(field => {
+            const value = field.type === 'int' 
+                ? (field.id === 'seed' && values[field.id] === -1 
+                    ? Math.floor(Math.random() * 1000000000) 
+                    : values[field.id])
+                : JSON.stringify(values[field.id]);
+
+            workflowStr = workflowStr.replace(
+                `"${field.placeholder}"`, 
+                field.type === 'int' ? value : value
+            );
+        });
+
+        return JSON.parse(workflowStr);
     }
 
     async function runWorkflow() {
-        if (!userPrompt.trim()) {
-            userPrompt = DEFAULT_USER_PROMPT;
-        }
-        if (!negativePrompt.trim()) {
-            negativePrompt = DEFAULT_NEGATIVE_PROMPT;
-        }
-
         resetState();
         status = 'Starting...';
+
+        // Reset any empty string values to their defaults
+        UI_CONFIG.forEach(field => {
+            if (field.type === 'string' && !values[field.id]?.trim()) {
+                values[field.id] = field.default;
+            }
+        });
         
         try {
-            const workflowWithPrompt = prepareWorkflow(userPrompt, negativePrompt, seed);
+            const workflowWithPrompt = prepareWorkflow(DEFAULT_WORKFLOW, UI_CONFIG, values);
 
             const response = await fetch('http://localhost:4000/api/comfyui-runpod-serverless-run', {
                 method: 'POST',
@@ -129,7 +108,6 @@
                 const data = await response.json();
                 runpodStatus = data;
                 
-                // Update logs
                 if (data.logs?.length > 0) {
                     const newLogs = data.logs.filter(log => !logs.includes(log));
                     if (newLogs.length > 0) {
@@ -167,70 +145,9 @@
 
 <div class="px-4 pb-0">
     <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
-        <h2>
-            Run Workflow
-        </h2>
+        <h2>Run Workflow</h2>
 
-        <InputPrompt
-            id="prompt1"
-            label="Prompt 1"
-            bind:value={userPrompt}
-        />
-
-        <InputPrompt
-            id="negative-prompt1"
-            label="Negative prompt 1"
-            bind:value={negativePrompt}
-        />
-
-        <InputNumber
-            id="seed"
-            label="Seed (-1 for random)"
-            bind:value={seed}
-        />
-
-        <InputNumber
-            id="steps"
-            label="Steps"
-            bind:value={steps}
-        />
-
-        <InputNumber
-            id="cfg"
-            label="CFG"
-            bind:value={cfg}
-        />
-
-        <InputNumber
-            id="width"
-            label="Width"
-            bind:value={width}
-        />
-
-        <InputNumber
-            id="height"
-            label="Height"
-            bind:value={height}
-        />
-
-        <InputNumber
-            id="batch-size"
-            label="Batch Size"
-            bind:value={batchSize}
-        />
-
-        <div class="flex flex-col gap-2">
-            <label for="checkpoint" class="text-sm font-medium text-gray-700">Checkpoint Model</label>
-            <select
-                id="checkpoint"
-                bind:value={selectedCheckpoint}
-                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-            >
-                {#each CHECKPOINT_OPTIONS as option}
-                    <option value={option.value}>{option.label}</option>
-                {/each}
-            </select>
-        </div>
+        <RunUI UI={UI_CONFIG} bind:values />
 
         <Button
             onClick={runWorkflow}
