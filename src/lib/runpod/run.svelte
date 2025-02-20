@@ -1,12 +1,13 @@
 <script>
-    import { user } from '../../stores/auth';
-    import DEFAULT_WORKFLOW from '../../workflows/comfyui/comfyui-test.json';
-    import UI_CONFIG from '../../workflows/comfyui/comfyui-test-uiconfig.json';
-    import Button from '../../atomic-components/Button.svelte';
-    import RunUI from '../../ui-components/run-ui.svelte';
-    import JsonViewer from '../../ui-components/JsonViewer.svelte';
-    import AdvancedLogViewer from '../../ui-components/AdvancedLogViewer.svelte';   
-    import ImageList from '../../ui-components/ImageList.svelte';
+    import { user } from '../stores/auth';
+    import DEFAULT_WORKFLOW from '../workflows/comfyui/comfyui-test.json';
+    import UI_CONFIG from '../workflows/comfyui/comfyui-test-uiconfig.json';
+    import Button from '../atomic-components/Button.svelte';
+    import RunUI from '../ui-components/run-ui.svelte';
+    import JsonViewer from '../ui-components/JsonViewer.svelte';
+    import AdvancedLogViewer from '../ui-components/AdvancedLogViewer.svelte';   
+    import ImageList from '../ui-components/ImageList.svelte';
+    import StatusGrid from '../ui-components/StatusGrid.svelte';
 
     const INITIAL_STATE = {
         status: 'Idle',
@@ -32,6 +33,17 @@
     export let workflow_name
     
     $: user_id = $user?.id;
+
+    $: statusFields = [
+        { label: 'User ID', value: user_id },
+        { label: 'Status', value: status || 'Idle' },
+        { label: 'RunPod Status', value: runpodStatus?.status || 'Not started' },
+        { label: 'Error', value: error || 'No Error' },
+        { label: 'Job ID', value: jobId || 'No JobID received' },
+        { label: 'Delay Time', value: runpodStatus?.delayTime !== undefined ? `${runpodStatus.delayTime}ms` : 'No delay time available' },
+        { label: 'Endpoint ID', value: runpodStatus?.endpointId || 'No endpoint ID available' },
+        { label: 'Worker ID', value: runpodStatus?.workerId || 'No worker ID available', isLast: true }
+    ];
 
     function resetState() {
         ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
@@ -146,8 +158,6 @@
 
 <div class="px-4 pb-0">
     <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
-        <h2>Run Workflow</h2>
-
         <RunUI UI={UI_CONFIG} bind:values />
 
         <Button
@@ -158,57 +168,7 @@
     </div>
 
     <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
-        <h2>
-            Status & Logs
-        </h2>
-
-        <div class="grid grid-cols-2 rounded-lg border border-gray-200 overflow-hidden bg-white divide-x divide-gray-200">
-            <div class="contents">
-                <div class="font-medium p-3 border-b border-gray-200">User ID:</div>
-                <div class="p-3 border-b border-gray-200">{user_id}</div>
-            </div>
-            
-            <div class="contents">
-                <div class="font-medium p-3 border-b border-gray-200">Status:</div>
-                <div class="p-3 border-b border-gray-200">{status || 'Idle'}</div>
-            </div>
-
-            <div class="contents">
-                <div class="font-medium p-3 border-b border-gray-200">RunPod Status:</div>
-                <div class="p-3 border-b border-gray-200">{runpodStatus?.status || 'Not started'}</div>
-            </div>
-
-            <div class="contents">
-                <div class="font-medium p-3 border-b border-gray-200">Error:</div>
-                <div class="p-3 border-b border-gray-200">{error || 'No Error'}</div>
-            </div>
-
-            <div class="contents">
-                <div class="font-medium p-3 border-b border-gray-200">Job ID:</div>
-                <div class="p-3 border-b border-gray-200">{jobId || 'No JobID received'}</div>
-            </div>
-
-            <div class="contents">
-                <div class="font-medium p-3 border-b border-gray-200">Delay Time:</div>
-                <div class="p-3 border-b border-gray-200">
-                    {runpodStatus?.delayTime !== undefined ? `${runpodStatus.delayTime}ms` : 'No delay time available'}
-                </div>
-            </div>
-
-            <div class="contents">
-                <div class="font-medium p-3 border-b border-gray-200">Endpoint ID:</div>
-                <div class="p-3 border-b border-gray-200">
-                    {runpodStatus?.endpointId || 'No endpoint ID available'}
-                </div>
-            </div>
-
-            <div class="contents">
-                <div class="font-medium p-3">Worker ID:</div>
-                <div class="p-3">
-                    {runpodStatus?.workerId || 'No worker ID available'}
-                </div>
-            </div>
-        </div>
+        <StatusGrid fields={statusFields} />
         
         <AdvancedLogViewer 
             {logs}
@@ -220,10 +180,6 @@
     </div>
 
     <div class="flex flex-col gap-4 border border-gray-300 rounded-lg p-4 mb-4">
-        <h2>
-            Output
-        </h2>
-
         <ImageList id="image-list" label="Generated Images" {images} />
     </div>
 </div>

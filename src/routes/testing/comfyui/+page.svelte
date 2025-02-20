@@ -1,5 +1,5 @@
 <script>
-    import ComfyUIRun from '../../../lib/services/comfyui/run.svelte';
+    import Run from '../../../lib/runpod/run.svelte';  
     import ImagesByService from '../../../lib/supabase/images-by-service.svelte';
     import HealthCheck from '../../../lib/runpod/health-check.svelte';
 </script>
@@ -9,5 +9,5 @@
 </h1>
 
 <HealthCheck service="comfyui" />
-<ComfyUIRun />
+<Run service="comfyui" workflow_name="comfyui-test" />
 <ImagesByService service="comfyui" />
