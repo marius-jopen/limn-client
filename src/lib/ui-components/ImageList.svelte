@@ -28,13 +28,13 @@
     }
 </script>
 
-{#if images.length > 0}
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+<div class="flex flex-wrap bg-gray-100 h-full justify-center">
+    {#if images.length > 0}
         {#each images as image}
             {@const imageUrl = getImageUrl(image)}
             <button 
                 on:click={() => openOverlay(imageUrl)} 
-                class=""
+                class="{images.length === 1 ? 'w-full' : 'w-full sm:w-1/2 md:w-1/2 lg:w-1/2 '}"
             >
                 <img 
                     src={imageUrl} 
@@ -49,5 +49,27 @@
                 </div>
             </button>
         {/each}
+    {/if} 
+</div>
+
+<!-- Add Image Overlay -->
+{#if showOverlay}
+    <div 
+        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+        on:click={closeOverlay}
+    >
+        <div class="relative max-w-4xl max-h-[90vh]">
+            <button 
+                class="absolute top-4 right-4 text-white text-xl font-bold p-2 hover:text-gray-300"
+                on:click={closeOverlay}
+            >
+                ×
+            </button>
+            <img 
+                src={selectedImage} 
+                alt="Full size" 
+                class="max-h-[90vh] w-auto"
+            />
+        </div>
     </div>
 {/if} 

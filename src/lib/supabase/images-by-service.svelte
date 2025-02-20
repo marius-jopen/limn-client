@@ -9,26 +9,32 @@
     let resources = [];
     let error = null;
     let currentImages = [];
+    let selectedImage = null;
 
     $: user_id = $user?.id;
 
-    // Add state for selected image
-    let selectedImage = null;
+    function getImageUrl(img) {
+        if (!img) return '';
+        if (typeof img === 'string') return img;
+        return img.url || img.image_url || '';
+    }
 
-    // Subscribe to runState to watch for new images
-    runState.subscribe(state => {
-        if (state.images?.length && state.images !== currentImages) {
-            currentImages = state.images;
-            // Add the new images to the beginning of resources array
-            resources = [...state.images.map(img => ({
-                image_url: img,
-                user_id: user_id,
-                workflow_name: workflow_name,
-                created_at: new Date().toISOString()
-            })), ...resources];
-        }
-    });
+    // Handle runState images immediately
+    $: if ($runState.images?.length) {
+        const newImages = $runState.images.map(img => ({
+            image_url: getImageUrl(img),
+            user_id: user_id,
+            workflow_name: workflow_name,
+            created_at: new Date().toISOString()
+        }));
+        
+        // Merge new images with existing ones, avoiding duplicates
+        const existingUrls = new Set(resources.map(r => r.image_url));
+        const uniqueNewImages = newImages.filter(img => !existingUrls.has(img.image_url));
+        resources = [...uniqueNewImages, ...resources];
+    }
 
+    // Then handle database images
     async function fetchUserImages() {
         try {
             const { data, error: supabaseError } = await supabase
@@ -39,7 +45,11 @@
                 .order('created_at', { ascending: false });
 
             if (supabaseError) throw supabaseError;
-            resources = data;
+            
+            // Merge with existing runState images
+            const existingUrls = new Set(resources.map(r => r.image_url));
+            const newDbImages = data.filter(img => !existingUrls.has(img.image_url));
+            resources = [...resources, ...newDbImages];
         } catch (e) {
             error = e.message;
             console.error('Error fetching images:', e);
@@ -102,6 +112,7 @@
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
+    <h2>{workflow_name}</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
         {#each resources as resource}
             <div 

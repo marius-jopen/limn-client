@@ -150,6 +150,7 @@
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
+    <h2>{workflow_name}</h2>
     <div class="flex flex-col">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {#each Object.entries(groupedResources) as [batchName, batchResources]}

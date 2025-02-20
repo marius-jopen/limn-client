@@ -2,9 +2,9 @@
     import { user } from '../stores/auth';
     import DEFAULT_WORKFLOW from '../workflows/comfyui/comfyui-test.json';
     import Button from '../atoms/Button.svelte';
-    import RunUI from '../ui-components/run-ui.svelte';
+    import RunUI from './components/RunUi.svelte';
     import JsonViewer from '../ui-components/JsonViewer.svelte';
-    import AdvancedLogViewer from '../ui-components/AdvancedLogViewer.svelte';   
+    import AdvancedLogViewer from './components/AdvancedLogViewer.svelte';   
     import ImageList from '../ui-components/ImageList.svelte';
     import StatusGrid from '../ui-components/StatusGrid.svelte';
     import { prepareWorkflow } from './helper/prepareWorkflow';
@@ -151,21 +151,23 @@
     }
 </script>
 
-<RunUI UI={ui_config} bind:values />
-<Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
-
-{#if showStatus}
-    <StatusGrid fields={statusFields} />
-{/if}
-
-{#if showLogs}
-    <AdvancedLogViewer {logs} {status} {runpodStatus} />
-{/if}
-
-{#if showJson}
-    <JsonViewer label="Complete Response" data={runpodStatus} />
-{/if}
-
-{#if showImages}
-    <ImageList id="image-list" label="Generated Images" {images} />
-{/if}
+<div>
+    <RunUI UI={ui_config} bind:values />
+    <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
+    
+    {#if showStatus}
+        <StatusGrid fields={statusFields} />
+    {/if}
+    
+    {#if showLogs}
+        <AdvancedLogViewer {logs} {status} {runpodStatus} />
+    {/if}
+    
+    {#if showJson}
+        <JsonViewer label="Complete Response" data={runpodStatus} />
+    {/if}
+    
+    {#if showImages}
+        <ImageList id="image-list" label="Generated Images" {images} />
+    {/if}
+</div>

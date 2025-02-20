@@ -5,7 +5,7 @@
     import UI_CONFIG from '../../../lib/workflows/comfyui/config-comfyui-test.json';
     
     import StatusGrid from '../../../lib/ui-components/StatusGrid.svelte';
-    import AdvancedLogViewer from '../../../lib/ui-components/AdvancedLogViewer.svelte';
+    import AdvancedLogViewer from '../../../lib/runpod/components/AdvancedLogViewer.svelte';
     import JsonViewer from '../../../lib/ui-components/JsonViewer.svelte';
     import ImageList from '../../../lib/ui-components/ImageList.svelte';
     import { runState } from '../../../lib/runpod/helper/store-run.js';
@@ -25,21 +25,27 @@
 <div class="p-4">
     <h1>ComfyUI</h1>
 
-    <HealthCheck service="comfyui" />
-    
-    <Run 
-        service="comfyui" 
-        workflow_name="comfyui-test"
-        ui_config={UI_CONFIG}
-        showStatus={false}
-        showLogs={false}
-        showJson={false}
-        showImages={false}
-    />
-    
+    <div class="flex gap-4 flex-col md:flex-row">
+        <div class="md:w-1/2">
+            <Run 
+            service="comfyui" 
+            workflow_name="comfyui-test"
+            ui_config={UI_CONFIG}
+            showStatus={false}
+            showLogs={false}
+            showJson={false}
+            showImages={false}
+            />
+        </div>
+        
+        <div class="md:w-1/2">
+            <ImageList {images} />
+        </div>
+    </div>
+
     <StatusGrid fields={statusFields} />
     <AdvancedLogViewer {logs} {status} {runpodStatus} />
     <JsonViewer label="Complete Response" data={runpodStatus} />
-    <ImageList {images} />
     <ImagesByService workflow_name="comfyui-test" />
+    <HealthCheck service="comfyui" />
 </div>

@@ -43,5 +43,8 @@
     ] : [];
 </script>
 
-<StatusGrid fields={statusFields} />
-<Button onClick={checkHealth} label="Refresh Status" variant="primary" size="md" />
+<div>
+    <h2>Health</h2>
+    <StatusGrid fields={statusFields} />
+    <Button onClick={checkHealth} label="Refresh Status" variant="primary" size="md" />
+</div>
