@@ -8,10 +8,12 @@
     },
     {
         "id": "steps",
-        "type": "int",
+        "type": "slider",
         "placeholder": "${STEPS}",
         "label": "Steps",
-        "default": 20
+        "default": 20,
+        "min": 1,
+        "max": 150
     },
     {
         "id": "cfg",
