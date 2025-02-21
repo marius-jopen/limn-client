@@ -13,7 +13,7 @@
         "label": "Steps",
         "default": 20,
         "min": 1,
-        "max": 150
+        "max": 30
     },
     {
         "id": "cfg",
