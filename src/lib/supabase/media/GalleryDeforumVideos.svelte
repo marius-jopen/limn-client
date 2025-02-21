@@ -44,6 +44,7 @@
                 .select('*')
                 .eq('user_id', user_id)
                 .eq('workflow_name', workflow_name)
+                .or('visibility.is.null,visibility.eq.true') 
                 .order('created_at', { ascending: false });
 
             if (supabaseError) throw supabaseError;
@@ -169,6 +170,48 @@
     
     // Calculate if there are more batches to show
     $: hasMore = Object.keys(groupedResources).length > displayCount;
+
+    // Add this function before the script's end
+    async function handleDeleteBatch(batchName: string): Promise<void> {
+        try {
+            const batchResources = groupedResources[batchName];
+            if (!batchResources || batchResources.length === 0) {
+                throw new Error('No resources found for this batch');
+            }
+
+            const url = `http://localhost:4000/api/batch/delete`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ batch: batchName })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Failed to delete batch');
+            }
+
+            // Clear the animation interval for this batch
+            if (batchIntervals.has(batchName)) {
+                clearInterval(batchIntervals.get(batchName));
+                batchIntervals.delete(batchName);
+            }
+
+            // Refetch the data to update the UI
+            await fetchUserImages();
+            
+            // If the deleted batch was being displayed in the overlay, close it
+            if (selectedImage && selectedImage.batch_name === batchName) {
+                closeOverlay();
+            }
+        } catch (e) {
+            error = e.message;
+            console.error('Error deleting batch:', e);
+            alert('Failed to delete batch: ' + e.message);
+        }
+    }
 </script>
 
 {#if error}
@@ -178,17 +221,27 @@
     <div class="flex flex-col">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {#each Object.entries(groupedResources).slice(0, displayCount) as [batchName, batchResources]}
-                <div class="aspect-square w-full overflow-hidden cursor-pointer"
-                    on:click={() => handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
-                    on:keydown={(e) => e.key === 'Enter' && handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
-                    role="button"
-                    tabindex="0"
-                >
-                    <img 
-                        src={batchResources[batchCurrentIndices.get(batchName) || 0].image_url} 
-                        alt={batchResources[batchCurrentIndices.get(batchName) || 0].name || 'User uploaded image'} 
-                        class="w-full h-full object-cover"
-                    />
+                <div class="relative group">
+                    <div class="aspect-square w-full overflow-hidden cursor-pointer"
+                        on:click={() => handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
+                        on:keydown={(e) => e.key === 'Enter' && handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
+                        role="button"
+                        tabindex="0"
+                    >
+                        <img 
+                            src={batchResources[batchCurrentIndices.get(batchName) || 0].image_url} 
+                            alt={batchResources[batchCurrentIndices.get(batchName) || 0].name || 'User uploaded image'} 
+                            class="w-full h-full object-cover"
+                        />
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
+                        <button
+                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 shadow-md"
+                            on:click|stopPropagation={() => handleDeleteBatch(batchName)}
+                        >
+                            Delete Batch
+                        </button>
+                    </div>
                 </div>
             {/each}
         </div>
