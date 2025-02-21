@@ -6,11 +6,13 @@
     
     // Define interfaces for our data structures
     interface Resource {
+        id: string;
         image_url: string;
         user_id: string;
         workflow_name: string;
         created_at: string;
         name?: string;
+        visibility?: boolean;
     }
 
     interface RunStateImage {
@@ -56,6 +58,7 @@
                 .select('*')
                 .eq('user_id', user_id)
                 .eq('workflow_name', workflow_name)
+                .or('visibility.is.null,visibility.eq.true')  // Only fetch visible images
                 .order('created_at', { ascending: false });
 
             if (supabaseError) throw supabaseError;
@@ -119,6 +122,38 @@
     function closeOverlay(): void {
         selectedImage = null;
     }
+
+    // Add this function after the closeOverlay function
+    async function handleDeleteImage(resource: Resource): Promise<void> {
+        try {
+            const url = `http://localhost:4000/api/resources/${resource.id}/delete`;
+            console.log('Attempting to delete resource at URL:', url);
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            // Log response details for debugging
+            console.log('Response status:', response.status);
+            console.log('Response type:', response.headers.get('content-type'));
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to delete image');
+            }
+
+            // Only remove from UI if deletion was successful
+            resources = resources.filter(r => r.id !== resource.id);
+        } catch (e) {
+            error = e.message;
+            console.error('Error deleting image:', e);
+            alert('Failed to delete image: ' + e.message);
+        }
+    }
 </script>
 
 {#if error}
@@ -132,7 +167,7 @@
                 role="group"
             >
                 <img 
-                    src={resource.image_url} 
+                    src={resource.image_url}
                     alt={resource.name || 'User uploaded image'} 
                     class="w-full h-full object-cover"
                     loading="lazy"
@@ -150,6 +185,12 @@
                     >
                         Details
                     </a>
+                    <button
+                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 shadow-md"
+                        on:click={() => handleDeleteImage(resource)}
+                    >
+                        Delete
+                    </button>
                 </div>
             </div>
         {/each}
