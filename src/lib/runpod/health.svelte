@@ -44,7 +44,7 @@
 </script>
 
 <div>
-    <h2>Health</h2>
+    <h2>Health {service}</h2>
     <StatusTable fields={statusFields} />
     <Button onClick={checkHealth} label="Refresh Status" variant="primary" size="md" />
 </div>

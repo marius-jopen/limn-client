@@ -5,7 +5,7 @@
     import HealthCheck from '$lib/runpod/Health.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumTest.json';
-
+    import Cancel from '$lib/runpod/Cancel.svelte';
     import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
     import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
@@ -14,6 +14,7 @@
 
     let statusFields, logs, status, runpodStatus;
     let images = [];
+    let currentJobId;
 
     $: {
         if ($runState) {
@@ -21,7 +22,8 @@
             logs = $runState.logs;
             status = $runState.status;
             runpodStatus = $runState.runpodStatus;
-            images = $runState.images || [];
+            images = $runState.images || [];            
+            currentJobId = statusFields?.find(field => field.label === "Job ID")?.value;
         }
     }
 </script>
@@ -38,6 +40,7 @@
             ui_config={UI_CONFIG}
             workflow={WORKFLOW}
             />
+            <Cancel jobId={currentJobId} />
         </div>
         
         <div class="md:w-1/2">
@@ -53,6 +56,7 @@
     </div>
 
     <HealthCheck service="deforum" />
+    <HealthCheck service="cancel" />
     <GalleryDeforumVideos workflow_name="deforum-test" />
     <GalleryImages workflow_name="deforum-test" />
 </div>

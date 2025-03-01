@@ -9,7 +9,7 @@
 export function prepareWorkflow(workflow, uiConfig, values) {
     // Convert the workflow settings to string for replacement
     let workflowStr = JSON.stringify(workflow);
-    console.log('Initial values:', values);
+    // console.log('Initial values:', values);
 
     uiConfig.forEach(field => {
         const placeholder = field.placeholder;
@@ -20,7 +20,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
                 ? Math.floor(Math.random() * 1000000000) 
                 : Number(values[field.id]);
             
-            console.log(`Replacing ${placeholder} with number ${value}`);
+            // console.log(`Replacing ${placeholder} with number ${value}`);
             workflowStr = workflowStr.replace(`"${placeholder}"`, value);
         } else {
             // Handle string values
@@ -28,7 +28,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
                 .replace(/\\/g, '\\\\')    // Escape backslashes
                 .replace(/"/g, '\\"');      // Escape quotes
             
-            console.log(`Replacing ${placeholder} with string "${value}"`);
+            // console.log(`Replacing ${placeholder} with string "${value}"`);
             workflowStr = workflowStr.replace(placeholder, value);
         }
         
@@ -38,7 +38,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
         }
     });
 
-    console.log('Final workflow string:', workflowStr);
+    // console.log('Final workflow string:', workflowStr);
 
     try {
         return JSON.parse(workflowStr);

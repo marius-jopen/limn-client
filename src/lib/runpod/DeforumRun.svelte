@@ -117,7 +117,7 @@
 
             // Use the imported prepareWorkflow function
             const workflowWithPrompt = prepareWorkflow(workflowCopy, ui_config, values);
-            console.log('Workflow with prompt:', workflowWithPrompt);
+            // console.log('Workflow with prompt:', workflowWithPrompt);
 
             const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
                 method: 'POST',
@@ -160,7 +160,7 @@
                     try {
                         const jsonStr = event.data.replace(/^data: /, '');
                         const data = JSON.parse(jsonStr);
-                        console.log('Received data:', data); // Debug log
+                        // console.log('Received data:', data); // Debug log
                         
                         // Handle error first
                         if (data.error) {
@@ -170,7 +170,7 @@
                                 level: 'ERROR',
                                 message: `Job failed: ${JSON.stringify(data.error)}`
                             };
-                            console.error('Error log entry:', errorLogEntry);
+                            // console.error('Error log entry:', errorLogEntry);
                             logs = [...logs, errorLogEntry];
                             status = 'Error';
                             error = JSON.stringify(data.error);
@@ -205,7 +205,7 @@
                                         level: 'INFO',
                                         message: streamItem.output.log
                                     };
-                                    console.log('Adding log entry:', logEntry); // Debug log
+                                    // console.log('Adding log entry:', logEntry); // Debug log
                                     logs = [...logs, logEntry];
                                 }
                             });
@@ -226,7 +226,7 @@
                                                 level: 'INFO',
                                                 message: `Generated new image: ${image.url}`
                                             };
-                                            console.log('Adding image log entry:', imageLogEntry); // Debug log
+                                            // console.log('Adding image log entry:', imageLogEntry); // Debug log
                                             logs = [...logs, imageLogEntry];
                                         });
                                     }
@@ -242,7 +242,7 @@
                                 level: data.status === 'COMPLETED' ? 'INFO' : 'ERROR',
                                 message: `Job ${data.status.toLowerCase()}`
                             };
-                            console.log('Adding completion log entry:', completionLogEntry); // Debug log
+                            // console.log('Adding completion log entry:', completionLogEntry); // Debug log
                             logs = [...logs, completionLogEntry];
                             eventSource.close();
                             resolve();
