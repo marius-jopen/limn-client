@@ -61,5 +61,19 @@
         "placeholder": "${INPUT_NEGATIVEPROMPT_2}",
         "label": "Negative prompt 2",
         "default": "bad eyes, cgi, airbrushed, plastic, deformed, watermark"
+    },
+    {
+        "id": "use_init",
+        "type": "boolean",
+        "placeholder": "${USE_INIT}",
+        "label": "Use Init",
+        "default": false
+    },
+    {
+        "id": "init_image",
+        "type": "upload-image",
+        "placeholder": "${INIT_IMAGE}",
+        "label": "Init Image",
+        "default": "https://blog.mariusjopen.com/content/images/size/w2000/2024/12/magnifics_upscale-bOHaM4iGkXvhHQxvXgh8-0_0-1-1.png"
     }
 ]
