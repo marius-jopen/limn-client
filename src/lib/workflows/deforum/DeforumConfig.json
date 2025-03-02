@@ -63,6 +63,13 @@
         "default": "bad eyes, cgi, airbrushed, plastic, deformed, watermark"
     },
     {
+        "id": "diffusion_cadence",
+        "type": "int",
+        "placeholder": "${DIFFUSION_CADENCE}",
+        "label": "Diffusion Cadence",
+        "default": 1
+    },
+    {
         "id": "use_init",
         "type": "boolean",
         "placeholder": "${USE_INIT}",
