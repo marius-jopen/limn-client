@@ -1,0 +1,86 @@
+[
+    {
+        "id": "seed",
+        "type": "int",
+        "placeholder": "${SEED}",
+        "label": "Seed (-1 for random)",
+        "default": 1
+    },
+    {
+        "id": "w",
+        "type": "int",
+        "placeholder": "${W}",
+        "label": "Width",
+        "default": 1024
+    },
+    {
+        "id": "h",
+        "type": "int",
+        "placeholder": "${H}",
+        "label": "Height",
+        "default": 1024
+    },
+    {
+        "id": "max_frames",
+        "type": "int",
+        "placeholder": "${MAX_FRAMES}",
+        "label": "Max Frames",
+        "default": 10
+    },
+    {
+        "id": "steps",
+        "type": "int",
+        "placeholder": "${STEPS}",
+        "label": "Steps",
+        "default": 20
+    },
+    {
+        "id": "input_prompt_1",
+        "type": "string",
+        "placeholder": "${INPUT_PROMPT_1}",
+        "label": "Prompt 1",
+        "default": "beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover"
+    },
+    {
+        "id": "input_negativeprompt_1",
+        "type": "string",
+        "placeholder": "${INPUT_NEGATIVEPROMPT_1}",
+        "label": "Negative prompt 1",
+        "default": "bad eyes, cgi, airbrushed, plastic, deformed, watermark"
+    },
+    {
+        "id": "input_prompt_2",
+        "type": "string",
+        "placeholder": "${INPUT_PROMPT_2}",
+        "label": "Prompt 2",
+        "default": "alien"
+    },
+    {
+        "id": "input_negativeprompt_2",
+        "type": "string",
+        "placeholder": "${INPUT_NEGATIVEPROMPT_2}",
+        "label": "Negative prompt 2",
+        "default": "bad eyes, cgi, airbrushed, plastic, deformed, watermark"
+    },
+    {
+        "id": "diffusion_cadence",
+        "type": "int",
+        "placeholder": "${DIFFUSION_CADENCE}",
+        "label": "Diffusion Cadence",
+        "default": 1
+    },
+    {
+        "id": "use_init",
+        "type": "boolean",
+        "placeholder": "${USE_INIT}",
+        "label": "Use Init",
+        "default": false
+    },
+    {
+        "id": "init_image",
+        "type": "upload-image",
+        "placeholder": "${INIT_IMAGE}",
+        "label": "Init Image",
+        "default": "https://blog.mariusjopen.com/content/images/size/w2000/2024/12/magnifics_upscale-bOHaM4iGkXvhHQxvXgh8-0_0-1-1.png"
+    }
+]
