@@ -102,42 +102,45 @@
     }
 </script>
 
-<div class="prompts-ui bg-red-200">
-    <label for={id}>{label}</label>
+<div class="mb-6 w-full">
+    <label for={id} class="block font-semibold mb-2">{label}</label>
     
-    <div class="entries">
+    <div class="flex flex-col gap-4 mb-4">
         {#each entries as entry, index}
-            <div class="entry">
-                <div class="frame-input">
-                    <label>Frame</label>
+            <div class="grid grid-cols-[80px_1fr_1fr_40px] gap-4 p-4 border border-gray-200 bg-gray-50">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Frame</label>
                     <input 
                         type="number"
                         value={entry.frame}
                         min="0"
                         on:input={(e) => handleInputFrame(e, index)}
+                        class="w-full py-2 px-3 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                 </div>
                 
-                <div class="prompt-input">
-                    <label>Prompt</label>
+                <div class="flex flex-col">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Prompt</label>
                     <textarea
                         rows="3"
                         value={entry.prompt}
                         on:input={(e) => handleInputPrompt(e, index)}
+                        class="p-2 border border-gray-200 font-inherit resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     ></textarea>
                 </div>
                 
-                <div class="negative-prompt-input">
-                    <label>Negative Prompt</label>
+                <div class="flex flex-col">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Negative Prompt</label>
                     <textarea
                         rows="3"
                         value={entry.negativePrompt}
                         on:input={(e) => handleInputNegativePrompt(e, index)}
+                        class="p-2 border border-gray-200 font-inherit resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     ></textarea>
                 </div>
                 
                 <button 
-                    class="remove-button"
+                    class="h-8 w-8 bg-red-400 hover:bg-red-500 text-white text-xl border-none cursor-pointer flex items-center justify-center self-center disabled:bg-gray-300 disabled:cursor-not-allowed"
                     on:click={() => removeEntry(index)}
                     disabled={entries.length <= 1}
                 >
@@ -154,74 +157,3 @@
     
     <input type="hidden" {id} {value} />
 </div>
-
-<style>
-    .prompts-ui {
-        margin-bottom: 1.5rem;
-        width: 100%;
-    }
-    
-    label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-    
-    .entries {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-    
-    .entry {
-        display: grid;
-        grid-template-columns: 80px 1fr 1fr 40px;
-        gap: 1rem;
-        padding: 1rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        background-color: #f8fafc;
-    }
-    
-    .frame-input input {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.25rem;
-    }
-    
-    .prompt-input, .negative-prompt-input {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    textarea {
-        padding: 0.5rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.25rem;
-        font-family: inherit;
-        resize: vertical;
-    }
-    
-    .remove-button {
-        height: 2rem;
-        width: 2rem;
-        border-radius: 50%;
-        background-color: #f87171;
-        color: white;
-        font-size: 1.25rem;
-        line-height: 1;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        align-self: center;
-    }
-    
-    .remove-button:disabled {
-        background-color: #d1d5db;
-        cursor: not-allowed;
-    }
-</style>

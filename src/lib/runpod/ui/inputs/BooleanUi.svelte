@@ -11,4 +11,7 @@
 <div class="flex flex-col gap-1">
     <Label for_id={id} {label} />
     <Boolean {id} bind:value {disabled} />
+    {#if value}
+        <span class="text-sm text-green-600 font-medium mt-1">true</span>
+    {/if}
 </div> 
