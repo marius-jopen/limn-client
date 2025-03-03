@@ -1,34 +1,34 @@
 <script>
     import Button from '$lib/atoms/Button.svelte';
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
 
-    export let jobId;
     let status = 'Ready to cancel';
     let error = null;
     let data = null;
+    let currentJobId;
 
-    // Log when jobId changes
+    // Subscribe to runState
     $: {
-        // console.log('Cancel component jobId updated:', jobId);
-        status = 'Ready to cancel';
-        error = null;
+        if ($runState) {
+            currentJobId = $runState.statusFields?.find(field => field.label === "Job ID")?.value;
+            status = 'Ready to cancel';
+            error = null;
+        }
     }
 
     async function cancelJob() {
-        // console.log('Cancelling job with ID:', jobId);
         try {
             status = 'Cancelling...';
-            const response = await fetch(`http://localhost:4000/api/cancel-runpod-serverless/${jobId}`, {
+            const response = await fetch(`http://localhost:4000/api/cancel-runpod-serverless/${currentJobId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            // console.log('Cancel response:', response);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             data = await response.json();
-            // console.log('Cancel response data:', data);
             status = 'Cancelled';
             error = null;
         } catch (err) {
@@ -48,7 +48,6 @@
         size="md" 
     />
     <div class="mt-2 text-sm">
-        <!-- <p>Current Job ID: {jobId}</p> -->
         <p>Status: {status}</p>
         {#if error}<p class="text-red-500">{error}</p>{/if}
     </div>

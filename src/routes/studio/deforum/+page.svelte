@@ -11,36 +11,19 @@
     import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
     import PreviewDeforum from '$lib/runpod/ui/PreviewDeforum.svelte';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
-
-    let statusFields, logs, status, runpodStatus;
-    let images = [];
-    let currentJobId;
-
-    $: {
-        if ($runState) {
-            statusFields = $runState.statusFields;
-            logs = $runState.logs;
-            status = $runState.status;
-            runpodStatus = $runState.runpodStatus;
-            images = $runState.images || [];            
-            currentJobId = statusFields?.find(field => field.label === "Job ID")?.value;
-        }
-    }
 </script>
 
-
 <div class="p-4">
-    <h1>Deforum</h1>
-
+    <h1>Deforum Init</h1>
     <div class="flex gap-4 flex-col md:flex-row">
         <div class="md:w-1/2">
             <DeforumRun 
-            service="deforum" 
-            workflow_name="deforum-basic"
-            ui_config={UI_CONFIG}
-            workflow={WORKFLOW}
+                service="deforum" 
+                workflow_name="deforum-basic"
+                ui_config={UI_CONFIG}
+                workflow={WORKFLOW}
             />
-            <Cancel jobId={currentJobId} />
+            <Cancel />
         </div>
         
         <div class="md:w-1/2">
@@ -49,14 +32,14 @@
     </div>
 
     <div class="flex gap-4 flex-col md:flex-row">
-        <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
-        <JsonViewer label="Complete Response" data={runpodStatus} />
+        <LogViewer id="log-viewer" label="Generation Logs" />
+        <JsonViewer label="Complete Response" />
     </div>
-    
+
     <div class="grid grid-cols-3 gap-4">
         <div>
             <h2>Status</h2>
-            <StatusTable fields={statusFields} />
+            <StatusTable />
         </div>
 
         <HealthCheck service="deforum" />

@@ -1,12 +1,20 @@
 <script lang="ts">
     import { afterUpdate } from 'svelte';
     import Label from '$lib/atoms/Label.svelte';
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
     
     export let id: string = '';
     export let label: string = '';
-    export let data: Record<string, any> | null | undefined;
+    let data: Record<string, any> | null | undefined;
 
-    let jsonContainer: HTMLPreElement; // Reference to the pre element
+    // Subscribe to runState
+    $: {
+        if ($runState) {
+            data = $runState.runpodStatus || null;
+        }
+    }
+
+    let jsonContainer: HTMLPreElement;
 
     // Auto-scroll to bottom whenever data updates
     afterUpdate(() => {

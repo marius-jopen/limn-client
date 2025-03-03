@@ -1,6 +1,7 @@
 <script lang="ts">
     import { afterUpdate } from 'svelte';
     import Label from '$lib/atoms/Label.svelte';
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
     
     interface RunpodStatus {
         endpointId?: string;
@@ -16,11 +17,20 @@
 
     export let id: string = '';
     export let label: string = '';
-    export let logs: LogEntry[] = [];
-    export let status: string = '';
-    export let runpodStatus: RunpodStatus | null = null;
+    let logs: LogEntry[] = [];
+    let status: string = '';
+    let runpodStatus: RunpodStatus | null = null;
 
-    let logContainer: HTMLDivElement; // Reference to the log container element
+    // Subscribe to runState
+    $: {
+        if ($runState) {
+            logs = $runState.logs || [];
+            status = $runState.status || '';
+            runpodStatus = $runState.runpodStatus || null;
+        }
+    }
+
+    let logContainer: HTMLDivElement;
 
     // Auto-scroll to bottom whenever logs update
     afterUpdate(() => {

@@ -1,11 +1,20 @@
 <script lang="ts">
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
+
     interface Field {
         label: string;
         value: string | number;
         isLast?: boolean;
     }
 
-    export let fields: Field[] = [];
+    let fields: Field[] = [];
+    
+    // Subscribe to runState
+    $: {
+        if ($runState) {
+            fields = $runState.statusFields || [];
+        }
+    }
     
     // Optional: Allow customization of the container styles
     export let containerClass = "";
