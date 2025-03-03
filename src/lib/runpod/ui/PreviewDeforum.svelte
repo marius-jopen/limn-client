@@ -19,17 +19,6 @@
         }
     }
     
-    // Add check for previous images to prevent unwanted resets
-    let previousImages = images;
-    $: {
-        if (images.length === 0 && previousImages.length > 0) {
-            // Keep previous images if new array is empty
-            images = previousImages;
-        } else {
-            previousImages = images;
-        }
-    }
-
     // Add state for overlay
     let showOverlay = false;
     let selectedImage: string = '';

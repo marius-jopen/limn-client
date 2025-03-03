@@ -100,6 +100,10 @@
         const date = new Date();
         const dateStr = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}${date.getSeconds().toString().padStart(2,'0')}`;
 
+        // Clear the images array and update the store
+        images = [];
+        runState.update(state => ({ ...state, images: [] }));
+        
         ({ status, error, result, jobId, imageUrl, images, runpodStatus, logs } = INITIAL_STATE);
         status = 'Starting...';
 
