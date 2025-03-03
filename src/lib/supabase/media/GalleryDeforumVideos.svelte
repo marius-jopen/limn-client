@@ -99,7 +99,7 @@
         }
     }
 
-    // Modify handleImageClick to setup overlay animation
+    // Modify handleImageClick to animate backwards
     function handleImageClick(resource: Resource) {
         const batchName = Object.entries(groupedResources).find(([_, resources]) => 
             resources.includes(resource)
@@ -107,11 +107,11 @@
         overlayImages = groupedResources[batchName];
         overlayCurrentIndex = overlayImages.indexOf(resource);
         
-        // Start overlay animation
+        // Start overlay animation going backwards
         if (overlayInterval) clearInterval(overlayInterval);
         overlayInterval = setInterval(() => {
-            overlayCurrentIndex = (overlayCurrentIndex + 1) % overlayImages.length;
-        }, 67); // Same 15fps as grid animations
+            overlayCurrentIndex = (overlayCurrentIndex - 1 + overlayImages.length) % overlayImages.length;
+        }, 67);
         
         selectedImage = resource;
     }
@@ -147,10 +147,10 @@
         const interval = setInterval(() => {
             batchCurrentIndices.set(
                 batchName,
-                (batchCurrentIndices.get(batchName) + 1) % batchResources.length
+                (batchCurrentIndices.get(batchName) - 1 + batchResources.length) % batchResources.length
             );
             batchCurrentIndices = batchCurrentIndices; // Trigger reactivity
-        }, 67); // ~15 frames per second (1000ms / 15)
+        }, 67);
         batchIntervals.set(batchName, interval);
     }
 

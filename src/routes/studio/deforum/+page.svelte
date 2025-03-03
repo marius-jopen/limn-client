@@ -36,7 +36,7 @@
         <div class="md:w-1/2">
             <DeforumRun 
             service="deforum" 
-            workflow_name="deforum-test"
+            workflow_name="deforum-basic"
             ui_config={UI_CONFIG}
             workflow={WORKFLOW}
             />
@@ -57,6 +57,8 @@
 
     <HealthCheck service="deforum" />
     <HealthCheck service="cancel" />
-    <GalleryDeforumVideos workflow_name="deforum-test" />
-    <GalleryImages workflow_name="deforum-test" />
+    <GalleryDeforumVideos workflow_name="deforum-init" />
+    <GalleryDeforumVideos workflow_name="deforum-basic" />
+    <GalleryImages workflow_name="deforum-init" />
+    <GalleryImages workflow_name="deforum-basic" />
 </div>

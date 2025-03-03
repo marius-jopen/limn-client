@@ -38,7 +38,7 @@
 </script>
 
 <div class="p-4">
-    <h1>Deforum</h1>
+    <h1>Deforum Init</h1>
 
     <Back />
     <FetchImage imageId={data.imageId} />
@@ -47,7 +47,7 @@
         <div class="md:w-1/2">
             <DeforumRun 
             service="deforum" 
-            workflow_name="deforum-test"
+            workflow_name="deforum-init"
             ui_config={UI_CONFIG}
             workflow={WORKFLOW}
             />
@@ -68,6 +68,8 @@
 
     <HealthCheck service="deforum" />
     <HealthCheck service="cancel" />
-    <GalleryDeforumVideos workflow_name="deforum-test" />
-    <GalleryImages workflow_name="deforum-test" />
+    <GalleryDeforumVideos workflow_name="deforum-init" />
+    <GalleryDeforumVideos workflow_name="deforum-basic" />
+    <GalleryImages workflow_name="deforum-init" />
+    <GalleryImages workflow_name="deforum-basic" />
 </div>

@@ -13,7 +13,7 @@
         "batch_name": "${BATCH_NAME}",
         "seed_behavior": "iter",
         "seed_iter_N": 1,
-        "use_init": "${USE_INIT}",
+        "use_init": true,
         "strength": 0.8,
         "strength_0_no_init": true,
         "init_image": "${INIT_IMAGE}",

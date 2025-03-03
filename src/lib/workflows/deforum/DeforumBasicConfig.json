@@ -49,13 +49,6 @@
         "default": 4
     },
     {
-        "id": "use_init",
-        "type": "boolean",
-        "placeholder": "${USE_INIT}",
-        "label": "Use Init",
-        "default": false
-    },
-    {
         "id": "init_image",
         "type": "upload-image",
         "placeholder": "${INIT_IMAGE}",

@@ -9,6 +9,8 @@
     <GalleryImages workflow_name="a1111-test" />
     <GalleryImages workflow_name="comfyui-test" />
     <GalleryImages workflow_name="comfyui-flux" />
-    <GalleryDeforumVideos workflow_name="deforum-test" />
-    <GalleryImages workflow_name="deforum-test" />
+    <GalleryDeforumVideos workflow_name="deforum-init" />
+    <GalleryImages workflow_name="deforum-init" />
+    <GalleryDeforumVideos workflow_name="deforum-basic" />
+    <GalleryImages workflow_name="deforum-basic" />
 </div>
