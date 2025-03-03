@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
+
     // Define types for the image object
     type ImageObject = {
         url: string;
@@ -7,7 +9,15 @@
 
     type ImageInput = ImageObject | string;
 
-    export let images: ImageInput[] = [];
+    // Get images from runState store
+    let images: ImageInput[] = [];
+    
+    // Subscribe to runState
+    $: {
+        if ($runState) {
+            images = $runState.images || [];
+        }
+    }
     
     // Add check for previous images to prevent unwanted resets
     let previousImages = images;
@@ -39,11 +49,6 @@
     // Helper function to get image URL from image object or string
     function getImageUrl(image: ImageInput): string {
         return typeof image === 'object' ? image.url : image;
-    }
-
-    // Helper function to get image filename
-    function getImageFilename(imageUrl: string): string {
-        return imageUrl.split('/').pop()?.split('?')[0] ?? '';
     }
 </script>
 

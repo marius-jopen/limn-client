@@ -44,7 +44,7 @@
         </div>
         
         <div class="md:w-1/2">
-            <PreviewDeforum {images} />
+            <PreviewDeforum />
         </div>
     </div>
 
