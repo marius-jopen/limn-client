@@ -44,13 +44,20 @@
         </div>
     </div>
 
-    <StatusTable fields={statusFields} />
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <h2>Status</h2>
+            <StatusTable fields={statusFields} />
+        </div>
+
+        <HealthCheck service="comfyui" />
+    </div>
     
     <div class="flex gap-4 flex-col md:flex-row">
         <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
         <JsonViewer label="Complete Response" data={runpodStatus} />
     </div>
     
-    <HealthCheck service="comfyui" />
+    <GalleryImages type="uploaded" />
     <GalleryImages workflow_name="comfyui-flux" />
 </div>

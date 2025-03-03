@@ -58,18 +58,25 @@
             <PreviewDeforum {images} />
         </div>
     </div>
-
-    <StatusTable fields={statusFields} />
     
     <div class="flex gap-4 flex-col md:flex-row">
         <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
         <JsonViewer label="Complete Response" data={runpodStatus} />
     </div>
 
-    <HealthCheck service="deforum" />
-    <HealthCheck service="cancel" />
+    <div class="grid grid-cols-3 gap-4">
+        <div>
+            <h2>Status</h2>
+            <StatusTable fields={statusFields} />
+        </div>
+
+        <HealthCheck service="deforum" />
+        <HealthCheck service="cancel" />
+    </div>
+
     <GalleryDeforumVideos workflow_name="deforum-init" />
     <GalleryDeforumVideos workflow_name="deforum-basic" />
+    <GalleryImages type="uploaded" />
     <GalleryImages workflow_name="deforum-init" />
     <GalleryImages workflow_name="deforum-basic" />
 </div>

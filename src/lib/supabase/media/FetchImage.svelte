@@ -48,13 +48,16 @@
                     class="max-w-full max-h-[80vh] object-contain mx-auto"
                 />
             </div>
+            
             <div class="space-y-2">
                 {#if resource.name}
                     <p class="text-lg font-medium">Name: {resource.name}</p>
                 {/if}
+                
                 {#if resource.batch_name}
                     <p>Batch: {resource.batch_name}</p>
                 {/if}
+
                 <p>Workflow: {resource.workflow_name}</p>
             </div>
         </div>

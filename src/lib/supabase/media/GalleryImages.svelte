@@ -13,6 +13,7 @@
         created_at: string;
         name?: string;
         visibility?: boolean;
+        type?: 'uploaded' | 'generated' | string; // Add type field
     }
 
     interface RunStateImage {
@@ -20,7 +21,8 @@
         image_url?: string;
     }
 
-    export let workflow_name: string;
+    export let workflow_name: string | undefined = undefined;
+    export let type: 'uploaded' | 'generated' | undefined = undefined;
     
     let resources: Resource[] = [];
     let error: string | null = null;
@@ -50,15 +52,26 @@
         resources = [...uniqueNewImages, ...resources];
     }
 
-    // Then handle database images
+    // Modify fetchUserImages to handle new filtering logic
     async function fetchUserImages() {
         try {
-            const { data, error: supabaseError } = await supabase
+            let query = supabase
                 .from('resource')
                 .select('*')
                 .eq('user_id', user_id)
-                .eq('workflow_name', workflow_name)
-                .or('visibility.is.null,visibility.eq.true')  // Only fetch visible images
+                .or('visibility.is.null,visibility.eq.true');
+
+            // Add workflow_name filter if provided
+            if (workflow_name) {
+                query = query.eq('workflow_name', workflow_name);
+            }
+
+            // Add type filter if provided
+            if (type) {
+                query = query.eq('type', type);
+            }
+
+            const { data, error: supabaseError } = await query
                 .order('created_at', { ascending: false });
 
             if (supabaseError) throw supabaseError;
@@ -74,12 +87,19 @@
     }
 
     function setupSubscription() {
-        // Clean up existing subscription if it exists
         if (subscription) {
             subscription.unsubscribe();
         }
 
         if (user_id) {
+            let filter = `user_id=eq.${user_id}`;
+            if (workflow_name) {
+                filter += ` AND workflow_name=eq.${workflow_name}`;
+            }
+            if (type) {
+                filter += ` AND type=eq.${type}`;
+            }
+
             subscription = supabase
                 .channel('resource_changes')
                 .on(
@@ -88,7 +108,7 @@
                         event: '*',
                         schema: 'public',
                         table: 'resource',
-                        filter: `user_id=eq.${user_id} AND workflow_name=eq.${workflow_name}`
+                        filter
                     },
                     () => {
                         fetchUserImages();
@@ -105,10 +125,11 @@
         }
     });
 
-    // Setup subscription and fetch images when user_id or workflow_name changes
+    // Update the reactive statement to include type
     $: {
-        if (user_id && workflow_name) {
+        if (user_id) {
             setupSubscription();
+            resources = []; // Clear existing resources
             fetchUserImages();
         }
     }
@@ -156,10 +177,14 @@
     }
 </script>
 
+<!-- Remove the filter buttons and simplify the header -->
+<div class="mb-4">
+    <h2>{type || workflow_name || 'Gallery'}</h2>
+</div>
+
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
-    <h2>{workflow_name}</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
         {#each resources as resource}
             <div 
