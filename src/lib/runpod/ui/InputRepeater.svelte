@@ -5,6 +5,7 @@
     import SliderUi from '$lib/runpod/ui/inputs/SliderUi.svelte';
     import BooleanUi from '$lib/runpod/ui/inputs/BooleanUi.svelte';
     import UploadImageUi from '$lib/runpod/ui/inputs/UploadImageUi.svelte';
+    import PromptsUi from '$lib/runpod/ui/inputs/PromptsUi.svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
 
     type BaseField = {
@@ -23,7 +24,7 @@
 
     type SelectField = BaseField & {
         type: 'select';
-        options: Array<{ label: string; value: string | number }>;
+        options: Array<{ label: string; value: string }>;
     };
 
     type SliderField = BaseField & {
@@ -40,7 +41,11 @@
         type: 'upload-image';
     };
 
-    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField;
+    type PromptsField = BaseField & {
+        type: 'prompts';
+    };
+
+    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField;
 
     export let UI: UIField[] = [];
     export let values: Record<string, string | number | boolean> = {};
@@ -90,6 +95,12 @@
                     label={field.label}
                     bind:value={values[field.id]}
                     userId={user_id}
+                />
+            {:else if field.type === 'prompts'}
+                <PromptsUi
+                    id={field.id}
+                    label={field.label}
+                    bind:value={values[field.id]}
                 />
             {/if}
         {/if}
