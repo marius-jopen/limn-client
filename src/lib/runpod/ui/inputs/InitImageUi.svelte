@@ -1,13 +1,14 @@
 <script lang="ts">
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import Label from "$lib/atoms/Label.svelte";
+
+    export let label: string = "";
+    export let value: string = "";
+    export let id: string = "";
     
     interface Resource {
         id: string;
-        user_id: string;
-        workflow_name: string;
-        batch_name: string | null;
-        name: string | null;
         image_url: string;
     }
     
@@ -18,12 +19,13 @@
         try {
             const { data: imageData, error: supabaseError } = await supabase
                 .from('resource')
-                .select('*')
+                .select('id, image_url')
                 .eq('id', $runState.imageId)
                 .single();
                 
             if (supabaseError) throw supabaseError;
             resource = imageData;
+            value = imageData.image_url; // Set the output value
         } catch (e) {
             error = e.message;
             console.error('Error fetching image:', e);
@@ -36,27 +38,21 @@
     }
 </script>
 
-<div class="max-w-4xl mx-auto p-4">
+<div class="flex flex-col gap-2">
+    <Label for_id={id} {label} />
+    
     {#if error}
         <p class="text-red-400">{error}</p>
     {:else if resource}
-        <div class="space-y-4">
-            <div class="relative aspect-auto max-h-[80vh]">
-                <img 
-                    src={resource.image_url} 
-                    alt={resource.name || 'Image'} 
-                    class="max-w-full max-h-[80vh] object-contain mx-auto"
-                />
-            </div>
-            <div class="space-y-2">
-                {#if resource.name}
-                    <p class="text-lg font-medium">Name: {resource.name}</p>
-                {/if}
-                {#if resource.batch_name}
-                    <p>Batch: {resource.batch_name}</p>
-                {/if}
-                <p>Workflow: {resource.workflow_name}</p>
-            </div>
+        <div class="relative w-full max-w-md mt-2">
+            <img 
+                src={resource.image_url} 
+                alt="Selected image" 
+                class="rounded-md shadow-sm max-h-48 object-contain"
+            />
+        </div>
+        <div class="text-sm text-gray-500 break-all">
+            Image URL: {value}
         </div>
     {:else}
         <p>Loading...</p>

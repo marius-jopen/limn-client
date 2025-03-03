@@ -172,18 +172,24 @@
                     class="w-full h-full object-cover"
                     loading="lazy"
                 />
-                <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
+                <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center flex-col justify-center gap-2 p-2">
                     <button
                         class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
                         on:click={() => handleImageClick(resource)}
                     >
-                        View
+                        Preview
                     </button>
                     <a
                         href={`/studio/${resource.id}`}
                         class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
                     >
                         Details
+                    </a>
+                    <a
+                        href={`/studio/deforum/${resource.id}`}
+                        class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
+                    >
+                        Deforum
                     </a>
                     <button
                         class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 shadow-md"
