@@ -10,7 +10,6 @@
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
     import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
     import PreviewDeforum from '$lib/runpod/ui/PreviewDeforum.svelte';
-    import { runState } from '$lib/runpod/helper/StoreRun.js';
 </script>
 
 <div class="p-4">
@@ -18,7 +17,6 @@
     <div class="flex gap-4 flex-col md:flex-row">
         <div class="md:w-1/2">
             <DeforumRun 
-                service="deforum" 
                 workflow_name="deforum-basic"
                 ui_config={UI_CONFIG}
                 workflow={WORKFLOW}

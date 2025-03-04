@@ -27,9 +27,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
         
         if (field.type === 'int' || field.type === 'number') {
             // Handle numeric values
-            const value = field.id === 'seed' && values[field.id] === -1 
-                ? Math.floor(Math.random() * 1000000000) 
-                : Number(values[field.id]);
+            const value = Number(values[field.id]);
             
             console.log(`Replacing ${placeholder} with number ${value}`);
             workflowStr = workflowStr.replace(`"${placeholder}"`, value);
