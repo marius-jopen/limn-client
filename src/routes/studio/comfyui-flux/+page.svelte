@@ -9,20 +9,7 @@
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
     import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
     import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
-    import { runState } from '$lib/runpod/helper/StoreRun.js';
-
-    let statusFields, logs, status, runpodStatus;
-    let images = [];
-
-    $: {
-        if ($runState) {
-            statusFields = $runState.statusFields;
-            logs = $runState.logs;
-            status = $runState.status;
-            runpodStatus = $runState.runpodStatus;
-            images = $runState.images || [];
-        }
-    }
+    // import { runState } from '$lib/runpod/helper/StoreRun.js';
 </script>
 
 
@@ -40,23 +27,32 @@
         </div>
         
         <div class="md:w-1/2">
-            <PreviewImages {images} />
+            <PreviewImages />
         </div>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
         <div>
             <h2>Status</h2>
-            <StatusTable fields={statusFields} />
+            <StatusTable 
+                service="comfyui" 
+                label="ComfyUI Flux Status" 
+                id="comfyui-flux-status" 
+            />
         </div>
 
-        <HealthCheck service="comfyui" />
+        <!-- <HealthCheck service="comfyui" /> -->
     </div>
     
     <div class="flex gap-4 flex-col md:flex-row">
+        <LogViewer id="log-viewer" label="Generation Logs" />
+        <JsonViewer label="Complete Response" />
+    </div>
+
+    <!-- <div class="flex gap-4 flex-col md:flex-row">
         <LogViewer id="log-viewer" label="Generation Logs" {logs} {status} {runpodStatus} />
         <JsonViewer label="Complete Response" data={runpodStatus} />
-    </div>
+    </div> -->
     
     <GalleryImages type="uploaded" />
     <GalleryImages workflow_name="comfyui-flux" />

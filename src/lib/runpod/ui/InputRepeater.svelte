@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { user } from '$lib/supabase/helper/StoreSupabase';
     import Textarea from '$lib/runpod/ui/inputs/TextareaUi.svelte';
     import Number from '$lib/runpod/ui/inputs/NumberUi.svelte';
     import Dropdown from '$lib/runpod/ui/inputs/DropdownUi.svelte';
@@ -7,7 +8,6 @@
     import UploadImageUi from '$lib/runpod/ui/inputs/UploadImageUi.svelte';
     import InitImageUi from '$lib/runpod/ui/inputs/InitImageUi.svelte';
     import PromptsUi from '$lib/runpod/ui/inputs/PromptsUi.svelte';
-    import { user } from '$lib/supabase/helper/StoreSupabase';
 
     type BaseField = {
         id: string;

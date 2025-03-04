@@ -1,10 +1,8 @@
 import { writable } from 'svelte/store';
 
-// Storage key for localStorage - unique identifier to prevent collision with other stores
-// This key is used to save and retrieve RunPod state data in the browser's localStorage
-// Each store in the application should use a different key to avoid overwriting each other's data
-const STORAGE_KEY = 'runpod_state';
-
+// Base storage key for localStorage - will be combined with workflow name
+// This creates a unique identifier for each workflow to prevent collision
+const BASE_STORAGE_KEY = 'runpod_state';
 
 // Default state
 // This defines the initial structure of the store and matches what components like DeforumRun.svelte send
@@ -15,6 +13,7 @@ const STORAGE_KEY = 'runpod_state';
 // - status: Current user-friendly status of the job
 // - runpodStatus: Complete RunPod API response data with detailed job information
 // - images: Generated images from the job
+// - values: Store input field values
 const defaultState = {
     service: null,
     workflow_name: null,
@@ -22,7 +21,8 @@ const defaultState = {
     logs: [],
     status: 'Idle',
     runpodStatus: null,
-    images: []
+    images: [],
+    values: {}
 };
 
 // Check if we're running in a browser environment
@@ -30,6 +30,16 @@ const defaultState = {
 // This is important because the store is used in both the client and server
 // If the store is used in the server, it will throw an error
 const isBrowser = typeof window !== 'undefined';
+
+// Helper function to get the storage key for a specific workflow
+// If workflow_name is provided, it creates a workflow-specific key
+// Otherwise, it falls back to the base key for backward compatibility
+const getStorageKey = (workflow_name) => {
+    if (workflow_name) {
+        return `${BASE_STORAGE_KEY}_${workflow_name}`;
+    }
+    return BASE_STORAGE_KEY;
+};
 
 // Load initial state from localStorage or use default
 // This function is called when the store is first created to initialize its state
@@ -44,24 +54,29 @@ const loadState = () => {
     if (!isBrowser) return defaultState;
     
     try {
-        // Attempt to retrieve the saved state from localStorage using our unique key
-        const savedState = localStorage.getItem(STORAGE_KEY);
-        
-        // If we found saved state in localStorage, parse the JSON string back into an object
-        // This restores our previous RunPod state (job status, images, logs, etc.)
-        if (savedState) {
-            return JSON.parse(savedState);
+        // Clean up any old generic key if it exists
+        // This is a one-time cleanup of the old storage format
+        const oldGenericState = localStorage.getItem(BASE_STORAGE_KEY);
+        if (oldGenericState) {
+            try {
+                // Try to parse the old state
+                const oldState = JSON.parse(oldGenericState);
+                // If it has a workflow_name, migrate it to the workflow-specific key
+                if (oldState.workflow_name) {
+                    const workflowKey = getStorageKey(oldState.workflow_name);
+                    localStorage.setItem(workflowKey, oldGenericState);
+                }
+            } catch (e) {
+                console.warn('Error parsing old state during cleanup:', e);
+            }
+            // Remove the old generic key
+            localStorage.removeItem(BASE_STORAGE_KEY);
         }
     } catch (error) {
-        // Handle any errors that might occur:
-        // - localStorage might be disabled or full
-        // - The saved state might be invalid JSON
-        // - There might be permission issues
-        console.error('Error loading state from localStorage:', error);
+        console.warn('Error during old state cleanup:', error);
     }
     
-    // If we couldn't load state from localStorage (not found or error),
-    // return the default state as a fallback
+    // Return default state - specific workflow states will be loaded by components
     return defaultState;
 };
 
@@ -95,22 +110,49 @@ export const runState = writable(loadState());
 // The subscribe method takes a callback function that runs on every state change,
 // similar to how addEventListener runs a callback on every event
 runState.subscribe(state => {
+    if (!isBrowser || !state) return;
+    
     try {
-        // Convert the state object to a JSON string so it can be stored in localStorage
-        // localStorage can only store strings, not complex objects
-        const stateJson = JSON.stringify(state);
-        
-        // Save the JSON string to localStorage using our unique key
-        // This overwrites any previous state saved with the same key
-        localStorage.setItem(STORAGE_KEY, stateJson);
+        // Only save state if we have a workflow name
+        if (state.workflow_name) {
+            // Get the workflow-specific storage key
+            const storageKey = getStorageKey(state.workflow_name);
+            
+            // Convert the state object to a JSON string so it can be stored in localStorage
+            const stateJson = JSON.stringify(state);
+            
+            // Save the JSON string to localStorage using our workflow-specific key only
+            localStorage.setItem(storageKey, stateJson);
+        }
     } catch (error) {
-        // Handle potential errors:
-        // - localStorage might be disabled in the browser
-        // - The quota might be exceeded if the state is very large
-        // - The state might contain circular references that can't be stringified
         console.error('Error saving state to localStorage:', error);
     }
 });
+
+// Load state for a specific workflow
+// This function allows components to load saved state for a particular workflow
+// It's useful when switching between workflows to restore the previous settings
+export function loadWorkflowState(workflow_name) {
+    if (!isBrowser || !workflow_name) return defaultState;
+    
+    try {
+        const storageKey = getStorageKey(workflow_name);
+        const savedState = localStorage.getItem(storageKey);
+        
+        if (savedState) {
+            const parsedState = JSON.parse(savedState);
+            runState.set(parsedState);
+            return parsedState;
+        }
+    } catch (error) {
+        console.error(`Error loading state for workflow ${workflow_name}:`, error);
+    }
+    
+    // If no saved state exists for this workflow, return a new state with this workflow name
+    const newState = { ...defaultState, workflow_name };
+    runState.set(newState);
+    return newState;
+}
 
 // Reset the store to default state and clear storage
 //
@@ -131,23 +173,30 @@ runState.subscribe(state => {
 // function handleReset() {
 //   resetRunState();
 // }
-export function resetRunState() {
-    // First, reset the store to its default state
-    // This immediately updates all subscribed components with the default values
-    // Any component using $runState will see the reset values
+export function resetRunState(workflow_name = null) {
+    // Reset the store to its default state
     runState.set(defaultState);
     
     // Then, if we're in a browser environment, also clear localStorage
     if (isBrowser) {
         try {
-            // Remove the item completely from localStorage
-            // This is different from setting it to an empty string
-            // It completely removes the key-value pair
-            localStorage.removeItem(STORAGE_KEY);
+            if (workflow_name) {
+                // If a workflow name is provided, only clear that workflow's storage
+                const storageKey = getStorageKey(workflow_name);
+                localStorage.removeItem(storageKey);
+            } else {
+                // Otherwise, clear all runpod state storage
+                // First, get all keys from localStorage
+                const keys = Object.keys(localStorage);
+                
+                // Then, remove any keys that start with our base storage key
+                keys.forEach(key => {
+                    if (key === BASE_STORAGE_KEY || key.startsWith(`${BASE_STORAGE_KEY}_`)) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            }
         } catch (error) {
-            // Handle potential errors:
-            // - localStorage might be disabled
-            // - There might be permission issues
             console.error('Error clearing localStorage:', error);
         }
     }

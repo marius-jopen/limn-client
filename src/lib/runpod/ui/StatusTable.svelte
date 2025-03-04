@@ -21,9 +21,9 @@
     export let label = "";
     export let id = "";
     
-    // Allow specifying which service to display
-    // If it is set to deforum, then we only want to display the fields for deforum
-    export let service = ""; // Default to empty, meaning show all services
+    // Allow specifying which workflow to display
+    // If set, will only show status for this specific workflow
+    export let workflow_name = ""; // Default to empty, meaning show all workflows
     
     // Controls which fields from the runState object are displayed in the table.
     // 
@@ -49,8 +49,8 @@
     $: {
         if ($runState) {
             
-            // Determine if we should display status information based on service filtering
-            const shouldInclude = !service || $runState.service === service;
+            // Determine if we should display status information based on workflow filtering
+            const shouldInclude = !workflow_name || $runState.workflow_name === workflow_name;
             
             // If we should display status information, then we can proceed with the following logic
             if (shouldInclude) {
@@ -229,7 +229,7 @@
         </div>
     {:else}
         <div class="p-3 border border-gray-200 bg-white text-gray-500">
-            No status information available{service ? ` for ${service}` : ''}.
+            No status information available{workflow_name ? ` for ${workflow_name}` : ''}.
         </div>
     {/if}
 </div> 

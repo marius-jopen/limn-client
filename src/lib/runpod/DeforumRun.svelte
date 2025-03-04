@@ -1,9 +1,10 @@
 <script lang="ts">
     import { user } from '$lib/supabase/helper/StoreSupabase';
-    import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import { runState, loadWorkflowState } from '$lib/runpod/helper/StoreRun.js';
     import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow.js';
     import Button from '$lib/atoms/Button.svelte';
     import InputRepeater from '$lib/runpod/ui/InputRepeater.svelte';
+    import { onMount } from 'svelte';
 
     // TYPESCRIPT TYPES
 
@@ -13,7 +14,7 @@
         id: string;
         type: string;
         default: string | number;
-        label?: string;
+        label: string;
         placeholder?: string;
     }
 
@@ -47,6 +48,14 @@
         isLast?: boolean;
     }
 
+    // Define a type for log entries to fix type errors
+    interface LogEntry {
+        type: string;
+        timestamp: string;
+        level: string;
+        message: string;
+    }
+
     // Define the structure for the component's internal state
     // This interface acts as a blueprint for all the data this component needs to track
     // It combines both UI-specific state (like status messages) and API data (runpodStatus)
@@ -66,7 +75,7 @@
         jobId: string | null;
         images: Array<{ url: string; [key: string]: any }>;
         runpodStatus: RunpodStatus | null;
-        logs: string[];
+        logs: LogEntry[];
     }
 
     // VARIABLES
@@ -114,7 +123,18 @@
     
     // The service to use for the RunPod job
     // This is hardcoded to "deforum" for now
-    let service = "deforum"
+    let service = "deforum";
+
+    // Load saved state for this workflow when the component mounts
+    onMount(() => {
+        if (workflow_name) {
+            const savedState = loadWorkflowState(workflow_name);
+            // If there are saved values for this workflow, use them
+            if (savedState && savedState.values) {
+                values = { ...values, ...savedState.values };
+            }
+        }
+    });
 
     // REACTIVE STATEMENTS
     
@@ -153,6 +173,7 @@
     //   - runpodStatus: Complete RunPod API response data
     //   - images: All generated images
     //   - workflow_name: The specific workflow that was executed
+    //   - values: The current input values from the user
     // The store makes this data available to other components
     // and automatically saves everything to localStorage
     $: {
@@ -163,7 +184,8 @@
             logs,
             status,
             runpodStatus,
-            images
+            images,
+            values // Also store the current input values
         });
     }
 
@@ -277,36 +299,18 @@
         }
     }
 
-    async function streamJob(id) {
+    async function streamJob(id: string): Promise<void> {
         try {
-
-            // Create a real-time connection to stream updates from the RunPod job
-            // Uses EventSource (Server-Sent Events) to receive continuous updates
-            // The URL includes:
-            //   - The job ID to track a specific job
-            //   - userId: To verify permissions
-            //   - service: Which RunPod service is being used
-            //   - workflow: The name of the workflow being executed
-            // This connection will receive status updates, logs, and image results as they happen
             const eventSource = new EventSource(
                 `http://localhost:4000/api/${service}-runpod-serverless-stream/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`
             );
 
-            // Return a promise that resolves when the job is completed
-            // A promise is an object representing an operation that hasn't finished yet
-            // It allows the function to continue running asynchronously while the caller waits for the result
-            // The promise will:
-            //   - resolve (complete successfully) when the job finishes
-            //   - reject (report an error) if something goes wrong
-            // This lets the calling code use "await" to pause until the job is done
-            return new Promise((resolve, reject) => {
-
+            return new Promise<void>((resolve, reject) => {
                 // Handle incoming messages from the event source
                 // This function is called whenever a new message is received
                 // It processes the message data to update the job status, logs, and images
                 eventSource.onmessage = (event) => {
                     try {
-
                         // Extract the JSON data from the event
                         // The data is sent as a string with "data:" prefix
                         // This removes the prefix and parses the JSON
@@ -526,20 +530,16 @@
                 // This section handles any errors that occur from the event source
                 // It creates a log entry for the error and logs it to the console
                 // It does not close the connection on error, let it auto-reconnect
-                eventSource.onerror = (err) => {
-                    const errorLogEntry = {
+                eventSource.onerror = (err: Event) => {
+                    const errorLogEntry: LogEntry = {
                         type: 'error',
                         timestamp: new Date().toISOString(),
                         level: 'ERROR',
-                        message: `EventSource error: ${err.message || 'Unknown error'}`
+                        message: `EventSource error: ${err instanceof ErrorEvent ? err.message : 'Unknown error'}`
                     };
 
                     console.error('EventSource error:', err);
-
-                    // Add the log entry to the logs array
                     logs = [...logs, errorLogEntry];
-
-                    // Don't close the connection on error, let it auto-reconnect
                     console.warn('EventSource error occurred, waiting for reconnection');
                 };
 
@@ -559,9 +559,14 @@
             throw err;
         }
     }
+
+    // Function to cast the UI config to the expected type for InputRepeater
+    function castUIConfig(config: UIConfigField[]) {
+        return config as any;
+    }
 </script>
 
 <div>
-    <InputRepeater UI={ui_config} bind:values />
+    <InputRepeater UI={castUIConfig(ui_config)} bind:values />
     <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
 </div>

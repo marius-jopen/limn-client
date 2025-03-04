@@ -37,7 +37,7 @@
     <div class="grid grid-cols-3 gap-4">
         <div>
             <StatusTable 
-                service="deforum" 
+                workflow_name="deforum-basic"
                 label="Deforum Status" 
                 id="deforum-status" 
             />
