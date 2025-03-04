@@ -115,6 +115,8 @@
     // The service to use for the RunPod job
     // This is hardcoded to "deforum" for now
     let service = "deforum"
+
+    // REACTIVE STATEMENTS
     
     // Get the user ID from the user store
     $: user_id = $user?.id;
@@ -141,7 +143,16 @@
         { label: 'Worker ID', value: runpodStatus?.workerId || 'No worker ID available', isLast: true }
     ] as StatusField[];
 
-    // Update the store whenever the state changes
+    // Update the shared store whenever any component state changes
+    // This reactive statement runs automatically when any of these variables change
+    // It puts all the important state into the runState store:
+    //   - statusFields: Formatted status information for the UI
+    //   - logs: All log messages and errors
+    //   - status: Current user-friendly status
+    //   - runpodStatus: Complete RunPod API response data
+    //   - images: All generated images
+    // The store makes this data available to other components
+    // and automatically saves everything to localStorage
     $: {
         runState.set({
             statusFields,
@@ -151,6 +162,8 @@
             images
         });
     }
+
+    // FUNCTIONS
 
     async function runWorkflow() {
         
