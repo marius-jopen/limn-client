@@ -53,7 +53,7 @@
                 {#if resource.name}
                     <p class="text-lg font-medium">Name: {resource.name}</p>
                 {/if}
-                
+
                 {#if resource.batch_name}
                     <p>Batch: {resource.batch_name}</p>
                 {/if}

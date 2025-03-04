@@ -146,15 +146,19 @@
     // Update the shared store whenever any component state changes
     // This reactive statement runs automatically when any of these variables change
     // It puts all the important state into the runState store:
+    //   - service: Identifies which service generated this data (deforum, comfyui, etc.)
     //   - statusFields: Formatted status information for the UI
     //   - logs: All log messages and errors
     //   - status: Current user-friendly status
     //   - runpodStatus: Complete RunPod API response data
     //   - images: All generated images
+    //   - workflow_name: The specific workflow that was executed
     // The store makes this data available to other components
     // and automatically saves everything to localStorage
     $: {
         runState.set({
+            service,
+            workflow_name,
             statusFields,
             logs,
             status,
