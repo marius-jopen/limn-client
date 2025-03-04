@@ -36,7 +36,11 @@
 
     <div class="grid grid-cols-3 gap-4">
         <div>
-            <StatusTable label="Deforum Status" service="deforum" />
+            <StatusTable 
+                service="deforum" 
+                label="Deforum Status" 
+                id="deforum-status" 
+            />
         </div>
 
         <!-- <HealthCheck service="deforum" /> -->
