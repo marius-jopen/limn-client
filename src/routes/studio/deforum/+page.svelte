@@ -2,7 +2,7 @@
     import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
     import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
     import GalleryDeforumVideos from '$lib/supabase/media/GalleryDeforumVideos.svelte';
-    import HealthCheck from '$lib/runpod/Health.svelte';
+    // import HealthCheck from '$lib/runpod/Health.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
     import Cancel from '$lib/runpod/Cancel.svelte';
@@ -36,12 +36,11 @@
 
     <div class="grid grid-cols-3 gap-4">
         <div>
-            <h2>Status</h2>
-            <StatusTable />
+            <StatusTable label="Deforum Status" service="deforum" />
         </div>
 
-        <HealthCheck service="deforum" />
-        <HealthCheck service="cancel" />
+        <!-- <HealthCheck service="deforum" /> -->
+        <!-- <HealthCheck service="cancel" /> -->
     </div>
 
     <GalleryDeforumVideos workflow_name="deforum-init" />
