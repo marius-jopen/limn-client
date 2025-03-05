@@ -1,8 +1,11 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
+    
+    // Configuration for pagination
+    const IMAGES_PER_PAGE = 40; // Number of images to load initially and on each "Load More" click
     
     // Define interfaces for our data structures
     interface Resource {
@@ -22,7 +25,33 @@
     }
 
     export let workflow_name: string | undefined = undefined;
+    export let workflow_names: string[] = [];
     export let type: 'uploaded' | 'generated' | undefined = undefined;
+    
+    // Pagination state
+    let allResources: Resource[] = []; // All fetched resources
+    let displayedResources: Resource[] = []; // Resources currently displayed
+    let displayCount = IMAGES_PER_PAGE; // Number of resources to display
+    let hasMoreToLoad = false; // Whether there are more resources to load
+    
+    // Log props on mount
+    onMount(() => {
+        console.log('GalleryImages component mounted with props:', {
+            workflow_name,
+            workflow_names,
+            type
+        });
+        
+        // Debug: Check database schema
+        checkDatabaseSchema();
+    });
+    
+    // Combine both props into a single array for internal use
+    $: workflowsToFetch = workflow_name 
+        ? [workflow_name] 
+        : workflow_names;
+        
+    $: console.log('workflowsToFetch updated:', workflowsToFetch);
     
     let resources: Resource[] = [];
     let error: string | null = null;
@@ -30,6 +59,12 @@
     let subscription: any; // Type will depend on your Supabase client type
 
     $: user_id = $user?.id;
+
+    // Update displayed resources when allResources or displayCount changes
+    $: {
+        displayedResources = allResources.slice(0, displayCount);
+        hasMoreToLoad = allResources.length > displayCount;
+    }
 
     function getImageUrl(img: string | RunStateImage | null): string {
         if (!img) return '';
@@ -40,6 +75,7 @@
     // Handle runState images immediately
     $: if ($runState.images?.length) {
         const newImages = $runState.images.map(img => ({
+            id: crypto.randomUUID(), // Add a random UUID for the id
             image_url: getImageUrl(img),
             user_id: user_id,
             workflow_name: workflow_name,
@@ -47,39 +83,77 @@
         }));
         
         // Merge new images with existing ones, avoiding duplicates
-        const existingUrls = new Set(resources.map(r => r.image_url));
+        const existingUrls = new Set(allResources.map(r => r.image_url));
         const uniqueNewImages = newImages.filter(img => !existingUrls.has(img.image_url));
-        resources = [...uniqueNewImages, ...resources];
+        allResources = [...uniqueNewImages, ...allResources];
+    }
+
+    // Function to load more images
+    function loadMore() {
+        displayCount += IMAGES_PER_PAGE;
     }
 
     // Modify fetchUserImages to handle new filtering logic
     async function fetchUserImages() {
         try {
-            let query = supabase
-                .from('resource')
-                .select('*')
-                .eq('user_id', user_id)
-                .or('visibility.is.null,visibility.eq.true');
-
-            // Add workflow_name filter if provided
-            if (workflow_name) {
-                query = query.eq('workflow_name', workflow_name);
+            if (!user_id) {
+                console.log('No user_id available, skipping fetch');
+                return;
             }
-
-            // Add type filter if provided
-            if (type) {
-                query = query.eq('type', type);
-            }
-
-            const { data, error: supabaseError } = await query
-                .order('created_at', { ascending: false });
-
-            if (supabaseError) throw supabaseError;
             
-            // Merge with existing runState images
-            const existingUrls = new Set(resources.map(r => r.image_url));
-            const newDbImages = data.filter(img => !existingUrls.has(img.image_url));
-            resources = [...resources, ...newDbImages];
+            console.log('Fetching images with filters:', { 
+                type, 
+                workflowsToFetch,
+                user_id
+            });
+            
+            let fetchedResources: Resource[] = [];
+            
+            // First, fetch uploaded images
+            if (type === 'uploaded') {
+                console.log('Fetching uploaded images');
+                const { data: uploadedData, error: uploadedError } = await supabase
+                    .from('resource')
+                    .select('*')
+                    .eq('user_id', user_id)
+                    .eq('type', 'uploaded')
+                    .or('visibility.is.null,visibility.eq.true')
+                    .order('created_at', { ascending: false });
+                
+                if (uploadedError) {
+                    console.error('Error fetching uploaded images:', uploadedError);
+                } else if (uploadedData) {
+                    console.log('Fetched uploaded images:', uploadedData);
+                    fetchedResources = [...uploadedData];
+                }
+            }
+            
+            // Then, if we have workflow names, fetch those images too
+            if (workflowsToFetch.length > 0) {
+                console.log('Fetching workflow images:', workflowsToFetch);
+                const { data: workflowData, error: workflowError } = await supabase
+                    .from('resource')
+                    .select('*')
+                    .eq('user_id', user_id)
+                    .in('workflow_name', workflowsToFetch)
+                    .or('visibility.is.null,visibility.eq.true')
+                    .order('created_at', { ascending: false });
+                
+                if (workflowError) {
+                    console.error('Error fetching workflow images:', workflowError);
+                } else if (workflowData) {
+                    console.log('Fetched workflow images:', workflowData);
+                    
+                    // Merge with existing resources, avoiding duplicates
+                    const existingIds = new Set(fetchedResources.map(r => r.id));
+                    const newWorkflowImages = workflowData.filter(img => !existingIds.has(img.id));
+                    fetchedResources = [...fetchedResources, ...newWorkflowImages];
+                }
+            }
+            
+            console.log('Final combined resources:', fetchedResources);
+            allResources = fetchedResources;
+            
         } catch (e) {
             error = e.message;
             console.error('Error fetching images:', e);
@@ -92,45 +166,111 @@
         }
 
         if (user_id) {
-            let filter = `user_id=eq.${user_id}`;
-            if (workflow_name) {
-                filter += ` AND workflow_name=eq.${workflow_name}`;
+            // Create separate subscriptions for uploaded and workflow images
+            const channels = [];
+            
+            // Subscribe to uploaded images if needed
+            if (type === 'uploaded') {
+                console.log('Setting up subscription for uploaded images');
+                const uploadedChannel = supabase
+                    .channel('uploaded_changes')
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: '*',
+                            schema: 'public',
+                            table: 'resource',
+                            filter: `user_id=eq.${user_id} AND type=eq.uploaded`
+                        },
+                        () => {
+                            fetchUserImages();
+                        }
+                    )
+                    .subscribe();
+                
+                channels.push(uploadedChannel);
             }
-            if (type) {
-                filter += ` AND type=eq.${type}`;
+            
+            // Subscribe to workflow images if needed
+            if (workflowsToFetch.length > 0) {
+                console.log('Setting up subscription for workflow images');
+                
+                // Create a separate subscription for each workflow
+                workflowsToFetch.forEach(wf => {
+                    const workflowChannel = supabase
+                        .channel(`workflow_${wf}_changes`)
+                        .on(
+                            'postgres_changes',
+                            {
+                                event: '*',
+                                schema: 'public',
+                                table: 'resource',
+                                filter: `user_id=eq.${user_id} AND workflow_name=eq.${wf}`
+                            },
+                            () => {
+                                fetchUserImages();
+                            }
+                        )
+                        .subscribe();
+                    
+                    channels.push(workflowChannel);
+                });
             }
-
-            subscription = supabase
-                .channel('resource_changes')
-                .on(
-                    'postgres_changes',
-                    {
-                        event: '*',
-                        schema: 'public',
-                        table: 'resource',
-                        filter
-                    },
-                    () => {
-                        fetchUserImages();
-                    }
-                )
-                .subscribe();
+            
+            // Store all channels for cleanup
+            subscription = channels;
         }
     }
 
     // Clean up subscription when component is destroyed
     onDestroy(() => {
         if (subscription) {
-            subscription.unsubscribe();
+            if (Array.isArray(subscription)) {
+                subscription.forEach(channel => {
+                    if (channel && typeof channel.unsubscribe === 'function') {
+                        channel.unsubscribe();
+                    }
+                });
+            } else if (typeof subscription.unsubscribe === 'function') {
+                subscription.unsubscribe();
+            }
         }
     });
 
-    // Update the reactive statement to include type
+    // Update the reactive statement to include workflowsToFetch
     $: {
         if (user_id) {
             setupSubscription();
-            resources = []; // Clear existing resources
+            allResources = []; // Clear existing resources
             fetchUserImages();
+            
+            // Debug query to check for any uploaded images
+            if (type === 'uploaded') {
+                checkForAnyUploadedImages();
+            }
+        }
+    }
+
+    // Debug function to check if there are any uploaded images at all
+    async function checkForAnyUploadedImages() {
+        try {
+            console.log('DEBUG: Checking for any uploaded images');
+            
+            const { data, error: supabaseError } = await supabase
+                .from('resource')
+                .select('*')
+                .eq('user_id', user_id)
+                .eq('type', 'uploaded')
+                .limit(10);
+                
+            if (supabaseError) {
+                console.error('DEBUG: Supabase error when checking for uploads:', supabaseError);
+                return;
+            }
+            
+            console.log('DEBUG: Found uploaded images (regardless of workflow):', data);
+        } catch (e) {
+            console.error('DEBUG: Error checking for uploads:', e);
         }
     }
 
@@ -168,25 +308,50 @@
             }
 
             // Only remove from UI if deletion was successful
-            resources = resources.filter(r => r.id !== resource.id);
+            allResources = allResources.filter(r => r.id !== resource.id);
         } catch (e) {
             error = e.message;
             console.error('Error deleting image:', e);
             alert('Failed to delete image: ' + e.message);
         }
     }
-</script>
 
-<!-- Remove the filter buttons and simplify the header -->
-<div class="mb-4">
-    <h2>{type || workflow_name || 'Gallery'}</h2>
-</div>
+    async function checkDatabaseSchema() {
+        try {
+            console.log('DEBUG: Checking database schema');
+            
+            // First, get a sample resource to check its structure
+            const { data: sampleData, error: sampleError } = await supabase
+                .from('resource')
+                .select('*')
+                .limit(1);
+                
+            if (sampleError) {
+                console.error('DEBUG: Error fetching sample data:', sampleError);
+                return;
+            }
+            
+            if (sampleData && sampleData.length > 0) {
+                console.log('DEBUG: Sample resource structure:', sampleData[0]);
+                
+                // Check if the type field exists
+                if (!('type' in sampleData[0])) {
+                    console.warn('DEBUG: The "type" field does not exist in the resource table!');
+                }
+            } else {
+                console.log('DEBUG: No resources found in the database');
+            }
+        } catch (e) {
+            console.error('DEBUG: Error checking database schema:', e);
+        }
+    }
+</script>
 
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
-        {#each resources as resource}
+        {#each displayedResources as resource}
             <div 
                 class="aspect-square overflow-hidden relative group"
                 role="group"
@@ -226,6 +391,17 @@
             </div>
         {/each}
     </div>
+    
+    {#if hasMoreToLoad}
+        <div class="mt-4 flex justify-center">
+            <button 
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md"
+                on:click={loadMore}
+            >
+                Load More ({displayedResources.length} of {allResources.length})
+            </button>
+        </div>
+    {/if}
 {/if}
 
 {#if selectedImage}
@@ -248,7 +424,7 @@
                 class="max-w-full max-h-[90vh] object-contain"
             />
             <button 
-                class="absolute top-4 right-4 text-white p-2 hover:bg-opacity-75"
+                class="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
                 on:click={closeOverlay}
             >
                 ✕

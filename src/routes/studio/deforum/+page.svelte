@@ -8,7 +8,7 @@
     import Cancel from '$lib/runpod/Cancel.svelte';
     import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
-    import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
+    // import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
     import PreviewDeforum from '$lib/runpod/ui/PreviewDeforum.svelte';
 </script>
 
@@ -31,7 +31,6 @@
 
     <div class="flex gap-4 flex-col md:flex-row">
         <LogViewer id="log-viewer" label="Generation Logs" />
-        <JsonViewer label="Complete Response" />
     </div>
 
     <div class="grid grid-cols-3 gap-4">
@@ -47,9 +46,6 @@
         <!-- <HealthCheck service="cancel" /> -->
     </div>
 
-    <GalleryDeforumVideos workflow_name="deforum-init" />
-    <GalleryDeforumVideos workflow_name="deforum-basic" />
-    <GalleryImages type="uploaded" />
-    <GalleryImages workflow_name="deforum-init" />
-    <GalleryImages workflow_name="deforum-basic" />
+    <GalleryDeforumVideos workflow_names={["deforum-init", "deforum-basic"]} />
+    <GalleryImages type="uploaded" workflow_names={["deforum-init", "deforum-basic"]} />
 </div>

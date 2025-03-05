@@ -1,6 +1,4 @@
-<script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
-    
+<script context="module" lang="ts">
     // Define types for the image object
     export type ImageObject = {
         url: string;
@@ -8,16 +6,21 @@
     };
 
     export type ImageInput = ImageObject | string;
+</script>
+
+<script lang="ts">
+    import { onMount, onDestroy } from 'svelte';
     
     // Props
     export let images: ImageInput[] = [];
     export let fps: number = 15;
     export let autoPlay: boolean = true;
     export let showControls: boolean = true;
+    export let aspectRatio: 'video' | 'square' = 'video';
     
     // State
     let currentIndex = 0;
-    let animationInterval: number | null = null;
+    let animationInterval: ReturnType<typeof setInterval> | null = null;
     let isPlaying = autoPlay;
     
     // Calculate the interval in milliseconds based on FPS
@@ -96,7 +99,7 @@
 {#if images.length > 0}
     <div class="video-looper relative">
         <!-- Current image display -->
-        <div class="aspect-video bg-black relative overflow-hidden">
+        <div class={`${aspectRatio === 'square' ? 'aspect-square' : 'aspect-video'} bg-black relative overflow-hidden`}>
             <img 
                 src={getImageUrl(images[currentIndex])} 
                 alt="Animation frame" 
@@ -111,7 +114,7 @@
         
         <!-- Controls -->
         {#if showControls && images.length > 1}
-            <div class="flex items-center justify-center gap-2 mt-2 p-2 bg-gray-100 rounded">
+            <div class="flex items-center justify-center gap-2 mb-2 p-2 bg-gray-100 rounded">
                 <!-- Previous frame button -->
                 <button 
                     class="p-2 rounded-full hover:bg-gray-200"
@@ -160,7 +163,7 @@
         {/if}
     </div>
 {:else}
-    <div class="aspect-video bg-gray-200 flex items-center justify-center text-gray-500">
+    <div class={`${aspectRatio === 'square' ? 'aspect-square' : 'aspect-video'} bg-gray-200 flex items-center justify-center text-gray-500`}>
         No images available
     </div>
 {/if}

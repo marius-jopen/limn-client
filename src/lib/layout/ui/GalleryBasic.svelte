@@ -79,7 +79,7 @@
             {@const imageUrl = getImageUrl(image)}
             
             <div 
-                class="aspect-square overflow-hidden cursor-pointer"
+                class="aspect-square overflow-hidden cursor-pointer group relative"
                 on:click={() => openOverlay(imageUrl, index)}
                 on:keydown={(e) => e.key === 'Enter' && openOverlay(imageUrl, index)}
                 tabindex="0"
@@ -89,7 +89,7 @@
                 <img 
                     src={imageUrl} 
                     alt="Gallery image" 
-                    class="w-full h-full object-cover"
+                    class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                     loading="lazy"
                 />
             </div>

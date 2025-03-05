@@ -3,6 +3,7 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import Button from '$lib/atoms/Button.svelte';
+    import VideoLooper from '$lib/layout/ui/VideoLooper.svelte';
     
     interface Resource {
         id: string;
@@ -17,20 +18,19 @@
         [batchName: string]: Resource[];
     }
     
-    export let workflow_name: string;
+    // Accept either a single workflow name or an array of workflow names
+    export let workflow_names: string[] = [];
+    export let workflow_name: string | undefined = undefined;
+    
+    // Combine both props into a single array for internal use
+    $: workflowsToFetch = workflow_name 
+        ? [workflow_name] 
+        : workflow_names;
     
     let resources: Resource[] = [];
     let error: string | null = null;
-    let selectedImage: Resource | null = null;
-
-    // Add state for animation intervals and current indices
-    let batchIntervals: Map<string, number> = new Map();
-    let batchCurrentIndices: Map<string, number> = new Map();
-
-    // Add state for overlay animation
-    let overlayInterval: number | null = null;
-    let overlayCurrentIndex = 0;
-    let overlayImages: Resource[] = [];
+    let selectedBatch: string | null = null;
+    let selectedImages: Resource[] = [];
 
     // Add state for pagination
     let displayCount = 4;
@@ -39,11 +39,13 @@
 
     async function fetchUserImages() {
         try {
+            if (!user_id || workflowsToFetch.length === 0) return;
+            
             const { data, error: supabaseError } = await supabase
                 .from('resource')
                 .select('*')
                 .eq('user_id', user_id)
-                .eq('workflow_name', workflow_name)
+                .in('workflow_name', workflowsToFetch)
                 .or('visibility.is.null,visibility.eq.true') 
                 .order('created_at', { ascending: false });
 
@@ -63,7 +65,15 @@
             subscription.unsubscribe();
         }
 
-        if (user_id) {
+        if (user_id && workflowsToFetch.length > 0) {
+            // Create a filter condition for each workflow name
+            const filterConditions = workflowsToFetch.map(wf => 
+                `user_id=eq.${user_id} AND workflow_name=eq.${wf}`
+            );
+            
+            // Join with OR
+            const filterString = filterConditions.join(' OR ');
+            
             subscription = supabase
                 .channel('resource_changes')
                 .on(
@@ -72,7 +82,7 @@
                         event: '*',
                         schema: 'public',
                         table: 'resource',
-                        filter: `user_id=eq.${user_id} AND workflow_name=eq.${workflow_name}`
+                        filter: filterString
                     },
                     () => {
                         fetchUserImages();
@@ -87,44 +97,24 @@
         if (subscription) {
             subscription.unsubscribe();
         }
-        batchIntervals.forEach(interval => clearInterval(interval));
-        if (overlayInterval) clearInterval(overlayInterval);
     });
 
-    // Setup subscription and fetch images when user_id or workflow_name changes
+    // Setup subscription and fetch images when user_id or workflowsToFetch changes
     $: {
-        if (user_id && workflow_name) {
+        if (user_id && workflowsToFetch.length > 0) {
             setupSubscription();
             fetchUserImages();
         }
     }
 
-    // Modify handleImageClick to animate backwards
-    function handleImageClick(resource: Resource) {
-        const batchName = Object.entries(groupedResources).find(([_, resources]) => 
-            resources.includes(resource)
-        )[0];
-        overlayImages = groupedResources[batchName];
-        overlayCurrentIndex = overlayImages.indexOf(resource);
-        
-        // Start overlay animation going backwards
-        if (overlayInterval) clearInterval(overlayInterval);
-        overlayInterval = setInterval(() => {
-            overlayCurrentIndex = (overlayCurrentIndex - 1 + overlayImages.length) % overlayImages.length;
-        }, 67);
-        
-        selectedImage = resource;
+    function handleBatchClick(batchName: string, batchResources: Resource[]) {
+        selectedBatch = batchName;
+        selectedImages = batchResources;
     }
 
-    // Modify closeOverlay to cleanup overlay animation
     function closeOverlay() {
-        if (overlayInterval) {
-            clearInterval(overlayInterval);
-            overlayInterval = null;
-        }
-        selectedImage = null;
-        overlayImages = [];
-        overlayCurrentIndex = 0;
+        selectedBatch = null;
+        selectedImages = [];
     }
 
     // Update the groupedResources computed property type
@@ -137,32 +127,6 @@
         return groups;
     }, {});
 
-    // Function to start animation for a batch
-    function startBatchAnimation(batchName: string, batchResources: Resource[]) {
-        if (batchIntervals.has(batchName)) {
-            clearInterval(batchIntervals.get(batchName));
-        }
-
-        batchCurrentIndices.set(batchName, 0);
-        const interval = setInterval(() => {
-            batchCurrentIndices.set(
-                batchName,
-                (batchCurrentIndices.get(batchName) - 1 + batchResources.length) % batchResources.length
-            );
-            batchCurrentIndices = batchCurrentIndices; // Trigger reactivity
-        }, 67);
-        batchIntervals.set(batchName, interval);
-    }
-
-    // Start animations when resources change
-    $: {
-        if (Object.entries(groupedResources).length > 0) {
-            Object.entries(groupedResources).forEach(([batchName, batchResources]) => {
-                startBatchAnimation(batchName, batchResources);
-            });
-        }
-    }
-
     // Function to load more batches
     function loadMore() {
         displayCount += 4;
@@ -171,7 +135,7 @@
     // Calculate if there are more batches to show
     $: hasMore = Object.keys(groupedResources).length > displayCount;
 
-    // Add this function before the script's end
+    // Function to handle batch deletion
     async function handleDeleteBatch(batchName: string): Promise<void> {
         try {
             const batchResources = groupedResources[batchName];
@@ -193,17 +157,11 @@
                 throw new Error(data.message || 'Failed to delete batch');
             }
 
-            // Clear the animation interval for this batch
-            if (batchIntervals.has(batchName)) {
-                clearInterval(batchIntervals.get(batchName));
-                batchIntervals.delete(batchName);
-            }
-
             // Refetch the data to update the UI
             await fetchUserImages();
             
             // If the deleted batch was being displayed in the overlay, close it
-            if (selectedImage && selectedImage.batch_name === batchName) {
+            if (selectedBatch === batchName) {
                 closeOverlay();
             }
         } catch (e) {
@@ -217,21 +175,22 @@
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
-    <h2>{workflow_name}</h2>
     <div class="flex flex-col">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
             {#each Object.entries(groupedResources).slice(0, displayCount) as [batchName, batchResources]}
                 <div class="relative group">
                     <div class="aspect-square w-full overflow-hidden cursor-pointer"
-                        on:click={() => handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
-                        on:keydown={(e) => e.key === 'Enter' && handleImageClick(batchResources[batchCurrentIndices.get(batchName) || 0])}
+                        on:click={() => handleBatchClick(batchName, batchResources)}
+                        on:keydown={(e) => e.key === 'Enter' && handleBatchClick(batchName, batchResources)}
                         role="button"
                         tabindex="0"
                     >
-                        <img 
-                            src={batchResources[batchCurrentIndices.get(batchName) || 0].image_url} 
-                            alt={batchResources[batchCurrentIndices.get(batchName) || 0].name || 'User uploaded image'} 
-                            class="w-full h-full object-cover"
+                        <VideoLooper 
+                            images={batchResources.map(resource => resource.image_url)}
+                            fps={15}
+                            autoPlay={true}
+                            showControls={false}
+                            aspectRatio="square"
                         />
                     </div>
                     <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
@@ -257,7 +216,7 @@
     </div>
 {/if}
 
-{#if selectedImage}
+{#if selectedBatch && selectedImages.length > 0}
     <div 
         class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
         on:click={closeOverlay}
@@ -266,13 +225,15 @@
         tabindex="0"
     >
         <div 
-            class="relative max-w-4xl max-h-[90vh]"
+            class="relative max-w-4xl max-h-[90vh] w-full"
             on:click|stopPropagation={() => {}}
         >
-            <img 
-                src={overlayImages[overlayCurrentIndex].image_url} 
-                alt={overlayImages[overlayCurrentIndex].name || 'User uploaded image'} 
-                class="max-w-full max-h-[90vh] object-contain"
+            <VideoLooper 
+                images={selectedImages.map(resource => resource.image_url)}
+                fps={15}
+                autoPlay={true}
+                showControls={true}
+                aspectRatio="video"
             />
             <button 
                 class="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
