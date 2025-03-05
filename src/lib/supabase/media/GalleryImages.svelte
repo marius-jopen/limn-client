@@ -39,7 +39,7 @@
     let allResources: Resource[] = []; // All fetched resources
     let displayedResources: Resource[] = []; // Resources currently displayed
     let displayCount = IMAGES_PER_PAGE; // Number of resources to display
-    let hasMoreToLoad = false; // Whether there are more resources to load
+    let hasMoreToLoad = true; // Whether there are more resources to load - always default to true
     
     // Log props on mount
     onMount(() => {
@@ -59,7 +59,6 @@
         
     $: console.log('workflowsToFetch updated:', workflowsToFetch);
     
-    let resources: Resource[] = [];
     let error: string | null = null;
     let selectedImage: Resource | null = null;
     let subscription: any; // Type will depend on your Supabase client type
@@ -69,13 +68,7 @@
     // Update displayed resources
     $: {
         displayedResources = allResources.slice(0, displayCount);
-        
-        // Always show the Load More button if we have more resources than currently displayed
-        // or if we have exactly IMAGES_PER_PAGE images (which suggests there may be more)
-        hasMoreToLoad = allResources.length > displayCount || 
-                        (allResources.length === IMAGES_PER_PAGE);
-                         
-        console.log(`Displaying ${displayedResources.length} resources, hasMoreToLoad: ${hasMoreToLoad}`);
+        console.log(`Displaying ${displayedResources.length} resources`);
     }
 
     function getImageUrl(img: string | RunStateImage | null): string {
@@ -166,17 +159,9 @@
                 if (uniqueNewResources.length > 0) {
                     allResources = [...allResources, ...uniqueNewResources];
                     console.log(`Total resources now: ${allResources.length}`);
-                    
-                    // If we got a full page, there are likely more
-                    hasMoreToLoad = additionalResources.length >= IMAGES_PER_PAGE;
-                } else {
-                    console.log('No new unique resources found');
-                    // If we didn't find any new resources, there are no more to load
-                    hasMoreToLoad = false;
                 }
             } else {
                 console.log('No additional resources found');
-                hasMoreToLoad = false;
             }
             
         } catch (e) {
@@ -201,7 +186,7 @@
         allResources = [...uniqueNewImages, ...allResources];
     }
 
-    // Modify fetchUserImages to use a single query
+    // Simplified fetch function
     async function fetchUserImages() {
         try {
             if (!user_id) {
@@ -209,40 +194,28 @@
                 return;
             }
             
-            console.log('Fetching user images with simplified query');
+            console.log('Fetching user images');
             
             // Single query to fetch all resources for the user
             const fetchedResources = await fetchResourcesFromSupabase({});
             
             console.log(`Fetched ${fetchedResources.length} resources`);
             allResources = fetchedResources;
-            
-            // Check if there are likely more images to load
-            hasMoreToLoad = fetchedResources.length >= IMAGES_PER_PAGE;
-            console.log(`Setting hasMoreToLoad to ${hasMoreToLoad} based on initial fetch size`);
-            
         } catch (e) {
             error = e.message;
             console.error('Error fetching images:', e);
         }
     }
 
+    // Simplified subscription setup
     function setupSubscription() {
-        if (subscription) {
-            if (Array.isArray(subscription)) {
-                subscription.forEach(channel => {
-                    if (channel && typeof channel.unsubscribe === 'function') {
-                        channel.unsubscribe();
-                    }
-                });
-            } else if (typeof subscription.unsubscribe === 'function') {
-                subscription.unsubscribe();
-            }
+        // Clean up existing subscription
+        if (subscription && typeof subscription.unsubscribe === 'function') {
+            subscription.unsubscribe();
         }
 
         if (user_id) {
-            // Create a single subscription for all resource changes
-            console.log('Setting up a single subscription for all resource changes');
+            console.log('Setting up subscription for resource changes');
             
             subscription = supabase
                 .channel(`resource_changes_${user_id}`)
@@ -264,59 +237,20 @@
 
     // Clean up subscription when component is destroyed
     onDestroy(() => {
-        if (subscription) {
-            if (Array.isArray(subscription)) {
-                subscription.forEach(channel => {
-                    if (channel && typeof channel.unsubscribe === 'function') {
-                        channel.unsubscribe();
-                    }
-                });
-            } else if (typeof subscription.unsubscribe === 'function') {
-                subscription.unsubscribe();
-            }
+        if (subscription && typeof subscription.unsubscribe === 'function') {
+            subscription.unsubscribe();
         }
     });
 
-    // Update the reactive statement to include workflowsToFetch
+    // Initial setup
     let initialLoadComplete = false;
     $: {
         if (user_id && !initialLoadComplete) {
-            console.log('Initial component setup with props:', {
-                workflow_name,
-                workflow_names,
-                type,
-                typeArray
-            });
-            
+            console.log('Initial component setup');
             setupSubscription();
-            
-            // Now fetch images with the props
             allResources = []; // Clear existing resources
             fetchUserImages();
             initialLoadComplete = true;
-        }
-    }
-
-    // Debug function to check if there are any uploaded images at all
-    async function checkForAnyUploadedImages() {
-        try {
-            console.log('DEBUG: Checking for any uploaded images');
-            
-            const { data, error: supabaseError } = await supabase
-                .from('resource')
-                .select('*')
-                .eq('user_id', user_id)
-                .eq('type', 'uploaded')
-                .limit(10);
-                
-            if (supabaseError) {
-                console.error('DEBUG: Supabase error when checking for uploads:', supabaseError);
-                return;
-            }
-            
-            console.log('DEBUG: Found uploaded images (regardless of workflow):', data);
-        } catch (e) {
-            console.error('DEBUG: Error checking for uploads:', e);
         }
     }
 
@@ -330,7 +264,7 @@
         selectedImage = null;
     }
 
-    // Add this function after the closeOverlay function
+    // Function to delete image
     async function handleDeleteImage(resource: Resource): Promise<void> {
         try {
             const url = `http://localhost:4000/api/resources/${resource.id}/delete`;
@@ -342,10 +276,6 @@
                     'Content-Type': 'application/json',
                 }
             });
-
-            // Log response details for debugging
-            console.log('Response status:', response.status);
-            console.log('Response type:', response.headers.get('content-type'));
 
             const data = await response.json();
             
@@ -418,7 +348,8 @@
         {/if}
     </div>
     
-    {#if hasMoreToLoad}
+    <!-- Always show Load More button if there are images -->
+    {#if displayedResources.length > 0}
         <div class="mt-4 flex justify-center">
             <button 
                 class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md"
@@ -430,6 +361,7 @@
     {/if}
 {/if}
 
+<!-- Overlay for selected image -->
 {#if selectedImage}
     <div 
         class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
