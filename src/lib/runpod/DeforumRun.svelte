@@ -567,6 +567,6 @@
 </script>
 
 <div>
-    <InputRepeater UI={castUIConfig(ui_config)} bind:values />
     <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
+    <InputRepeater UI={castUIConfig(ui_config)} bind:values />
 </div>
