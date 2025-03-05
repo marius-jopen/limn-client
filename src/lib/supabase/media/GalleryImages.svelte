@@ -255,7 +255,7 @@
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
-    <div class="grid {gridClass}">
+    <div class="grid gap-1 {gridClass}">
         {#if displayedResources.length > 0}
             {#each displayedResources as resource (resource.id)}
                 <GalleryImageItem 

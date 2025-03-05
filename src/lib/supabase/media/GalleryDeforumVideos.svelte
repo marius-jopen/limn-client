@@ -460,16 +460,16 @@
     </div>
 {:else}
     <div class="flex flex-col gap-4 pt-8">
-        <p class="text-sm text-gray-500">
+        <!-- <p class="text-sm text-gray-500">
             Loaded {Object.keys(groupedResources).length} of {totalBatchCount} batches ({resources.length} total images) 
             <small>(Update counter: {uiForceUpdateCounter})</small>
-        </p>
+        </p> -->
         
         <!-- Use visibleBatches directly to ensure reactivity -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
             {#key forceUpdateKey}
                 {#each Object.entries(groupedResources) as [batchName, batchResources], index}
-                    <div class="relative group border border-gray-200 shadow-sm rounded overflow-hidden">
+                    <div class="relative group border border-gray-200 overflow-hidden">
                         <div class="aspect-square w-full overflow-hidden cursor-pointer"
                             on:click={() => handleBatchClick(batchName, batchResources)}
                             on:keydown={(e) => e.key === 'Enter' && handleBatchClick(batchName, batchResources)}
@@ -479,6 +479,7 @@
                             <div class="absolute inset-0 flex items-center justify-center text-sm text-gray-500 z-0">
                                 {batchResources.length} images
                             </div>
+
                             <VideoLooper 
                                 images={batchResources.map(resource => resource.image_url)}
                                 fps={VIDEO_FPS}
@@ -487,7 +488,7 @@
                                 aspectRatio="square"
                             />
                         </div>
-                        <div class="absolute top-0 left-0 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-br">
+                        <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-br">
                             <span title={batchName}>{batchName.length > 20 ? batchName.substring(0, 20) + '...' : batchName}</span>
                         </div>
                         <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2 bg-black bg-opacity-50">
@@ -552,6 +553,3 @@
         </div>
     </div>
 {/if}
-
-// At the end of the script section, add this reactive console log:
-$: console.log(`RENDER CHECK: forceUpdateKey=${forceUpdateKey}, batchCount=${Object.keys(groupedResources).length}, batch names=`, Object.keys(groupedResources));
