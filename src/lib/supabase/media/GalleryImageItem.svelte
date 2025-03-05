@@ -164,31 +164,37 @@
             class="w-full h-full object-cover"
             loading="lazy"
         />
-        <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center flex-col justify-center gap-2 p-2">
-            <button
-                class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-                on:click={handlePreview}
-            >
-                Preview
-            </button>
-            <a
-                href={`/studio/${currentResource.id}`}
-                class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-            >
-                Details
-            </a>
-            <a
-                href={`/studio/deforum/${currentResource.id}`}
-                class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-            >
-                Deforum
-            </a>
-            <button
-                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 shadow-md"
-                on:click={handleDelete}
-            >
-                Delete
-            </button>
+        <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity p-1">
+            <div class="w-full h-full grid grid-cols-2 grid-rows-2 gap-1">
+                <button
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    on:click={handlePreview}
+                    title="Preview"
+                >
+                    🔍
+                </button>
+                <a
+                    href={`/studio/${currentResource.id}`}
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    title="Details"
+                >
+                    ℹ️
+                </a>
+                <a
+                    href={`/studio/deforum/${currentResource.id}`}
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    title="Deforum"
+                >
+                    🎞️
+                </a>
+                <button
+                    class="bg-white text-white rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    on:click={handleDelete}
+                    title="Delete"
+                >
+                    🗑️
+                </button>
+            </div>
         </div>
     </div>
 
