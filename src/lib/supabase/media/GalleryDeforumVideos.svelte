@@ -468,7 +468,7 @@
         <!-- Use visibleBatches directly to ensure reactivity -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
             {#key forceUpdateKey}
-                {#each Object.entries(groupedResources) as [batchName, batchResources], index}
+                {#each getSortedBatches() as [batchName, batchResources], index}
                     <div class="relative group border border-gray-200 overflow-hidden">
                         <div class="aspect-square w-full overflow-hidden cursor-pointer"
                             on:click={() => handleBatchClick(batchName, batchResources)}
