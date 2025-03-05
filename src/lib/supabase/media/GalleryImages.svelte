@@ -3,6 +3,7 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
+    import GalleryImageItem from './GalleryImageItem.svelte';
     
     // Configuration for pagination
     const IMAGES_PER_PAGE = 40; // Number of images to load initially and on each "Load More" click
@@ -16,7 +17,7 @@
         created_at: string;
         name?: string;
         visibility?: boolean;
-        type?: 'uploaded' | 'generated' | string; // Add type field
+        type?: 'uploaded' | 'generated' | string;
     }
 
     interface RunStateImage {
@@ -60,7 +61,6 @@
     $: console.log('workflowsToFetch updated:', workflowsToFetch);
     
     let error: string | null = null;
-    let selectedImage: Resource | null = null;
     let subscription: any; // Type will depend on your Supabase client type
 
     $: user_id = $user?.id;
@@ -102,16 +102,6 @@
                 .eq('user_id', user_id)
                 .or('visibility.is.null,visibility.eq.true')
                 .order('created_at', { ascending: false });
-                
-            // Add type and workflow filters only if specifically provided in options
-            // (Used only for backward compatibility or specific use cases)
-            if (options.type) {
-                query = query.eq('type', options.type);
-            }
-
-            if (options.workflow) {
-                query = query.eq('workflow_name', options.workflow);
-            }
             
             // Add pagination
             if (offset > 0) {
@@ -254,42 +244,11 @@
         }
     }
 
-    // Function to handle image click
-    function handleImageClick(resource: Resource): void {
-        selectedImage = resource;
-    }
-
-    // Function to close overlay
-    function closeOverlay(): void {
-        selectedImage = null;
-    }
-
-    // Function to delete image
-    async function handleDeleteImage(resource: Resource): Promise<void> {
-        try {
-            const url = `http://localhost:4000/api/resources/${resource.id}/delete`;
-            console.log('Attempting to delete resource at URL:', url);
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to delete image');
-            }
-
-            // Only remove from UI if deletion was successful
-            allResources = allResources.filter(r => r.id !== resource.id);
-        } catch (e) {
-            error = e.message;
-            console.error('Error deleting image:', e);
-            alert('Failed to delete image: ' + e.message);
-        }
+    // Handle image deletion
+    function handleImageDeleted(event) {
+        const { id } = event.detail;
+        console.log(`Image deleted: ${id}`);
+        allResources = allResources.filter(r => r.id !== id);
     }
 </script>
 
@@ -298,44 +257,11 @@
 {:else}
     <div class="grid {gridClass}">
         {#if displayedResources.length > 0}
-            {#each displayedResources as resource}
-                <div 
-                    class="aspect-square overflow-hidden relative group"
-                    role="group"
-                >
-                    <img 
-                        src={resource.image_url}
-                        alt={resource.name || 'User uploaded image'} 
-                        class="w-full h-full object-cover"
-                        loading="lazy"
-                    />
-                    <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center flex-col justify-center gap-2 p-2">
-                        <button
-                            class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-                            on:click={() => handleImageClick(resource)}
-                        >
-                            Preview
-                        </button>
-                        <a
-                            href={`/studio/${resource.id}`}
-                            class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-                        >
-                            Details
-                        </a>
-                        <a
-                            href={`/studio/deforum/${resource.id}`}
-                            class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-                        >
-                            Deforum
-                        </a>
-                        <button
-                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 shadow-md"
-                            on:click={() => handleDeleteImage(resource)}
-                        >
-                            Delete
-                        </button>
-                    </div>
-                </div>
+            {#each displayedResources as resource (resource.id)}
+                <GalleryImageItem 
+                    {resource} 
+                    on:imageDeleted={handleImageDeleted}
+                />
             {/each}
         {:else if allResources.length === 0}
             <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
@@ -359,34 +285,4 @@
             </button>
         </div>
     {/if}
-{/if}
-
-<!-- Overlay for selected image -->
-{#if selectedImage}
-    <div 
-        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
-        on:click={closeOverlay}
-        on:keydown={(e) => e.key === 'Escape' && closeOverlay()}
-        role="button"
-        tabindex="0"
-    >
-        <div 
-            class="relative max-w-4xl max-h-[90vh]"
-            on:click|stopPropagation={() => {}}
-            on:keydown|stopPropagation={() => {}}
-            role="presentation"
-        >
-            <img 
-                src={selectedImage.image_url} 
-                alt={selectedImage.name || 'User uploaded image'} 
-                class="max-w-full max-h-[90vh] object-contain"
-            />
-            <button 
-                class="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
-                on:click={closeOverlay}
-            >
-                ✕
-            </button>
-        </div>
-    </div>
 {/if}
