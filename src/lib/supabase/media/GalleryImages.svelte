@@ -351,45 +351,51 @@
     <p class="text-red-400 p-4">{error}</p>
 {:else}
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
-        {#each displayedResources as resource}
-            <div 
-                class="aspect-square overflow-hidden relative group"
-                role="group"
-            >
-                <img 
-                    src={resource.image_url}
-                    alt={resource.name || 'User uploaded image'} 
-                    class="w-full h-full object-cover"
-                    loading="lazy"
-                />
-                <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center flex-col justify-center gap-2 p-2">
-                    <button
-                        class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-                        on:click={() => handleImageClick(resource)}
-                    >
-                        Preview
-                    </button>
-                    <a
-                        href={`/studio/${resource.id}`}
-                        class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-                    >
-                        Details
-                    </a>
-                    <a
-                        href={`/studio/deforum/${resource.id}`}
-                        class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
-                    >
-                        Deforum
-                    </a>
-                    <button
-                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 shadow-md"
-                        on:click={() => handleDeleteImage(resource)}
-                    >
-                        Delete
-                    </button>
+        {#if displayedResources.length > 0}
+            {#each displayedResources as resource}
+                <div 
+                    class="aspect-square overflow-hidden relative group"
+                    role="group"
+                >
+                    <img 
+                        src={resource.image_url}
+                        alt={resource.name || 'User uploaded image'} 
+                        class="w-full h-full object-cover"
+                        loading="lazy"
+                    />
+                    <div class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center flex-col justify-center gap-2 p-2">
+                        <button
+                            class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
+                            on:click={() => handleImageClick(resource)}
+                        >
+                            Preview
+                        </button>
+                        <a
+                            href={`/studio/${resource.id}`}
+                            class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
+                        >
+                            Details
+                        </a>
+                        <a
+                            href={`/studio/deforum/${resource.id}`}
+                            class="bg-white text-black px-3 py-1 rounded hover:bg-gray-200 shadow-md"
+                        >
+                            Deforum
+                        </a>
+                        <button
+                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 shadow-md"
+                            on:click={() => handleDeleteImage(resource)}
+                        >
+                            Delete
+                        </button>
+                    </div>
                 </div>
+            {/each}
+        {:else}
+            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
+                <p class="text-gray-500 text-lg">No images available</p>
             </div>
-        {/each}
+        {/if}
     </div>
     
     {#if hasMoreToLoad}

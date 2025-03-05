@@ -94,6 +94,10 @@
                 />
             </div>
         {/each}
+    {:else}
+        <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
+            <p class="text-gray-500 text-lg">No images available</p>
+        </div>
     {/if} 
 </div>
 
