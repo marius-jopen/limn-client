@@ -13,7 +13,10 @@
 </script>
 
 <div class="p-4">
-    <h1>Deforum Init</h1>
+    <h1>
+        Deforum Init
+    </h1>
+
     <div class="flex gap-4 flex-col md:flex-row">
         <div class="md:w-1/2">
             <DeforumRun 
@@ -22,30 +25,23 @@
                 workflow={WORKFLOW}
             />
             <Cancel />
-        </div>
-        
-        <div class="md:w-1/2">
-            <PreviewDeforum />
-        </div>
-    </div>
 
-    <div class="flex gap-4 flex-col md:flex-row">
-        <LogViewer id="log-viewer" label="Generation Logs" />
-    </div>
-
-    <div class="grid grid-cols-3 gap-4">
-        <div>
             <StatusTable 
                 workflow_name="deforum-basic"
                 label="Deforum Status" 
                 id="deforum-status" 
             />
+            <LogViewer id="log-viewer" label="Generation Logs" />
         </div>
-
-        <!-- <HealthCheck service="deforum" /> -->
-        <!-- <HealthCheck service="cancel" /> -->
+        
+        <div class="md:w-1/2">
+            <PreviewDeforum />
+            <GalleryDeforumVideos workflow_names={["deforum-init", "deforum-basic"]} />
+            <GalleryImages 
+                type={["uploaded", "generated"]} 
+                workflow_names={["deforum-init", "deforum-basic"]} 
+                defaultImagesPerRow={8}
+            />        
+        </div>
     </div>
-
-    <GalleryDeforumVideos workflow_names={["deforum-init", "deforum-basic"]} />
-    <GalleryImages type="uploaded" workflow_names={["deforum-init", "deforum-basic"]} />
 </div>

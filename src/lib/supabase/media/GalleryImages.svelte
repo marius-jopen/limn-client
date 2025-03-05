@@ -26,7 +26,14 @@
 
     export let workflow_name: string | undefined = undefined;
     export let workflow_names: string[] = [];
-    export let type: 'uploaded' | 'generated' | undefined = undefined;
+    export let type: string | string[] | undefined = undefined;
+    export let defaultImagesPerRow: number = 8; // Default number of images per row
+    
+    // Convert type to array if it's a string
+    $: typeArray = typeof type === 'string' ? [type] : Array.isArray(type) ? type : [];
+    
+    // Grid layout state - fixed based on prop
+    $: gridClass = `grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-${defaultImagesPerRow}`;
     
     // Pagination state
     let allResources: Resource[] = []; // All fetched resources
@@ -34,13 +41,37 @@
     let displayCount = IMAGES_PER_PAGE; // Number of resources to display
     let hasMoreToLoad = false; // Whether there are more resources to load
     
+    // Filter state
+    let availableWorkflows: string[] = [];
+    let availableTypes: string[] = [];
+    let selectedWorkflows: string[] = [];
+    let selectedTypes: string[] = [];
+    let filteredResources: Resource[] = [];
+    
     // Log props on mount
     onMount(() => {
         console.log('GalleryImages component mounted with props:', {
             workflow_name,
             workflow_names,
-            type
+            type,
+            typeArray,
+            defaultImagesPerRow
         });
+        
+        // Initialize filters with provided values
+        if (workflow_name) {
+            availableWorkflows = [workflow_name];
+            selectedWorkflows = [workflow_name];
+        } else if (workflow_names.length > 0) {
+            availableWorkflows = [...workflow_names];
+            selectedWorkflows = [...workflow_names];
+        }
+        
+        // Always include uploaded type if available
+        if (typeArray.includes('uploaded')) {
+            availableTypes = ['uploaded'];
+            selectedTypes = ['uploaded'];
+        }
         
         // Debug: Check database schema
         checkDatabaseSchema();
@@ -60,10 +91,33 @@
 
     $: user_id = $user?.id;
 
-    // Update displayed resources when allResources or displayCount changes
+    // Apply filters to resources
     $: {
-        displayedResources = allResources.slice(0, displayCount);
-        hasMoreToLoad = allResources.length > displayCount;
+        // If no filters are selected, show no images
+        if (selectedTypes.length === 0 && selectedWorkflows.length === 0) {
+            filteredResources = [];
+        } else {
+            filteredResources = allResources.filter(resource => {
+                // Check if this is an uploaded image
+                const isUploaded = resource.type === 'uploaded';
+                
+                // Show uploaded images if "uploaded" is selected
+                if (isUploaded && selectedTypes.includes('uploaded')) {
+                    return true;
+                }
+                
+                // Show workflow images if their workflow is selected
+                if (resource.workflow_name && selectedWorkflows.includes(resource.workflow_name)) {
+                    return true;
+                }
+                
+                return false;
+            });
+        }
+        
+        // Update displayed resources based on filtered resources
+        displayedResources = filteredResources.slice(0, displayCount);
+        hasMoreToLoad = filteredResources.length > displayCount;
     }
 
     function getImageUrl(img: string | RunStateImage | null): string {
@@ -86,11 +140,68 @@
         const existingUrls = new Set(allResources.map(r => r.image_url));
         const uniqueNewImages = newImages.filter(img => !existingUrls.has(img.image_url));
         allResources = [...uniqueNewImages, ...allResources];
+        
+        // Update available workflows and types
+        updateAvailableFilters();
     }
 
     // Function to load more images
     function loadMore() {
         displayCount += IMAGES_PER_PAGE;
+    }
+    
+    // Function to toggle workflow filter
+    function toggleWorkflowFilter(workflow: string) {
+        if (selectedWorkflows.includes(workflow)) {
+            selectedWorkflows = selectedWorkflows.filter(w => w !== workflow);
+        } else {
+            selectedWorkflows = [...selectedWorkflows, workflow];
+        }
+    }
+    
+    // Function to toggle type filter
+    function toggleTypeFilter(typeValue: string) {
+        if (selectedTypes.includes(typeValue)) {
+            selectedTypes = selectedTypes.filter(t => t !== typeValue);
+        } else {
+            selectedTypes = [...selectedTypes, typeValue];
+        }
+    }
+    
+    // Function to update available filters based on fetched resources
+    function updateAvailableFilters() {
+        // Get unique workflow names from resources
+        const workflowSet = new Set<string>();
+        const typeSet = new Set<string>();
+        
+        allResources.forEach(resource => {
+            if (resource.workflow_name) {
+                workflowSet.add(resource.workflow_name);
+            }
+            if (resource.type) {
+                typeSet.add(resource.type);
+            }
+        });
+        
+        // Update available filters
+        availableWorkflows = [...workflowSet];
+        availableTypes = [...typeSet];
+        
+        // Initialize selected filters if empty
+        if (selectedWorkflows.length === 0) {
+            if (workflowsToFetch.length > 0) {
+                // If workflows were specified in props, use those
+                selectedWorkflows = [...workflowsToFetch];
+            } else if (availableWorkflows.length > 0) {
+                // Otherwise select all available workflows
+                selectedWorkflows = [...availableWorkflows];
+            }
+        }
+        
+        // Always include uploaded type if available and not already selected
+        if (selectedTypes.length === 0 && availableTypes.includes('uploaded')) {
+            selectedTypes = ['uploaded'];
+        }
     }
 
     // Modify fetchUserImages to handle new filtering logic
@@ -102,15 +213,15 @@
             }
             
             console.log('Fetching images with filters:', { 
-                type, 
+                typeArray, 
                 workflowsToFetch,
                 user_id
             });
             
             let fetchedResources: Resource[] = [];
             
-            // First, fetch uploaded images
-            if (type === 'uploaded') {
+            // Fetch uploaded images if needed
+            if (typeArray.includes('uploaded')) {
                 console.log('Fetching uploaded images');
                 const { data: uploadedData, error: uploadedError } = await supabase
                     .from('resource')
@@ -125,6 +236,29 @@
                 } else if (uploadedData) {
                     console.log('Fetched uploaded images:', uploadedData);
                     fetchedResources = [...uploadedData];
+                }
+            }
+            
+            // Fetch generated images if needed
+            if (typeArray.includes('generated')) {
+                console.log('Fetching generated images');
+                const { data: generatedData, error: generatedError } = await supabase
+                    .from('resource')
+                    .select('*')
+                    .eq('user_id', user_id)
+                    .eq('type', 'generated')
+                    .or('visibility.is.null,visibility.eq.true')
+                    .order('created_at', { ascending: false });
+                
+                if (generatedError) {
+                    console.error('Error fetching generated images:', generatedError);
+                } else if (generatedData) {
+                    console.log('Fetched generated images:', generatedData);
+                    
+                    // Merge with existing resources, avoiding duplicates
+                    const existingIds = new Set(fetchedResources.map(r => r.id));
+                    const newGeneratedImages = generatedData.filter(img => !existingIds.has(img.id));
+                    fetchedResources = [...fetchedResources, ...newGeneratedImages];
                 }
             }
             
@@ -154,6 +288,9 @@
             console.log('Final combined resources:', fetchedResources);
             allResources = fetchedResources;
             
+            // Update available filters based on fetched resources
+            updateAvailableFilters();
+            
         } catch (e) {
             error = e.message;
             console.error('Error fetching images:', e);
@@ -162,25 +299,33 @@
 
     function setupSubscription() {
         if (subscription) {
-            subscription.unsubscribe();
+            if (Array.isArray(subscription)) {
+                subscription.forEach(channel => {
+                    if (channel && typeof channel.unsubscribe === 'function') {
+                        channel.unsubscribe();
+                    }
+                });
+            } else if (typeof subscription.unsubscribe === 'function') {
+                subscription.unsubscribe();
+            }
         }
 
         if (user_id) {
             // Create separate subscriptions for uploaded and workflow images
             const channels = [];
             
-            // Subscribe to uploaded images if needed
-            if (type === 'uploaded') {
-                console.log('Setting up subscription for uploaded images');
-                const uploadedChannel = supabase
-                    .channel('uploaded_changes')
+            // Subscribe to type-specific images
+            typeArray.forEach(typeValue => {
+                console.log(`Setting up subscription for ${typeValue} images`);
+                const typeChannel = supabase
+                    .channel(`${typeValue}_changes`)
                     .on(
                         'postgres_changes',
                         {
                             event: '*',
                             schema: 'public',
                             table: 'resource',
-                            filter: `user_id=eq.${user_id} AND type=eq.uploaded`
+                            filter: `user_id=eq.${user_id} AND type=eq.${typeValue}`
                         },
                         () => {
                             fetchUserImages();
@@ -188,8 +333,8 @@
                     )
                     .subscribe();
                 
-                channels.push(uploadedChannel);
-            }
+                channels.push(typeChannel);
+            });
             
             // Subscribe to workflow images if needed
             if (workflowsToFetch.length > 0) {
@@ -245,7 +390,7 @@
             fetchUserImages();
             
             // Debug query to check for any uploaded images
-            if (type === 'uploaded') {
+            if (typeArray.includes('uploaded')) {
                 checkForAnyUploadedImages();
             }
         }
@@ -350,7 +495,44 @@
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8">
+    <!-- Filter UI -->
+    <div class="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+        <div class="mb-2">
+            <h3 class="text-lg font-medium">Filters</h3>
+        </div>
+        <p class="text-xs text-gray-500 mb-3">
+            Select one or more options to filter images.
+        </p>
+        
+        <div>
+            <div class="mb-1">
+                <h4 class="text-sm font-medium">Show images:</h4>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <!-- Uploaded filter -->
+                {#if availableTypes.includes('uploaded')}
+                    <button 
+                        class="px-3 py-1 text-sm rounded-full {selectedTypes.includes('uploaded') ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}"
+                        on:click={() => toggleTypeFilter('uploaded')}
+                    >
+                        Uploaded
+                    </button>
+                {/if}
+                
+                <!-- Workflow filters -->
+                {#each availableWorkflows as workflow}
+                    <button 
+                        class="px-3 py-1 text-sm rounded-full {selectedWorkflows.includes(workflow) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}"
+                        on:click={() => toggleWorkflowFilter(workflow)}
+                    >
+                        {workflow}
+                    </button>
+                {/each}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid {gridClass}">
         {#if displayedResources.length > 0}
             {#each displayedResources as resource}
                 <div 
@@ -391,9 +573,17 @@
                     </div>
                 </div>
             {/each}
+        {:else if selectedWorkflows.length === 0 && selectedTypes.length === 0}
+            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
+                <p class="text-gray-500 text-lg">Please select at least one filter to view images</p>
+            </div>
+        {:else if allResources.length === 0}
+            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
+                <p class="text-gray-500 text-lg">No images found in your account</p>
+            </div>
         {:else}
             <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
-                <p class="text-gray-500 text-lg">No images available</p>
+                <p class="text-gray-500 text-lg">No images match the selected filters</p>
             </div>
         {/if}
     </div>
@@ -404,7 +594,7 @@
                 class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md"
                 on:click={loadMore}
             >
-                Load More ({displayedResources.length} of {allResources.length})
+                Load More ({displayedResources.length} of {filteredResources.length})
             </button>
         </div>
     {/if}

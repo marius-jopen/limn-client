@@ -33,7 +33,7 @@
     }
 </script>
 
-<div class="h-full">
+<div>
     <VideoLooper {images}  />
     <GalleryBasic 
         {images} 
