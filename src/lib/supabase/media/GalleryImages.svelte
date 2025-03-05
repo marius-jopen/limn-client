@@ -33,8 +33,38 @@
     // Convert type to array if it's a string
     $: typeArray = typeof type === 'string' ? [type] : Array.isArray(type) ? type : [];
     
-    // Grid layout state - fixed based on prop
-    $: gridClass = `grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-${defaultImagesPerRow}`;
+    // Grid layout state - using static classes based on defaultImagesPerRow
+    $: gridClass = getGridClass(defaultImagesPerRow);
+    
+    // Function to determine the appropriate grid class based on the defaultImagesPerRow
+    function getGridClass(columns) {
+        // Default responsive grid classes
+        const baseClasses = "grid-cols-1 sm:grid-cols-2 md:grid-cols-3";
+        
+        // Add the large screen grid class based on columns
+        switch(columns) {
+            case 4:
+                return `${baseClasses} lg:grid-cols-4`;
+            case 5:
+                return `${baseClasses} lg:grid-cols-5`;
+            case 6:
+                return `${baseClasses} lg:grid-cols-6`;
+            case 7:
+                return `${baseClasses} lg:grid-cols-7`;
+            case 8:
+                return `${baseClasses} lg:grid-cols-8`;
+            case 9:
+                return `${baseClasses} lg:grid-cols-9`;
+            case 10:
+                return `${baseClasses} lg:grid-cols-10`;
+            case 11:
+                return `${baseClasses} lg:grid-cols-11`;
+            case 12:
+                return `${baseClasses} lg:grid-cols-12`;
+            default:
+                return `${baseClasses} lg:grid-cols-4`; // Default to 4 columns if unrecognized value
+        }
+    }
     
     // Pagination state
     let allResources: Resource[] = []; // All fetched resources
