@@ -8,7 +8,8 @@
     import Cancel from '$lib/runpod/Cancel.svelte';
     import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
-    import PreviewDeforum from '$lib/runpod/ui/PreviewDeforum.svelte';
+    import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';
+    import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
 
     export let data: PageData;
@@ -41,7 +42,8 @@
         </div>
         
         <div class="md:w-1/2">
-            <PreviewDeforum />
+            <PreviewVideo />
+            <PreviewImages />
             <GalleryDeforumVideos workflow_names={["deforum-init", "deforum-basic"]} />
             <GalleryImages 
                 type={["uploaded", "generated"]} 

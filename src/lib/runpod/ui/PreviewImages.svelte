@@ -1,83 +1,40 @@
 <script lang="ts">
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import GalleryBasic, { type ImageInput } from '$lib/layout/ui/GalleryBasic.svelte';
+
+    // DEFINE TYPES
+
     // Define types for the image object
+    // This is the type of the images array in the runState store
     type ImageObject = {
         url: string;
         // Add other potential properties here if needed
     };
 
+    // Define the type for the images array
     type ImageInput = ImageObject | string;
 
-    export let images: ImageInput[] = [];
+    // DEFINE VARIABLES
+
+    // Get images from runState store
+    // Images are stored directly at the top level of the runState store object:
+    // runState = { service, workflow_name, statusFields, logs, status, runpodStatus, images, values }
+    let images: ImageInput[] = [];
     
-    // Add state for overlay
-    let showOverlay = false;
-    let selectedImage: string = '';
+    // DEFINE REACTIVE VARIABLES
 
-    // Function to open overlay
-    function openOverlay(imageUrl: string): void {
-        selectedImage = imageUrl;
-        showOverlay = true;
-    }
-
-    // Function to close overlay
-    function closeOverlay(): void {
-        showOverlay = false;
-        selectedImage = '';
-    }
-
-    // Helper function to get image URL from image object or string
-    function getImageUrl(image: ImageInput): string {
-        return typeof image === 'object' ? image.url : image;
-    }
-
-    // Helper function to get image filename
-    function getImageFilename(imageUrl: string): string {
-        return imageUrl.split('/').pop()?.split('?')[0] ?? '';
+    // Subscribe to runState
+    // When runState changes, update the images array
+    $: {
+        if ($runState) {
+            images = $runState.images || [];
+        }
     }
 </script>
 
-<div class="flex flex-wrap bg-gray-100 h-full justify-center">
-    {#if images.length > 0}
-        {#each images as image}
-            {@const imageUrl = getImageUrl(image)}
-            <button 
-                on:click={() => openOverlay(imageUrl)} 
-                class="{images.length === 1 ? 'w-full' : 'w-full sm:w-1/2 md:w-1/2 lg:w-1/2 '}"
-            >
-                <img 
-                    src={imageUrl} 
-                    alt="Thumbnail" 
-                    class="w-full h-auto object-cover square"
-                />
-                
-                <div class="flex flex-col">
-                    <span class="text-gray-600 pb-2">
-                        {getImageFilename(imageUrl)}
-                    </span>
-                </div>
-            </button>
-        {/each}
-    {/if} 
-</div>
-
-<!-- Add Image Overlay -->
-{#if showOverlay}
-    <div 
-        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-        on:click={closeOverlay}
-    >
-        <div class="relative max-w-4xl max-h-[90vh]">
-            <button 
-                class="absolute top-4 right-4 text-white text-xl font-bold p-2 hover:text-gray-300"
-                on:click={closeOverlay}
-            >
-                ×
-            </button>
-            <img 
-                src={selectedImage} 
-                alt="Full size" 
-                class="max-h-[90vh] w-auto"
-            />
-        </div>
-    </div>
-{/if} 
+<div>
+    <GalleryBasic 
+        {images} 
+        gridCols="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+    />
+</div> 

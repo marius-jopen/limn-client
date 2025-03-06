@@ -1,6 +1,5 @@
 <script lang="ts">
     import { runState } from '$lib/runpod/helper/StoreRun.js';
-    import GalleryBasic, { type ImageInput } from '$lib/layout/ui/GalleryBasic.svelte';
     import VideoLooper from '$lib/layout/ui/VideoLooper.svelte';
 
     // DEFINE TYPES
@@ -35,8 +34,4 @@
 
 <div>
     <VideoLooper {images}  />
-    <GalleryBasic 
-        {images} 
-        gridCols="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-    />
 </div> 
