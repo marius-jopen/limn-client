@@ -34,8 +34,8 @@
 
             <StatusTable 
                 workflow_name="deforum-init"
-                label="Deforum Status" 
-                id="deforum-status" 
+                label="Deforum Init Status" 
+                id="deforum-init-status" 
             />
             <LogViewer id="log-viewer" label="Generation Logs" />
         </div>

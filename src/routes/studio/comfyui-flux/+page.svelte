@@ -24,8 +24,8 @@
 
             <StatusTable 
                 workflow_name="comfyui-flux"
-                label="ComfyUi Status" 
-                id="comfyui-status" 
+                label="ComfyUi Flux Status" 
+                id="comfyui-flux-status" 
             />
             <LogViewer id="log-viewer" label="Generation Logs" />
         </div>

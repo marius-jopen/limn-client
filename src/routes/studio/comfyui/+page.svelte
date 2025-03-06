@@ -8,7 +8,6 @@
     import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
 </script>
 
-
 <div class="p-4">
     <h1>
         ComfyUI
