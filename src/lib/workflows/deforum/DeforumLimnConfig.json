@@ -1,10 +1,10 @@
 [
     {
         "id": "prompts",
-        "type": "prompts",
+        "type": "prompts-simple",
         "placeholder": "${PROMPTS}",
         "label": "Animation Prompts",
-        "default": "{\"0\": \"beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover --neg bad eyes, cgi, airbrushed, plastic, deformed, watermark\"}"
+        "default": "{\"0\": \"beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover\"}"
     },
     {
         "id": "init_image",
