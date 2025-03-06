@@ -13,7 +13,7 @@
 
 <div class="p-4">
     <h1>
-        Deforum Limn Init
+        Deforum Limn
     </h1>
 
     <div class="flex gap-4 flex-col md:flex-row">

@@ -9,6 +9,10 @@
     <GalleryDeforumVideos workflow_names={["deforum-init"]} />
     
     <GalleryDeforumVideos workflow_names={["deforum-basic"]} />
+
+    <GalleryDeforumVideos workflow_names={["deforum-limn-init"]} />
+    
+    <GalleryDeforumVideos workflow_names={["deforum-limn"]} />
     
     <GalleryImages 
         type={["uploaded"]} 
@@ -42,6 +46,18 @@
     <GalleryImages 
         type={["generated"]} 
         workflow_names={["deforum-basic"]} 
+        defaultImagesPerRow={8}
+    />  
+
+    <GalleryImages 
+        type={["generated"]} 
+        workflow_names={["deforum-limn-init"]} 
+        defaultImagesPerRow={8}
+    />  
+
+    <GalleryImages 
+        type={["generated"]} 
+        workflow_names={["deforum-limn"]} 
         defaultImagesPerRow={8}
     />  
 </div>
