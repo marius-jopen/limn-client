@@ -133,6 +133,18 @@
                 .or('visibility.is.null,visibility.eq.true')
                 .order('created_at', { ascending: false });
             
+            // Filter by workflow names if provided
+            if (workflowsToFetch && workflowsToFetch.length > 0) {
+                query = query.in('workflow_name', workflowsToFetch);
+                console.log('Filtering by workflows:', workflowsToFetch);
+            }
+            
+            // Filter by type if provided
+            if (typeArray && typeArray.length > 0) {
+                query = query.in('type', typeArray);
+                console.log('Filtering by types:', typeArray);
+            }
+            
             // Add pagination
             if (offset > 0) {
                 query = query.range(offset, offset + limit - 1);
