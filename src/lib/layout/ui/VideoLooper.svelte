@@ -18,24 +18,34 @@
     export let autoPlay: boolean = true;
     export let showControls: boolean = true;
     export let aspectRatio: 'video' | 'square' = 'video';
+    export let useBunnyCdn: boolean = true;
     
     // State
     let currentIndex = 0;
     let animationInterval: ReturnType<typeof setInterval> | null = null;
-    let isPlaying = autoPlay;
+    let isPlaying = false; // Initialize as false, will be set to true in onMount
     
     // Calculate the interval in milliseconds based on FPS
+    let intervalMs = 1000 / fps;
     $: intervalMs = 1000 / fps;
     
     // Helper function to get image URL from image object or string
     function getImageUrl(image: ImageInput): string {
+        if (!image) return '';
         const url = typeof image === 'object' ? image.url : image;
-        return transformToBunnyUrl(url);
+        return url ? (useBunnyCdn ? transformToBunnyUrl(url) : url) : '';
+    }
+    
+    // Function to check if an image URL is valid
+    function isValidImageUrl(url: string): boolean {
+        return !!url && url.trim() !== '';
     }
     
     // Start the animation loop
     function startAnimation() {
         if (animationInterval) clearInterval(animationInterval);
+        
+        if (images.length <= 1) return;
         
         isPlaying = true;
         animationInterval = setInterval(() => {
@@ -81,6 +91,10 @@
     
     // Start animation on mount if autoPlay is true
     onMount(() => {
+        // Always start from the first frame
+        currentIndex = 0;
+        
+        // Start animation if autoPlay is true and there are enough images
         if (autoPlay && images.length > 1) {
             startAnimation();
         }
@@ -95,6 +109,12 @@
     
     // Watch for changes to the images array or autoPlay
     $: {
+        // If images array changes, reset to first frame
+        if (images.length > 0) {
+            currentIndex = 0;
+        }
+        
+        // Handle autoplay logic
         if (images.length > 1) {
             if (autoPlay && !animationInterval) {
                 startAnimation();
@@ -111,16 +131,33 @@
 <div class="video-looper relative">
     <!-- Current image display -->
     <div class={`${aspectRatio === 'square' ? 'aspect-square' : 'aspect-video'} bg-black relative overflow-hidden`}>
-        <img 
-            src={getImageUrl(images[currentIndex])} 
-            alt="Animation frame" 
-            class="w-full h-full object-contain"
-        />
+        {#if images.length > 0 && isValidImageUrl(getImageUrl(images[currentIndex]))}
+            <img 
+                src={getImageUrl(images[currentIndex])} 
+                alt="Animation frame" 
+                class="w-full h-full object-contain"
+            />
+        {:else}
+            <div class="w-full h-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                    <line x1="7" y1="2" x2="7" y2="22"></line>
+                    <line x1="17" y1="2" x2="17" y2="22"></line>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <line x1="2" y1="7" x2="7" y2="7"></line>
+                    <line x1="2" y1="17" x2="7" y2="17"></line>
+                    <line x1="17" y1="17" x2="22" y2="17"></line>
+                    <line x1="17" y1="7" x2="22" y2="7"></line>
+                </svg>
+            </div>
+        {/if}
         
         <!-- Frame counter -->
-        <div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
-            {currentIndex + 1} / {images.length}
-        </div>
+        {#if images.length > 0}
+            <div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+                {currentIndex + 1} / {images.length}
+            </div>
+        {/if}
     </div>
     
     <!-- Controls -->

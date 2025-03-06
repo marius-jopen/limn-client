@@ -10,10 +10,11 @@
 
 <script lang="ts">
     import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
-    
+
     // Props for the Gallery component
     export let images: ImageInput[] = [];
     export let gridCols: string = "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
+    export let useBunnyCdn: boolean = true;
     
     // State for overlay
     let showOverlay = false;
@@ -23,11 +24,17 @@
     // Helper function to get image URL from image object or string
     function getImageUrl(image: ImageInput): string {
         const url = typeof image === 'object' ? image.url : image;
-        return transformToBunnyUrl(url);
+        return url ? (useBunnyCdn ? transformToBunnyUrl(url) : url) : '';
+    }
+
+    // Function to check if an image URL is valid (not empty)
+    function isValidImageUrl(url: string): boolean {
+        return !!url && url.trim() !== '';
     }
 
     // Function to open overlay
     function openOverlay(imageUrl: string, index: number): void {
+        if (!isValidImageUrl(imageUrl)) return;
         selectedImage = imageUrl;
         currentIndex = index;
         showOverlay = true;

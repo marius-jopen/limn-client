@@ -1,18 +1,7 @@
 <script lang="ts">
     import { runState } from '$lib/runpod/helper/StoreRun.js';
     import VideoLooper from '$lib/layout/ui/VideoLooper.svelte';
-
-    // DEFINE TYPES
-
-    // Define types for the image object
-    // This is the type of the images array in the runState store
-    type ImageObject = {
-        url: string;
-        // Add other potential properties here if needed
-    };
-
-    // Define the type for the images array
-    type ImageInput = ImageObject | string;
+    import type { ImageInput, ImageObject } from '$lib/layout/ui/VideoLooper.svelte';
 
     // DEFINE VARIABLES
 
@@ -20,6 +9,18 @@
     // Images are stored directly at the top level of the runState store object:
     // runState = { service, workflow_name, statusFields, logs, status, runpodStatus, images, values }
     let images: ImageInput[] = [];
+    let filteredImages: ImageInput[] = [];
+    
+    // Props
+    export let useBunnyCdn: boolean = false;
+    
+    // Function to check if an image is valid
+    function isValidImage(image: ImageInput): boolean {
+        if (!image) return false;
+        
+        const url = typeof image === 'object' ? image.url : image;
+        return !!url && url.trim() !== '';
+    }
     
     // DEFINE REACTIVE VARIABLES
 
@@ -28,10 +29,16 @@
     $: {
         if ($runState) {
             images = $runState.images || [];
+            // Filter out invalid images
+            filteredImages = images.filter(isValidImage);
         }
     }
 </script>
 
 <div>
-    <VideoLooper {images}  />
+    <VideoLooper 
+        images={filteredImages} 
+        {useBunnyCdn}
+        autoPlay={true}
+    />
 </div> 
