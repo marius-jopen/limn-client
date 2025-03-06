@@ -10,6 +10,7 @@
 
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
+    import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
     
     // Props
     export let images: ImageInput[] = [];
@@ -28,7 +29,8 @@
     
     // Helper function to get image URL from image object or string
     function getImageUrl(image: ImageInput): string {
-        return typeof image === 'object' ? image.url : image;
+        const url = typeof image === 'object' ? image.url : image;
+        return transformToBunnyUrl(url);
     }
     
     // Start the animation loop
@@ -60,110 +62,112 @@
         }
     }
     
-    // Go to previous frame
-    function prevFrame() {
-        currentIndex = (currentIndex - 1 + images.length) % images.length;
+    // Go to a specific frame
+    function goToFrame(index: number) {
+        if (index >= 0 && index < images.length) {
+            currentIndex = index;
+        }
     }
     
-    // Go to next frame
+    // Go to the next frame
     function nextFrame() {
         currentIndex = (currentIndex + 1) % images.length;
     }
     
-    // Start animation when component mounts if autoPlay is true
+    // Go to the previous frame
+    function prevFrame() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+    }
+    
+    // Start animation on mount if autoPlay is true
     onMount(() => {
         if (autoPlay && images.length > 1) {
             startAnimation();
         }
     });
     
-    // Clean up interval when component is destroyed
+    // Clean up on component destruction
     onDestroy(() => {
         if (animationInterval) {
             clearInterval(animationInterval);
         }
     });
     
-    // Watch for changes in images array or FPS
+    // Watch for changes to the images array or autoPlay
     $: {
-        if (images.length > 1 && isPlaying) {
-            // Restart animation with new interval if FPS changes
-            startAnimation();
-        } else if (images.length <= 1 && animationInterval) {
-            // Stop animation if there are not enough images
+        if (images.length > 1) {
+            if (autoPlay && !animationInterval) {
+                startAnimation();
+            } else if (!autoPlay && animationInterval) {
+                stopAnimation();
+            }
+        } else {
+            // If there's only one image or no images, stop the animation
             stopAnimation();
         }
     }
 </script>
 
-{#if images.length > 0}
-    <div class="video-looper relative">
-        <!-- Current image display -->
-        <div class={`${aspectRatio === 'square' ? 'aspect-square' : 'aspect-video'} bg-black relative overflow-hidden`}>
-            <img 
-                src={getImageUrl(images[currentIndex])} 
-                alt="Animation frame" 
-                class="w-full h-full object-contain"
-            />
-            
-            <!-- Frame counter -->
-            <div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
-                {currentIndex + 1} / {images.length}
-            </div>
-        </div>
+<div class="video-looper relative">
+    <!-- Current image display -->
+    <div class={`${aspectRatio === 'square' ? 'aspect-square' : 'aspect-video'} bg-black relative overflow-hidden`}>
+        <img 
+            src={getImageUrl(images[currentIndex])} 
+            alt="Animation frame" 
+            class="w-full h-full object-contain"
+        />
         
-        <!-- Controls -->
-        {#if showControls && images.length > 1}
-            <div class="flex items-center justify-center gap-2 mb-2 p-2 bg-gray-100 rounded">
-                <!-- Previous frame button -->
+        <!-- Frame counter -->
+        <div class="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+            {currentIndex + 1} / {images.length}
+        </div>
+    </div>
+    
+    <!-- Controls -->
+    {#if showControls && images.length > 1}
+        <div class="flex items-center justify-between bg-gray-800 text-white p-2">
+            <button 
+                class="p-1 hover:bg-gray-700 rounded"
+                on:click={togglePlayPause}
+                aria-label={isPlaying ? 'Pause' : 'Play'}
+            >
+                {#if isPlaying}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                {:else}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                {/if}
+            </button>
+            
+            <div class="flex items-center space-x-2">
                 <button 
-                    class="p-2 rounded-full hover:bg-gray-200"
+                    class="p-1 hover:bg-gray-700 rounded"
                     on:click={prevFrame}
                     aria-label="Previous frame"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
                 </button>
                 
-                <!-- Play/Pause button -->
                 <button 
-                    class="p-2 rounded-full hover:bg-gray-200"
-                    on:click={togglePlayPause}
-                    aria-label={isPlaying ? "Pause" : "Play"}
-                >
-                    {#if isPlaying}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="6" y="4" width="4" height="16"></rect>
-                            <rect x="14" y="4" width="4" height="16"></rect>
-                        </svg>
-                    {:else}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                        </svg>
-                    {/if}
-                </button>
-                
-                <!-- Next frame button -->
-                <button 
-                    class="p-2 rounded-full hover:bg-gray-200"
+                    class="p-1 hover:bg-gray-700 rounded"
                     on:click={nextFrame}
                     aria-label="Next frame"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 </button>
-                
-                <!-- FPS indicator -->
-                <div class="ml-4 text-sm text-gray-700">
-                    {fps} FPS
-                </div>
             </div>
-        {/if}
-    </div>
-{:else}
-    <div class={`${aspectRatio === 'square' ? 'aspect-square' : 'aspect-video'} bg-gray-200 flex items-center justify-center text-gray-500`}>
-        No images available
-    </div>
-{/if}
+            
+            <div class="text-sm">
+                FPS: {fps}
+            </div>
+        </div>
+    {/if}
+</div>

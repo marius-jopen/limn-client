@@ -2,6 +2,7 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
+    import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
 
     // Define the Resource interface
     interface Resource {
@@ -144,6 +145,9 @@
     
     // Derived value to get the actual resource (either from prop or locally fetched)
     $: currentResource = localResource || resource;
+
+    // Transform the S3 URL to Bunny.net URL
+    $: cdnImageUrl = currentResource ? transformToBunnyUrl(currentResource.image_url) : null;
 </script>
 
 {#if isLoading}
@@ -159,7 +163,7 @@
         role="group"
     >
         <img 
-            src={currentResource.image_url}
+            src={cdnImageUrl}
             alt={currentResource.name || 'User uploaded image'} 
             class="w-full h-full object-cover"
             loading="lazy"
@@ -201,25 +205,17 @@
     <!-- Preview overlay -->
     {#if isPreviewOpen}
         <div 
-            class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+            class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4"
             on:click={closePreview}
-            on:keydown={(e) => e.key === 'Escape' && closePreview()}
-            role="button"
-            tabindex="0"
         >
-            <div 
-                class="relative max-w-4xl max-h-[90vh]"
-                on:click|stopPropagation={() => {}}
-                on:keydown|stopPropagation={() => {}}
-                role="presentation"
-            >
+            <div class="max-w-4xl max-h-[90vh] relative">
                 <img 
-                    src={currentResource.image_url} 
-                    alt={currentResource.name || 'User uploaded image'} 
+                    src={cdnImageUrl} 
+                    alt={currentResource.name || 'Preview'} 
                     class="max-w-full max-h-[90vh] object-contain"
                 />
                 <button 
-                    class="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
+                    class="absolute top-2 right-2 bg-white rounded-full w-8 h-8 flex items-center justify-center text-black"
                     on:click={closePreview}
                 >
                     ✕
@@ -227,17 +223,14 @@
             </div>
         </div>
     {/if}
-{:else}
-    <div 
-        class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100"
-    >
-        <div class="text-gray-500">Image not found</div>
+{:else if error}
+    <div class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100">
+        <div class="text-red-500 p-2 text-center text-sm">
+            Error: {error}
+        </div>
     </div>
-{/if}
-
-<!-- Display error if any -->
-{#if error}
-    <div class="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 text-xs rounded">
-        Error: {error}
+{:else}
+    <div class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100">
+        <div class="text-gray-500">No image</div>
     </div>
 {/if}

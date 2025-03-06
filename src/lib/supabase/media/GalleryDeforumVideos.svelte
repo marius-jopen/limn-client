@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import Button from '$lib/atoms/Button.svelte';
     import VideoLooper from '$lib/layout/ui/VideoLooper.svelte';
+    import { transformToBunnyUrl, transformResourceUrls } from '$lib/bunny/BunnyClient';
     
     // Configuration for video playback
     const VIDEO_FPS = 15; // Frames per second for video animations
@@ -431,6 +432,11 @@
     $: batchCount = Object.keys(groupedResources).length;
     $: console.log(`Reactive update: batchCount=${batchCount}, uiForceUpdateCounter=${uiForceUpdateCounter}, debugBatchCount=${debugBatchCount}`);
     $: visibleBatches = getSortedBatches();
+
+    // Helper function to transform image URLs for video looper
+    function getTransformedImageUrls(resources) {
+        return resources.map(resource => transformToBunnyUrl(resource.image_url));
+    }
 </script>
 
 <!-- Enhanced debug info for development -->
@@ -481,7 +487,7 @@
                             </div>
 
                             <VideoLooper 
-                                images={batchResources.map(resource => resource.image_url)}
+                                images={getTransformedImageUrls(batchResources)}
                                 fps={VIDEO_FPS}
                                 autoPlay={true}
                                 showControls={false}
@@ -538,7 +544,7 @@
             on:click|stopPropagation={() => {}}
         >
             <VideoLooper 
-                images={selectedImages.map(resource => resource.image_url)}
+                images={getTransformedImageUrls(selectedImages)}
                 fps={VIDEO_FPS}
                 autoPlay={true}
                 showControls={true}

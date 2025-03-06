@@ -1,6 +1,7 @@
 <script lang="ts">
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
     
     interface Resource {
         id: string;
@@ -34,6 +35,9 @@
     $: if ($runState?.imageId) {
         fetchImage();
     }
+
+    // Transform the S3 URL to Bunny.net URL
+    $: cdnImageUrl = resource ? transformToBunnyUrl(resource.image_url) : null;
 </script>
 
 <div class="max-w-4xl mx-auto p-4">
@@ -43,7 +47,7 @@
         <div class="space-y-4">
             <div class="relative aspect-auto max-h-[80vh]">
                 <img 
-                    src={resource.image_url} 
+                    src={cdnImageUrl} 
                     alt={resource.name || 'Image'} 
                     class="max-w-full max-h-[80vh] object-contain mx-auto"
                 />

@@ -4,6 +4,7 @@
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
     import GalleryImageItem from './GalleryImageItem.svelte';
+    import { transformResourceUrls } from '$lib/bunny/BunnyClient';
     
     // Configuration for pagination
     const IMAGES_PER_PAGE = 40; // Number of images to load initially and on each "Load More" click
@@ -160,7 +161,11 @@
             }
             
             console.log(`Fetched ${data?.length || 0} resources`);
-            return data || [];
+            
+            // Transform S3 URLs to Bunny.net URLs
+            const transformedData = transformResourceUrls(data || []);
+            
+            return transformedData;
         } catch (e) {
             console.error('Error in fetchResourcesFromSupabase:', e);
             return [];
@@ -291,6 +296,90 @@
         const { id } = event.detail;
         console.log(`Image deleted: ${id}`);
         allResources = allResources.filter(r => r.id !== id);
+    }
+
+    // State variables
+    let resources: Resource[] = [];
+    let isLoading = false;
+    let hasMore = true;
+    let page = 0;
+    let selectedWorkflow = workflow_name;
+    let selectedType: string | null = null;
+    
+    // Get user ID from store
+    $: userId = $user?.id;
+    
+    // Watch for changes to workflow_name prop
+    $: if (workflow_name !== selectedWorkflow) {
+        selectedWorkflow = workflow_name;
+        resetAndFetch();
+    }
+    
+    // Function to reset state and fetch images
+    function resetAndFetch() {
+        resources = [];
+        page = 0;
+        hasMore = true;
+        fetchImages();
+    }
+    
+    // Function to fetch images from Supabase
+    async function fetchImages() {
+        if (!userId || isLoading || !hasMore) return;
+        
+        isLoading = true;
+        error = null;
+        
+        try {
+            console.log(`Fetching images for user ${userId}, page ${page}, workflow ${selectedWorkflow}`);
+            
+            // Start building the query
+            let query = supabase
+                .from('resource')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .range(page * IMAGES_PER_PAGE, (page + 1) * IMAGES_PER_PAGE - 1);
+            
+            // Add workflow filter if specified
+            if (selectedWorkflow) {
+                query = query.eq('workflow_name', selectedWorkflow);
+            } else if (workflow_names && workflow_names.length > 0) {
+                query = query.in('workflow_name', workflow_names);
+            }
+            
+            // Add type filter if specified
+            if (typeArray && typeArray.length > 0) {
+                query = query.in('type', typeArray);
+            }
+            
+            // Add selected type filter if specified
+            if (selectedType) {
+                query = query.eq('type', selectedType);
+            }
+            
+            const { data, error: fetchError } = await query;
+            
+            if (fetchError) {
+                throw new Error(fetchError.message || 'Failed to fetch images');
+            }
+            
+            // Transform S3 URLs to Bunny.net URLs
+            const transformedData = transformResourceUrls(data || []);
+            
+            // Update state
+            resources = [...resources, ...transformedData];
+            page += 1;
+            hasMore = (data?.length || 0) === IMAGES_PER_PAGE;
+            
+            console.log(`Fetched ${data?.length} images, total now: ${resources.length}`);
+            
+        } catch (e) {
+            error = e.message;
+            console.error('Error fetching images:', e);
+        } finally {
+            isLoading = false;
+        }
     }
 </script>
 
