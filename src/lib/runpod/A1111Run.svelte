@@ -1,9 +1,10 @@
 <script lang="ts">
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow';
-    import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import { runState, loadWorkflowState } from '$lib/runpod/helper/StoreRun.js';
     import Button from '$lib/atoms/Button.svelte';
     import InputRepeater from '$lib/runpod/ui/InputRepeater.svelte';
+    import { onMount } from 'svelte';
 
     interface UIConfigField {
         id: string;
@@ -72,6 +73,17 @@
     
     $: user_id = $user?.id;
 
+    // Load saved state for this workflow when the component mounts
+    onMount(() => {
+        if (workflow_name) {
+            const savedState = loadWorkflowState(workflow_name);
+            // If there are saved values for this workflow, use them
+            if (savedState && savedState.values) {
+                values = { ...values, ...savedState.values };
+            }
+        }
+    });
+
     $: statusFields = [
         { label: 'User ID', value: user_id },
         { label: 'Status', value: status || 'Idle' },
@@ -86,11 +98,14 @@
     // Update the store whenever the state changes
     $: {
         runState.set({
+            service,
+            workflow_name,
             statusFields,
             logs,
             status,
             runpodStatus,
-            images
+            images,
+            values // Also store the current input values
         });
     }
 
@@ -106,7 +121,7 @@
 
         // Reset any empty string values to their defaults
         ui_config.forEach(field => {
-            if (field.type === 'string' && !values[field.id]?.trim()) {
+            if (field.type === 'string' && typeof values[field.id] === 'string' && !(values[field.id] as string).trim()) {
                 values[field.id] = field.default;
             }
         });
@@ -116,7 +131,12 @@
                         
             const response = await fetch(`http://localhost:4000/api/${service}-runpod-serverless-run`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'user-id': user_id,
+                    'service': service,
+                    'workflow': workflow_name 
+                },
                 body: JSON.stringify({ 
                     input: { 
                         workflow: workflowWithPrompt,
@@ -199,9 +219,14 @@
         result = null;
         runpodStatus = { status: 'FAILED', error: 'Timeout waiting for job completion' };
     }
+
+    // Function to cast the UI config to the expected type for InputRepeater
+    function castUIConfig(config: UIConfigField[]) {
+        return config as any;
+    }
 </script>
 
 <div>
-    <InputRepeater UI={ui_config} bind:values />
+    <InputRepeater UI={castUIConfig(ui_config)} bind:values />
     <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
 </div>

@@ -29,6 +29,12 @@
 
     <GalleryImages 
         type={["generated"]} 
+        workflow_names={["a1111-test"]} 
+        defaultImagesPerRow={8}
+    />  
+
+    <GalleryImages 
+        type={["generated"]} 
         workflow_names={["deforum-init"]} 
         defaultImagesPerRow={8}
     />  
