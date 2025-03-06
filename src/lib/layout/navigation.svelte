@@ -13,6 +13,7 @@
             <a href="/studio/comfyui-flux">ComfyUI Flux</a>
             <a href="/studio/a1111">A1111</a>
             <a href="/studio/deforum">Deforum</a>
+            <a href="/studio/deforum-limn">Deforum Limn</a>
             <a href="/studio/output">Output</a>
         {/if}
     </div>

@@ -169,7 +169,7 @@
             loading="lazy"
         />
         <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity p-1">
-            <div class="w-full h-full grid grid-cols-2 grid-rows-2 gap-1">
+            <div class="w-full h-full grid grid-cols-3 grid-rows-2 gap-1">
                 <button
                     class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
                     on:click={handlePreview}
@@ -190,6 +190,13 @@
                     title="Deforum"
                 >
                     🎞️
+                </a>
+                <a
+                    href={`/studio/deforum-limn/${currentResource.id}`}
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    title="Deforum Limn"
+                >
+                ☀️
                 </a>
                 <button
                     class="bg-white text-white rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
