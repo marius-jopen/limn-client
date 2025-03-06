@@ -12,7 +12,6 @@
     // import { runState } from '$lib/runpod/helper/StoreRun.js';
 </script>
 
-
 <div class="p-4">
     <h1>
         ComfyUI Flux
