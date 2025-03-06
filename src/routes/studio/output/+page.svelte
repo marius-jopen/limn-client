@@ -5,13 +5,37 @@
 
 <div class="p-4">
     <h1>Output</h1>
+
+    <GalleryDeforumVideos workflow_names={["deforum-init"]} />
     
-    <GalleryImages type="uploaded" />
-    <GalleryImages workflow_name="a1111-test" />
-    <GalleryImages workflow_name="comfyui-test" />
-    <GalleryImages workflow_name="comfyui-flux" />
-    <GalleryDeforumVideos workflow_name="deforum-init" />
-    <GalleryImages workflow_name="deforum-init" />
-    <GalleryDeforumVideos workflow_name="deforum-basic" />
-    <GalleryImages workflow_name="deforum-basic" />
+    <GalleryDeforumVideos workflow_names={["deforum-basic"]} />
+    
+    <GalleryImages 
+        type={["uploaded"]} 
+        defaultImagesPerRow={8}
+    />  
+
+    <GalleryImages 
+        type={["generated"]} 
+        workflow_names={["comfyui-test"]} 
+        defaultImagesPerRow={8}
+    />  
+
+    <GalleryImages 
+        type={["generated"]} 
+        workflow_names={["comfyui-flux"]} 
+        defaultImagesPerRow={8}
+    />  
+
+    <GalleryImages 
+        type={["generated"]} 
+        workflow_names={["deforum-init"]} 
+        defaultImagesPerRow={8}
+    />  
+
+    <GalleryImages 
+        type={["generated"]} 
+        workflow_names={["deforum-basic"]} 
+        defaultImagesPerRow={8}
+    />  
 </div>

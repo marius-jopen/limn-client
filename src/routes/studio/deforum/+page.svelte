@@ -2,13 +2,11 @@
     import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
     import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
     import GalleryDeforumVideos from '$lib/supabase/media/GalleryDeforumVideos.svelte';
-    // import HealthCheck from '$lib/runpod/Health.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
     import Cancel from '$lib/runpod/Cancel.svelte';
     import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
-    // import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
     import PreviewDeforum from '$lib/runpod/ui/PreviewDeforum.svelte';
 </script>
 

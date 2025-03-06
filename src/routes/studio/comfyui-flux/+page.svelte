@@ -1,15 +1,11 @@
 <script>
     import ComfyuiRun from '$lib/runpod/ComfyuiRun.svelte';  
     import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
-    import HealthCheck from '$lib/runpod/Health.svelte';
     import UI_CONFIG from '$lib/workflows/comfyui/ComfyuiFluxConfig.json';
     import WORKFLOW from '$lib/workflows/comfyui/ComfyuiFlux.json';
-
     import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
-    import JsonViewer from '$lib/runpod/ui/JsonViewer.svelte';
     import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
-    // import { runState } from '$lib/runpod/helper/StoreRun.js';
 </script>
 
 <div class="p-4">
