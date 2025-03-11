@@ -14,6 +14,10 @@ export default {
         '11': 'repeat(11, minmax(0, 1fr))',
         '12': 'repeat(12, minmax(0, 1fr))',
       }
+    },
+    borderRadius: {
+      'xl': '2.5rem',
+      'full': '9999px',
     }
   },
   plugins: [

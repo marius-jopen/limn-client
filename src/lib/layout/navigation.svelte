@@ -1,9 +1,35 @@
 <script lang="ts">
     import Logout from '$lib/supabase/userarea/Logout.svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
+    import NavigationOverlay from './navigation-overlay.svelte';
+    import RoundButton from '$lib/atoms/RoundButton.svelte';
+    let menuVisible = false;
 </script>
 
-<div class="flex justify-between w-full">
+
+{#if $user}
+    {#if !menuVisible}
+        <RoundButton 
+            label="Menu" 
+            onClick={() => menuVisible = !menuVisible} 
+            customClass="top-3 left-3 z-20 fixed"
+        />
+    {/if}
+
+    {#if menuVisible}
+        <RoundButton 
+            label="X" 
+            onClick={() => menuVisible = false} 
+            customClass="top-3 left-3 z-20 fixed"
+        />
+    {/if}
+
+    {#if menuVisible}
+        <NavigationOverlay />
+    {/if}
+{/if}
+        
+<!-- <div class="flex justify-between w-full"> 
     <div class="flex gap-4 px-4 py-4">
         <a href="/">Home</a>
         
@@ -26,4 +52,4 @@
             <a href="/register">Register</a>
         {/if}
     </div>
-</div>
+</div> -->
