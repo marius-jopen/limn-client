@@ -3,30 +3,36 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import NavigationOverlay from './navigation-overlay.svelte';
     import RoundButton from '$lib/atoms/RoundButton.svelte';
+    import { goto } from '$app/navigation';
+    
     let menuVisible = false;
+    
+    function handleNavigate(event) {
+        console.log("Navigation event received in main component:", event.detail.href);
+        const href = event.detail.href;
+        
+        // First navigate to the new route
+        goto(href);
+        
+        // Then close the overlay after a short delay
+        setTimeout(() => {
+            menuVisible = false;
+        }, 300);
+    }
 </script>
 
 
 {#if $user}
-    {#if !menuVisible}
-        <RoundButton 
-            label="Menu" 
-            onClick={() => menuVisible = !menuVisible} 
-            customClass="top-3 left-3 z-20 fixed"
-        />
-    {/if}
+    <RoundButton 
+        label={menuVisible ? "X" : "Menu"} 
+        onClick={() => menuVisible = !menuVisible} 
+        customClass="top-3 left-3 z-20 fixed"
+    />
 
-    {#if menuVisible}
-        <RoundButton 
-            label="X" 
-            onClick={() => menuVisible = false} 
-            customClass="top-3 left-3 z-20 fixed"
-        />
-    {/if}
-
-    {#if menuVisible}
-        <NavigationOverlay />
-    {/if}
+    <NavigationOverlay 
+        isOpen={menuVisible} 
+        on:navigate={handleNavigate}
+    />
 {/if}
         
 <!-- <div class="flex justify-between w-full"> 
