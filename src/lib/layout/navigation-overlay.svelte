@@ -26,27 +26,27 @@
                     href="/studio/deforum-limn"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg"
                     imageAlt="Sandbox"
-                    title="Sandbox"
+                    title="Deforum Limn"
                     on:navigate={handleNavigate}
                 />
             </div>
             
-            <div in:fade={{ duration: 800, delay: 600 }}>
+            <div in:fade={{ duration: 800, delay: 500 }}>
                 <NavigationItem 
                     href="/studio/deforum"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/fashion.png"
                     imageAlt="Fashion"
-                    title="Fashion"
+                    title="Deforum"
                     on:navigate={handleNavigate}
                 />
             </div>
 
-            <div in:fade={{ duration: 800, delay: 1000 }}>
+            <div in:fade={{ duration: 800, delay: 800 }}>
                 <NavigationItem 
                     href="/studio/comfyui-flux"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/abstract.jpg"
                     imageAlt="Abstract"
-                    title="Abstract"
+                    title="ComfyUI Flux"
                     on:navigate={handleNavigate}
                 />
             </div>
