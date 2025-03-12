@@ -14,6 +14,11 @@
     console.log("Navigation event received in overlay:", event.detail.href);
     dispatch('navigate', event.detail);
   }
+  
+  function handleLogout() {
+    console.log("Logout event received in overlay");
+    dispatch('navigate', { href: '/' });
+  }
 </script>
 
 {#if isOpen}
@@ -33,7 +38,7 @@
                 />
             </div>
             
-            <div in:fade={{ duration: 800, delay: 500 }}>
+            <div in:fade={{ duration: 800, delay: 250 }}>
                 <NavigationItem 
                     href="/studio/deforum"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/fashion.png"
@@ -43,7 +48,7 @@
                 />
             </div>
 
-            <div in:fade={{ duration: 800, delay: 800 }}>
+            <div in:fade={{ duration: 800, delay: 300 }}>
                 <NavigationItem 
                     href="/studio/comfyui-flux"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/abstract.jpg"
@@ -56,12 +61,7 @@
     </div>
 
     <div class="absolute top-3 left-3">
-        <Button 
-            label="Logout" 
-            onClick={() => {}} 
-            variant="secondary"
-            size="sm"
-        />
+        <Logout on:logout={handleLogout} />
     </div>
   </div>
 {/if}

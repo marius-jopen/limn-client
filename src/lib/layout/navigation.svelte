@@ -27,8 +27,9 @@
         label={menuVisible ? "X" : "Menu"} 
         onClick={() => menuVisible = !menuVisible} 
         variant="secondary"
-        size="md"
+        size="sm"
         fullWidth={false}
+        classes="fixed top-3 right-3 z-20"
     />
 
     <NavigationOverlay 

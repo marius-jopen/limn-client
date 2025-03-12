@@ -58,6 +58,7 @@
                     id="password"
                     bind:value={password}
                     placeholder="Enter your password"
+                    type="password"
                 />
             </div>
     

@@ -3,6 +3,8 @@
     import type { AuthError, AuthResponse } from '@supabase/supabase-js';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { initializeAuth } from '$lib/supabase/helper/StoreSupabase';
+    import Button from '$lib/atoms/Button.svelte';
+    import InputText from '$lib/atoms/InputText.svelte';
     
     let email: string = '';
     let password: string = '';
@@ -44,61 +46,55 @@
     }
 </script>
 
-<div class="max-w-md mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Register</h2>
-    <form on:submit|preventDefault={handleRegister} class="space-y-6">
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input
-                type="email"
-                id="email"
-                bind:value={email}
-                required
-                placeholder="Enter your email"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+<div class="flex flex-col justify-center items-center h-screen">
+    <div class="mx-auto w-4/12 rounded-xxl bg-white p-12">
+
+        <h1 class="text-2xl font-medium w-full text-center pb-10">
+            Register
+        </h1>
+
+        <form on:submit|preventDefault={handleRegister} class="space-y-6">
+            <div>
+                <InputText
+                    id="email"
+                    bind:value={email}
+                    placeholder="Enter your email"
+                />
+            </div>
+    
+            <div>
+                <InputText
+                    id="password"
+                    bind:value={password}
+                    placeholder="Enter your password"
+                />
+            </div>
+
+            <div>
+                <InputText
+                    id="confirm-password"
+                    bind:value={confirmPassword}
+                    placeholder="Confirm your password"
+                />
+            </div>
+    
+            {#if errorMsg}
+                <div class="text-red-500 text-sm">{errorMsg}</div>
+            {/if}
+    
+            <Button
+                type="submit"
+                disabled={loading}
+                label={loading ? 'Loading...' : 'Register'}
+                variant="primary"
+                fullWidth={true}
             />
-        </div>
-
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input
-                type="password"
-                id="password"
-                bind:value={password}
-                required
-                placeholder="Enter your password"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-        </div>
-
-        <div>
-            <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-            <input
-                type="password"
-                id="confirm-password"
-                bind:value={confirmPassword}
-                required
-                placeholder="Confirm your password"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-        </div>
-
-        {#if errorMsg}
-            <div class="text-red-500 text-sm">{errorMsg}</div>
-        {/if}
-
-        <button
-            type="submit"
-            disabled={loading}
-            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-            {loading ? 'Loading...' : 'Register'}
-        </button>
-
-        <div class="text-center">
-            <a href="/login" class="text-sm text-indigo-600 hover:text-indigo-500">
-                Already have an account? Login
-            </a>
-        </div>
-    </form>
+    
+            <div class="text-center">
+                <a href="/login" class="block text-sm text-neutral-600 hover:text-neutral-800">
+                    Already have an account? Login
+                </a>
+            </div>
+        </form>
+    </div>
 </div>

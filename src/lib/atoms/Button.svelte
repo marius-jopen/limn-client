@@ -18,6 +18,7 @@
     export let variant: ButtonVariant = "primary";
     export let size: ButtonSize = "md";
     export let fullWidth: boolean = false;
+    export let classes: string = ""; // Renamed from class to classes
 
     // Dynamic classes based on props
     const variantClasses = {
@@ -25,7 +26,8 @@
         secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300",
         danger: "bg-red-500 text-white hover:bg-red-700",
         success: "bg-green-500 text-white hover:bg-green-700",
-        warning: "bg-yellow-500 text-white hover:bg-yellow-700"
+        warning: "bg-yellow-500 text-white hover:bg-yellow-700",
+        blank: "bg-transparent text-black"
     };
 
     const sizeClasses = {
@@ -34,16 +36,12 @@
         lg: "px-6 py-3 text-lg"
     };
 
-    $: classes = `
+    $: buttonClasses = `
         ${variantClasses[variant]}
         ${sizeClasses[size]}
         ${fullWidth ? 'w-full' : ''}
         transition-colors
         duration-200
-        focus:outline-none
-        focus:ring-2
-        focus:ring-offset-2
-        focus:ring-${variant === 'secondary' ? 'gray' : variant}-500
         disabled:opacity-50
         disabled:cursor-not-allowed
         flex
@@ -52,11 +50,12 @@
         gap-2
         w-fit
         rounded-full
+        ${classes}
     `.trim().replace(/\s+/g, ' ');
 </script>
 
 <button 
-    class={classes}
+    class={buttonClasses}
     on:click={onClick}
     {type}
     {disabled}

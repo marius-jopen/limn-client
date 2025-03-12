@@ -33,7 +33,7 @@
     <Button 
       label={title}
       onClick={handleClick}
-      variant="primary"
+      variant="blank"
       size="md"
     />
   </div>
