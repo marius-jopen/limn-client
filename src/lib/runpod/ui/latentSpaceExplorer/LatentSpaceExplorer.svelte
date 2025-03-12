@@ -9,12 +9,12 @@
     
     // Container element reference
     let container;
-    let sliderTrack;
+    let thumbnailTrack;
     
-    // Item width and spacing
-    const itemWidth = 80; // Width of small items
-    const itemGap = 10; // Gap between items
-    const activeScale = 1.5; // How much larger the active item should be
+    // Item dimensions
+    const thumbnailWidth = 90; // Width of thumbnail items
+    const activeWidth = 600; // Width of active item
+    const itemMargin = 5; // Margin on each side
     
     // Generate placeholder items with random colors
     const placeholderItems = Array.from({ length: items }, (_, i) => {
@@ -25,183 +25,118 @@
       };
     });
     
-    // Handle click on an item to make it active
-    function handleItemClick(index) {
+    // Get the active item
+    $: activeItem = placeholderItems[activeIndex];
+    
+    // Handle click on a thumbnail to make it active
+    function handleThumbnailClick(index) {
       activeIndex = index;
-      scrollToItem(index);
+      scrollToThumbnail(index);
     }
     
-    // Scroll to center a specific item
-    function scrollToItem(index) {
-      if (container) {
-        const itemTotalWidth = itemWidth + 10; // width + margins
-        const targetScrollPosition = (index * itemTotalWidth) - (container.offsetWidth / 2) + (itemWidth / 2) + initialOffset;
-        container.scrollTo({
-          left: targetScrollPosition,
-          behavior: 'smooth'
-        });
+    // Scroll to center a specific thumbnail
+    function scrollToThumbnail(index) {
+      if (thumbnailTrack) {
+        const thumbnailElement = thumbnailTrack.querySelector(`[data-index="${index}"]`);
+        if (thumbnailElement) {
+          thumbnailElement.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+        }
       }
     }
     
-    // Calculate the offset needed to center the first item
-    function getInitialOffset() {
-      if (container) {
-        const containerWidth = container.offsetWidth;
-        return (containerWidth / 2) - (itemWidth / 2);
-      }
-      return 0;
-    }
-    
-    // Calculate the end offset needed to center the last item
-    function getEndOffset() {
-      if (container) {
-        const containerWidth = container.offsetWidth;
-        return (containerWidth / 2) - (itemWidth / 2);
-      }
-      return 0;
-    }
-    
-    // Update active item based on scroll position
-    function handleScroll() {
-      if (container && sliderTrack) {
-        const scrollLeft = container.scrollLeft;
-        const containerWidth = container.offsetWidth;
-        const itemTotalWidth = itemWidth + 10; // width + margins
+    // Handle scroll on the thumbnail track
+    function handleThumbnailScroll() {
+      if (thumbnailTrack) {
+        const thumbnails = thumbnailTrack.querySelectorAll('.thumbnail-item');
+        const trackRect = thumbnailTrack.getBoundingClientRect();
+        const trackCenter = trackRect.left + (trackRect.width / 2);
         
-        // Calculate the center of the viewport
-        const viewportCenter = scrollLeft + (containerWidth / 2);
-        
-        // Find which item is closest to the center
         let closestIndex = 0;
         let closestDistance = Infinity;
         
-        // Get all item elements
-        const itemElements = sliderTrack.querySelectorAll('.slider-item');
-        
-        itemElements.forEach((item, index) => {
-          // Get the item's position relative to the document
-          const itemRect = item.getBoundingClientRect();
-          const containerRect = container.getBoundingClientRect();
+        thumbnails.forEach((thumbnail) => {
+          const thumbnailRect = thumbnail.getBoundingClientRect();
+          const thumbnailCenter = thumbnailRect.left + (thumbnailRect.width / 2);
+          const distance = Math.abs(thumbnailCenter - trackCenter);
           
-          // Calculate the center of the item relative to the viewport
-          const itemCenter = itemRect.left + (itemRect.width / 2) - containerRect.left;
-          
-          // Calculate the distance from the viewport center
-          const distance = Math.abs(itemCenter - (containerWidth / 2));
-          
-          // Update closest item if this one is closer
           if (distance < closestDistance) {
             closestDistance = distance;
-            closestIndex = index;
+            closestIndex = parseInt(thumbnail.dataset.index);
           }
         });
         
-        // Update active index if it changed
         if (closestIndex !== activeIndex) {
           activeIndex = closestIndex;
         }
       }
     }
     
-    let initialOffset = 0;
-    let endOffset = 0;
-    
     onMount(() => {
-      // Calculate initial and end offsets when component mounts
-      initialOffset = getInitialOffset();
-      endOffset = getEndOffset();
-      
-      // Add scroll event listener with throttling to improve performance
+      // Add scroll event listener with throttling
       let scrollTimeout;
-      container.addEventListener('scroll', () => {
-        if (!scrollTimeout) {
-          scrollTimeout = setTimeout(() => {
-            handleScroll();
-            scrollTimeout = null;
-          }, 50); // Throttle to 50ms
-        }
-      });
+      if (thumbnailTrack) {
+        thumbnailTrack.addEventListener('scroll', () => {
+          if (!scrollTimeout) {
+            scrollTimeout = setTimeout(() => {
+              handleThumbnailScroll();
+              scrollTimeout = null;
+            }, 100);
+          }
+        });
+      }
       
-      // Recalculate on window resize
-      const handleResize = () => {
-        initialOffset = getInitialOffset();
-        endOffset = getEndOffset();
-        // Re-center the active item after resize
-        scrollToItem(activeIndex);
-      };
-      
-      window.addEventListener('resize', handleResize);
+      // Initial scroll to active thumbnail
+      setTimeout(() => {
+        scrollToThumbnail(activeIndex);
+      }, 100);
       
       return () => {
-        window.removeEventListener('resize', handleResize);
-        container.removeEventListener('scroll', handleScroll);
+        if (thumbnailTrack) {
+          thumbnailTrack.removeEventListener('scroll', handleThumbnailScroll);
+        }
+        clearTimeout(scrollTimeout);
       };
     });
   </script>
   
-  <div class="slider-container" bind:this={container}>
-    <div class="slider-track" bind:this={sliderTrack} style="padding-left: {initialOffset}px; padding-right: {endOffset}px;">
-      {#each placeholderItems as item, i}
-        <div 
-          class="slider-item" 
-          style="
-            background-color: {item.color};
-            transform: scale({i === activeIndex ? activeScale : 1});
-          "
-          class:active={i === activeIndex}
-          on:click={() => handleItemClick(i)}
-        >
-          <span class="item-number">{i + 1}</span>
+  <div class="relative w-full flex flex-col bg-gray-100 rounded-lg">
+    <!-- Main active item display -->
+    <div class="w-full flex-grow flex items-center justify-center p-4">
+      <div 
+        class="flex-shrink-0 flex items-center justify-center relative shadow-lg outline outline-[3px] outline-red-500 rounded-lg"
+        style="
+          background-color: {activeItem?.color || 'transparent'};
+          width: {activeWidth}px;
+          height: {activeWidth}px;
+        "
+      >
+        <span class="text-white font-bold text-4xl drop-shadow-md">{activeIndex + 1}</span>
+        <div class="absolute bottom-0 left-0 w-full h-24 bg-black bg-opacity-70 text-white text-center flex items-center justify-center text-2xl rounded-b-lg">
+          REMIX
         </div>
-      {/each}
+      </div>
+    </div>
+    
+    <!-- Thumbnail scrolling track -->
+    <div 
+      class="w-full h-[120px] overflow-x-auto overflow-y-hidden flex items-center px-4"
+      bind:this={thumbnailTrack}
+    >
+      <div class="flex items-center mx-auto">
+        {#each placeholderItems as item, i}
+          <div 
+            class="thumbnail-item mx-[5px] flex-shrink-0 flex items-center justify-center cursor-pointer relative shadow-md rounded-lg {i === activeIndex ? 'ring-2 ring-white' : ''}"
+            style="
+              background-color: {item.color};
+              width: {thumbnailWidth}px;
+              height: {thumbnailWidth}px;
+            "
+            data-index={i}
+            on:click={() => handleThumbnailClick(i)}
+          >
+            <span class="text-white font-bold text-lg drop-shadow-md">{i + 1}</span>
+          </div>
+        {/each}
+      </div>
     </div>
   </div>
-  
-  <style>
-    .slider-container {
-      width: 100%;
-      height: 300px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      position: relative;
-      display: flex;
-      align-items: center;
-      background-color: #f5f5f5;
-      border-radius: 8px;
-      scroll-behavior: smooth;
-    }
-    
-    .slider-track {
-      position: relative;
-      height: 100%;
-      display: flex;
-      align-items: center;
-    }
-    
-    .slider-item {
-      width: 80px;
-      height: 80px;
-      border-radius: 8px;
-      margin: 0 5px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
-    }
-    
-    .slider-item.active {
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      outline: 3px solid red;
-      z-index: 10;
-    }
-    
-    .item-number {
-      color: white;
-      font-weight: bold;
-      font-size: 1.2rem;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    }
-  </style>
