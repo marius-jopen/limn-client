@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
   
     // Number of items in the slider
-    export let items = 40;
+    export let items = 80;
     
     // Currently active/centered item index (start with 0 which is item 1)
     let activeIndex = 0;
@@ -13,7 +13,6 @@
     // Item dimensions
     const thumbnailWidth = 90; // Width of thumbnail items
     const activeWidth = 600; // Width of active item
-    const itemMargin = 5; // Margin on each side
     
     // Generate placeholder items with random colors
     const placeholderItems = Array.from({ length: items }, (_, i) => {
@@ -164,20 +163,13 @@
       
       <!-- Active item (larger) - this one scrolls with the content -->
       <div 
-        class="item active-item mx-[5px] flex-shrink-0 flex items-center justify-center relative shadow-lg outline outline-[3px] outline-red-500 rounded-lg opacity-0"
-        style="
-          background-color: {activeItem?.color || 'transparent'};
-          width: {activeWidth}px;
-          height: {activeWidth}px;
-        "
+        class="item active-item mx-[5px] flex-shrink-0 flex items-center justify-center relativeopacity-0"
+        style="width: {activeWidth}px;"
         data-index={activeIndex}
         role="region"
         aria-label="Active item {activeIndex + 1}"
       >
-        <span class="text-white font-bold text-4xl drop-shadow-md">{activeIndex + 1}</span>
-        <div class="absolute bottom-0 left-0 w-full h-24 bg-black bg-opacity-70 text-white text-center flex items-center justify-center text-2xl rounded-b-lg">
-          REMIX
-        </div>
+
       </div>
       
       <!-- Right thumbnails -->
