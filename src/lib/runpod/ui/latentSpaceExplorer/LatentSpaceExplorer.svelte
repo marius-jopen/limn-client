@@ -39,7 +39,7 @@
       scrollToCenter();
     }
     
-    // Scroll the container to center the active item
+    // Scroll to center a specific item
     function scrollToCenter() {
       if (container) {
         const activeElement = container.querySelector('.active-item');
@@ -87,19 +87,25 @@
       }
     }
     
+    // Use a more efficient way to handle scrolling
+    function createScrollHandler() {
+      let ticking = false;
+      
+      return () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            handleScroll();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      };
+    }
+    
     onMount(() => {
-      // Add scroll event listener with throttling
-      let scrollTimeout;
-      if (container) {
-        container.addEventListener('scroll', () => {
-          if (!scrollTimeout) {
-            scrollTimeout = setTimeout(() => {
-              handleScroll();
-              scrollTimeout = null;
-            }, 100);
-          }
-        });
-      }
+      // Add scroll event listener with requestAnimationFrame for better performance
+      const scrollHandler = createScrollHandler();
+      container.addEventListener('scroll', scrollHandler);
       
       // Initial scroll to center
       setTimeout(() => {
@@ -107,73 +113,91 @@
       }, 100);
       
       return () => {
-        if (container) {
-          container.removeEventListener('scroll', handleScroll);
-        }
-        clearTimeout(scrollTimeout);
+        container.removeEventListener('scroll', scrollHandler);
       };
     });
 </script>
 
-<div 
-  class="w-full h-[650px] overflow-x-auto overflow-y-hidden flex items-center bg-gray-100 rounded-lg"
-  bind:this={container}
->
-  <div class="flex items-center" style="padding-left: calc(50% - {thumbnailWidth/2}px); padding-right: calc(50% - {thumbnailWidth/2}px);">
-    <!-- Left thumbnails -->
-    {#each leftItems as item, i}
-      <button 
-        class="item thumbnail-item mx-[5px] flex-shrink-0 flex items-center justify-center cursor-pointer relative shadow-md rounded-lg"
-        style="
-          background-color: {item.color};
-          width: {thumbnailWidth}px;
-          height: {thumbnailWidth}px;
-          border: none;
-          padding: 0;
-        "
-        data-index={i}
-        on:click={() => handleThumbnailClick(i)}
-        aria-label="Select item {i + 1}"
-      >
-        <span class="text-white font-bold text-lg drop-shadow-md">{i + 1}</span>
-      </button>
-    {/each}
-    
-    <!-- Active item (larger) -->
+<div class="relative w-full h-[650px] bg-gray-100 rounded-lg">
+  <!-- Fixed center active item overlay -->
+  <div class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none flex items-center justify-center z-20">
     <div 
-      class="item active-item mx-[5px] flex-shrink-0 flex items-center justify-center relative shadow-lg outline outline-[3px] outline-red-500 rounded-lg"
+      class="fixed-active-item flex-shrink-0 flex items-center justify-center relative shadow-lg outline outline-[3px] outline-red-500 rounded-lg"
       style="
         background-color: {activeItem?.color || 'transparent'};
         width: {activeWidth}px;
         height: {activeWidth}px;
       "
-      data-index={activeIndex}
-      role="region"
-      aria-label="Active item {activeIndex + 1}"
+      aria-hidden="true"
     >
       <span class="text-white font-bold text-4xl drop-shadow-md">{activeIndex + 1}</span>
       <div class="absolute bottom-0 left-0 w-full h-24 bg-black bg-opacity-70 text-white text-center flex items-center justify-center text-2xl rounded-b-lg">
         REMIX
       </div>
     </div>
-    
-    <!-- Right thumbnails -->
-    {#each rightItems as item, i}
-      <button 
-        class="item thumbnail-item mx-[5px] flex-shrink-0 flex items-center justify-center cursor-pointer relative shadow-md rounded-lg"
+  </div>
+
+  <!-- Scrollable container with all items -->
+  <div 
+    class="w-full h-full overflow-x-auto overflow-y-hidden flex items-center"
+    bind:this={container}
+  >
+    <div class="flex items-center" style="padding-left: calc(50% - {thumbnailWidth/2}px); padding-right: calc(50% - {thumbnailWidth/2}px);">
+      <!-- Left thumbnails -->
+      {#each leftItems as item, i}
+        <button 
+          class="item thumbnail-item mx-[5px] flex-shrink-0 flex items-center justify-center cursor-pointer relative shadow-md rounded-lg"
+          style="
+            background-color: {item.color};
+            width: {thumbnailWidth}px;
+            height: {thumbnailWidth}px;
+            border: none;
+            padding: 0;
+          "
+          data-index={i}
+          on:click={() => handleThumbnailClick(i)}
+          aria-label="Select item {i + 1}"
+        >
+          <span class="text-white font-bold text-lg drop-shadow-md">{i + 1}</span>
+        </button>
+      {/each}
+      
+      <!-- Active item (larger) - this one scrolls with the content -->
+      <div 
+        class="item active-item mx-[5px] flex-shrink-0 flex items-center justify-center relative shadow-lg outline outline-[3px] outline-red-500 rounded-lg opacity-0"
         style="
-          background-color: {item.color};
-          width: {thumbnailWidth}px;
-          height: {thumbnailWidth}px;
-          border: none;
-          padding: 0;
+          background-color: {activeItem?.color || 'transparent'};
+          width: {activeWidth}px;
+          height: {activeWidth}px;
         "
-        data-index={activeIndex + 1 + i}
-        on:click={() => handleThumbnailClick(activeIndex + 1 + i)}
-        aria-label="Select item {activeIndex + 1 + i + 1}"
+        data-index={activeIndex}
+        role="region"
+        aria-label="Active item {activeIndex + 1}"
       >
-        <span class="text-white font-bold text-lg drop-shadow-md">{activeIndex + 1 + i + 1}</span>
-      </button>
-    {/each}
+        <span class="text-white font-bold text-4xl drop-shadow-md">{activeIndex + 1}</span>
+        <div class="absolute bottom-0 left-0 w-full h-24 bg-black bg-opacity-70 text-white text-center flex items-center justify-center text-2xl rounded-b-lg">
+          REMIX
+        </div>
+      </div>
+      
+      <!-- Right thumbnails -->
+      {#each rightItems as item, i}
+        <button 
+          class="item thumbnail-item mx-[5px] flex-shrink-0 flex items-center justify-center cursor-pointer relative shadow-md rounded-lg"
+          style="
+            background-color: {item.color};
+            width: {thumbnailWidth}px;
+            height: {thumbnailWidth}px;
+            border: none;
+            padding: 0;
+          "
+          data-index={activeIndex + 1 + i}
+          on:click={() => handleThumbnailClick(activeIndex + 1 + i)}
+          aria-label="Select item {activeIndex + 1 + i + 1}"
+        >
+          <span class="text-white font-bold text-lg drop-shadow-md">{activeIndex + 1 + i + 1}</span>
+        </button>
+      {/each}
+    </div>
   </div>
 </div>
