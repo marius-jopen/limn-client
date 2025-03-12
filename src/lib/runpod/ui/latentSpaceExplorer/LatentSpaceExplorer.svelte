@@ -164,7 +164,7 @@
       <!-- Active item (larger) - this one scrolls with the content -->
       <div 
         class="item active-item mx-[5px] flex-shrink-0 flex items-center justify-center relativeopacity-0"
-        style="width: {activeWidth}px;"
+        style="width: {activeWidth / 2}px;"
         data-index={activeIndex}
         role="region"
         aria-label="Active item {activeIndex + 1}"
