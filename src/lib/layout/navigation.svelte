@@ -2,7 +2,7 @@
     import Logout from '$lib/supabase/userarea/Logout.svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import NavigationOverlay from './navigation-overlay.svelte';
-    import RoundButton from '$lib/atoms/RoundButton.svelte';
+    import Button from '$lib/atoms/Button.svelte';
     import { goto } from '$app/navigation';
     
     let menuVisible = false;
@@ -23,10 +23,12 @@
 
 
 {#if $user}
-    <RoundButton 
+    <Button 
         label={menuVisible ? "X" : "Menu"} 
         onClick={() => menuVisible = !menuVisible} 
-        customClass="top-3 right-3 z-20 fixed"
+        variant="secondary"
+        size="md"
+        fullWidth={false}
     />
 
     <NavigationOverlay 
@@ -36,14 +38,18 @@
 
 {:else}
     <div class="flex gap-2 top-3 right-3 z-20 fixed">
-        <RoundButton 
+        <Button 
             label="Register" 
             onClick={() => goto('/register')}
+            variant="secondary"
+            size="sm"
         />
 
-        <RoundButton 
+        <Button 
             label="Login" 
             onClick={() => goto('/login')}
+            variant="secondary"
+            size="sm"
         />
     </div>
 {/if}

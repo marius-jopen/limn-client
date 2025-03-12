@@ -21,7 +21,7 @@
 
     // Dynamic classes based on props
     const variantClasses = {
-        primary: "bg-blue-500 text-white hover:bg-blue-700",
+        primary: "bg-primary text-black hover:bg-primary/80",
         secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300",
         danger: "bg-red-500 text-white hover:bg-red-700",
         success: "bg-green-500 text-white hover:bg-green-700",
@@ -29,7 +29,7 @@
     };
 
     const sizeClasses = {
-        sm: "px-2 py-1 text-sm",
+        sm: "px-4 py-2 text-sm",
         md: "px-4 py-2",
         lg: "px-6 py-3 text-lg"
     };
@@ -38,7 +38,6 @@
         ${variantClasses[variant]}
         ${sizeClasses[size]}
         ${fullWidth ? 'w-full' : ''}
-        font-medium
         transition-colors
         duration-200
         focus:outline-none
@@ -52,6 +51,7 @@
         justify-center
         gap-2
         w-fit
+        rounded-full
     `.trim().replace(/\s+/g, ' ');
 </script>
 

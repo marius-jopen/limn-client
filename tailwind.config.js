@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: '#00ff94',
+      },
       gridTemplateColumns: {
         // Simple 8-12 column grid
         '8': 'repeat(8, minmax(0, 1fr))',

@@ -3,6 +3,7 @@
   import { fade } from 'svelte/transition';
   import { createEventDispatcher } from 'svelte';
   import Logout from '$lib/supabase/userarea/Logout.svelte';
+  import Button from '$lib/atoms/Button.svelte';
 
   const dispatch = createEventDispatcher();
   
@@ -55,7 +56,12 @@
     </div>
 
     <div class="absolute top-3 left-3">
-        <Logout />
+        <Button 
+            label="Logout" 
+            onClick={() => {}} 
+            variant="secondary"
+            size="sm"
+        />
     </div>
   </div>
 {/if}
