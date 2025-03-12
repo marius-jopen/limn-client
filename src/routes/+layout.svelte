@@ -13,7 +13,5 @@
 <main>
     <Navigation />  
 
-    <div class="pt-12">
-        <slot></slot>
-    </div>
+    <slot></slot>
 </main>

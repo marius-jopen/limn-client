@@ -18,6 +18,7 @@ export default {
     borderRadius: {
       'xl': '2.5rem',
       'full': '9999px',
+      'xxl': '6rem',
     }
   },
   plugins: [
