@@ -12,7 +12,11 @@
 
 <!-- <LatentSpaceExplorer /> -->
 <!-- <LimnGeneratorVertical /> -->
-<LimnGeneratorHorizontal />
+ <div class="py-24">
+     <LimnGeneratorHorizontal />
+     <LimnGeneratorHorizontal />
+     <LimnGeneratorHorizontal />
+ </div>
 
 <!-- <div class="flex gap-4 flex-col md:flex-row">
     <div class="md:w-1/2">
