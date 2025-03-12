@@ -30,25 +30,25 @@
         <div class="flex flex-row gap-8">
             <div in:fade={{ duration: 800, delay: 200 }}>
                 <NavigationItem 
-                    href="/studio/latent-space-explorer"
+                    href="/dashboard"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg"
-                    imageAlt="Sandbox"
-                    title="Latent Space Explorer"
+                    imageAlt="Dashboard"
+                    title="Dashboard"
                     on:navigate={handleNavigate}
                 />
             </div>
             
             <div in:fade={{ duration: 800, delay: 250 }}>
                 <NavigationItem 
-                    href="/studio/deforum"
+                    href="/studio/limn"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/fashion.png"
-                    imageAlt="Fashion"
-                    title="Deforum"
+                    imageAlt="Limn"
+                    title="Generator"
                     on:navigate={handleNavigate}
                 />
             </div>
 
-            <div in:fade={{ duration: 800, delay: 300 }}>
+            <!-- <div in:fade={{ duration: 800, delay: 300 }}>
                 <NavigationItem 
                     href="/studio/comfyui-flux"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/abstract.jpg"
@@ -56,7 +56,7 @@
                     title="ComfyUI Flux"
                     on:navigate={handleNavigate}
                 />
-            </div>
+            </div> -->
         </div>
     </div>
 

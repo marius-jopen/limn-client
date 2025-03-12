@@ -32,6 +32,10 @@
         classes="fixed top-3 right-3 z-20"
     />
 
+    <div class="fixed top-3 left-3 z-0 font-bold text-xl">
+        Limn
+    </div>
+
     <NavigationOverlay 
         isOpen={menuVisible} 
         on:navigate={handleNavigate}

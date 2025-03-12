@@ -4,12 +4,13 @@
     import WORKFLOW from '$lib/workflows/deforum/DeforumLimn.json';
     import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';
     import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
-    import LatentSpaceExplorer from '$lib/runpod/ui/LatentSpaceExplorer/LatentSpaceExplorer.svelte';
+    import LimnGenerator from '$lib/runpod/ui/limn/limn-generator.svelte';
+    // import LatentSpaceExplorer from '$lib/runpod/ui/LatentSpaceExplorer/LatentSpaceExplorer.svelte';
 </script>
 
 
-<LatentSpaceExplorer />
-
+<!-- <LatentSpaceExplorer /> -->
+<LimnGenerator />
 
 <!-- <div class="flex gap-4 flex-col md:flex-row">
     <div class="md:w-1/2">
