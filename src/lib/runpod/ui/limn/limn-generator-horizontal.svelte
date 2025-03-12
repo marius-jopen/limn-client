@@ -20,6 +20,9 @@
   // Array to track which image is in focus
   let inFocus = Array(images.length).fill(false);
   
+  // State to track button flash effect
+  let buttonFlashActive = false;
+  
   // Reference to DOM elements using Svelte bindings
   let imageContainers = [];
   let carouselContainer;
@@ -31,16 +34,31 @@
   // Track the currently focused index
   let currentFocusedIndex = -1;
   
-  // Get the currently active word
-  $: activeWord = (() => {
+  // Get the currently active word and handle focus changes
+  $: {
     const activeIndex = inFocus.findIndex((focus) => focus === true);
     
-    // If the focused image has changed, hide the word
-    if (activeIndex !== currentFocusedIndex) {
+    // If the focused image has changed
+    if (activeIndex !== currentFocusedIndex && activeIndex >= 0) {
+      // Hide the word
       isWordVisible = false;
+      
+      // Trigger flash effect on the buttons
+      buttonFlashActive = true;
+      
+      // Reset flash after 1 second
+      setTimeout(() => {
+        buttonFlashActive = false;
+      }, 1000);
+      
+      // Update current focused index
       currentFocusedIndex = activeIndex;
     }
-    
+  }
+  
+  // Get the active word
+  $: activeWord = (() => {
+    const activeIndex = inFocus.findIndex((focus) => focus === true);
     return activeIndex >= 0 ? images[activeIndex].word : "New";
   })();
   
@@ -117,15 +135,16 @@
   });
 </script>
 
+
 <div class="h-[95vh] relative">
   <!-- Fixed word display at the bottom center using Svelte binding -->
   <div 
     bind:this={wordDisplay} 
     class="absolute left-1/2 transform -translate-x-1/2 z-10 w-[25%]"
-    style="top: 73%"
+    style="top: 60vh"
   >
     {#if !isWordVisible}
-      <div class="flex gap-2 justify-center relative">
+      <div class="flex gap-2 justify-center relative {buttonFlashActive ? 'button-flash' : ''}">
         <Button 
           label="Remix" 
           variant="secondary"
@@ -170,7 +189,7 @@
   <!-- Main carousel container -->
   <div 
     bind:this={carouselContainer}
-    class="h-full flex flex-row items-center w-full overflow-x-auto snap-x snap-mandatory gap-16"
+    class="h-full flex flex-row w-full overflow-x-auto snap-x snap-mandatory gap-16 pt-[10%]"
     style="scroll-padding: 0 50%;"
   >
     <!-- Spacer for initial padding -->
@@ -179,7 +198,7 @@
     {#each images as item, i}
       <div 
         bind:this={imageContainers[i]}
-        class="w-[30%] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
+        class="w-[30vw] h-[30vw] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
         style="transform: {inFocus[i] ? 'scale(1.2) translateY(-15%)' : 'scale(1) translateY(0)'}"
       >
         <img src={item.url} alt="{item.word}" class="w-full h-full object-cover" />
@@ -190,3 +209,16 @@
     <div class="w-[31vw] flex-shrink-0"></div>
   </div>
 </div>
+
+
+<style>
+  .button-flash {
+    animation: flash 1s ease-out;
+  }
+  
+  @keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+</style>

@@ -12,7 +12,7 @@
 
 <!-- <LatentSpaceExplorer /> -->
 <!-- <LimnGeneratorVertical /> -->
- <div class="py-24">
+ <div class="pt-[12%]">
      <LimnGeneratorHorizontal />
      <LimnGeneratorHorizontal />
      <LimnGeneratorHorizontal />
