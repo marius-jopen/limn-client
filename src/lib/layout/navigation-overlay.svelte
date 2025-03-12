@@ -30,10 +30,10 @@
         <div class="flex flex-row gap-8">
             <div in:fade={{ duration: 800, delay: 200 }}>
                 <NavigationItem 
-                    href="/studio/deforum-limn"
+                    href="/studio/latent-space-explorer"
                     imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg"
                     imageAlt="Sandbox"
-                    title="Deforum Limn"
+                    title="Latent Space Explorer"
                     on:navigate={handleNavigate}
                 />
             </div>
