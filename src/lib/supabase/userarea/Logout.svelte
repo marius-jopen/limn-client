@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { supabase } from '$lib/supabase/helper/SupabaseClient';
+  import RoundButton from '$lib/atoms/RoundButton.svelte';
 
   async function handleLogout(): Promise<void> {
     const { error } = await supabase.auth.signOut();
@@ -12,6 +13,7 @@
   }
 </script>
 
-<button on:click={handleLogout}>
-    Logout
-</button>
+<RoundButton 
+    label="Logout" 
+    onClick={handleLogout}
+/>

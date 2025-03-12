@@ -26,13 +26,26 @@
     <RoundButton 
         label={menuVisible ? "X" : "Menu"} 
         onClick={() => menuVisible = !menuVisible} 
-        customClass="top-3 left-3 z-20 fixed"
+        customClass="top-3 right-3 z-20 fixed"
     />
 
     <NavigationOverlay 
         isOpen={menuVisible} 
         on:navigate={handleNavigate}
     />
+
+{:else}
+    <div class="flex gap-2 top-3 right-3 z-20 fixed">
+        <RoundButton 
+            label="Register" 
+            onClick={() => goto('/register')}
+        />
+
+        <RoundButton 
+            label="Login" 
+            onClick={() => goto('/login')}
+        />
+    </div>
 {/if}
         
 <!-- <div class="flex justify-between w-full"> 

@@ -2,7 +2,8 @@
   import NavigationItem from './navigation-item.svelte';
   import { fade } from 'svelte/transition';
   import { createEventDispatcher } from 'svelte';
-  
+  import Logout from '$lib/supabase/userarea/Logout.svelte';
+
   const dispatch = createEventDispatcher();
   
   // You can control when the overlay is shown with this variable
@@ -51,6 +52,10 @@
                 />
             </div>
         </div>
+    </div>
+
+    <div class="absolute top-3 left-3">
+        <Logout />
     </div>
   </div>
 {/if}
