@@ -9,7 +9,6 @@
     
     // Container element reference
     let container;
-    let thumbnailTrack;
     
     // Item dimensions
     const thumbnailWidth = 90; // Width of thumbnail items
@@ -28,45 +27,62 @@
     // Get the active item
     $: activeItem = placeholderItems[activeIndex];
     
+    // Get items before the active item
+    $: leftItems = placeholderItems.slice(0, activeIndex);
+    
+    // Get items after the active item
+    $: rightItems = placeholderItems.slice(activeIndex + 1);
+    
     // Handle click on a thumbnail to make it active
     function handleThumbnailClick(index) {
       activeIndex = index;
-      scrollToThumbnail(index);
+      scrollToCenter();
     }
     
-    // Scroll to center a specific thumbnail
-    function scrollToThumbnail(index) {
-      if (thumbnailTrack) {
-        const thumbnailElement = thumbnailTrack.querySelector(`[data-index="${index}"]`);
-        if (thumbnailElement) {
-          thumbnailElement.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+    // Scroll the container to center the active item
+    function scrollToCenter() {
+      if (container) {
+        const activeElement = container.querySelector('.active-item');
+        if (activeElement) {
+          const containerRect = container.getBoundingClientRect();
+          const activeRect = activeElement.getBoundingClientRect();
+          
+          const targetScrollLeft = (activeRect.left + activeRect.width/2) - (containerRect.left + containerRect.width/2) + container.scrollLeft;
+          
+          container.scrollTo({
+            left: targetScrollLeft,
+            behavior: 'auto'
+          });
         }
       }
     }
     
-    // Handle scroll on the thumbnail track
-    function handleThumbnailScroll() {
-      if (thumbnailTrack) {
-        const thumbnails = thumbnailTrack.querySelectorAll('.thumbnail-item');
-        const trackRect = thumbnailTrack.getBoundingClientRect();
-        const trackCenter = trackRect.left + (trackRect.width / 2);
+    // Handle scroll on the container
+    function handleScroll() {
+      if (container) {
+        const containerRect = container.getBoundingClientRect();
+        const containerCenter = containerRect.left + (containerRect.width / 2);
+        
+        // Get all items (thumbnails and active)
+        const allItems = container.querySelectorAll('.item');
         
         let closestIndex = 0;
         let closestDistance = Infinity;
         
-        thumbnails.forEach((thumbnail) => {
-          const thumbnailRect = thumbnail.getBoundingClientRect();
-          const thumbnailCenter = thumbnailRect.left + (thumbnailRect.width / 2);
-          const distance = Math.abs(thumbnailCenter - trackCenter);
+        allItems.forEach((item) => {
+          const itemRect = item.getBoundingClientRect();
+          const itemCenter = itemRect.left + (itemRect.width / 2);
+          const distance = Math.abs(itemCenter - containerCenter);
           
           if (distance < closestDistance) {
             closestDistance = distance;
-            closestIndex = parseInt(thumbnail.dataset.index);
+            closestIndex = parseInt(item.dataset.index);
           }
         });
         
         if (closestIndex !== activeIndex) {
           activeIndex = closestIndex;
+          // Don't auto-scroll here to allow free scrolling
         }
       }
     }
@@ -74,69 +90,90 @@
     onMount(() => {
       // Add scroll event listener with throttling
       let scrollTimeout;
-      if (thumbnailTrack) {
-        thumbnailTrack.addEventListener('scroll', () => {
+      if (container) {
+        container.addEventListener('scroll', () => {
           if (!scrollTimeout) {
             scrollTimeout = setTimeout(() => {
-              handleThumbnailScroll();
+              handleScroll();
               scrollTimeout = null;
             }, 100);
           }
         });
       }
       
-      // Initial scroll to active thumbnail
+      // Initial scroll to center
       setTimeout(() => {
-        scrollToThumbnail(activeIndex);
+        scrollToCenter();
       }, 100);
       
       return () => {
-        if (thumbnailTrack) {
-          thumbnailTrack.removeEventListener('scroll', handleThumbnailScroll);
+        if (container) {
+          container.removeEventListener('scroll', handleScroll);
         }
         clearTimeout(scrollTimeout);
       };
     });
-  </script>
-  
-  <div class="relative w-full flex flex-col bg-gray-100 rounded-lg">
-    <!-- Main active item display -->
-    <div class="w-full flex-grow flex items-center justify-center p-4">
-      <div 
-        class="flex-shrink-0 flex items-center justify-center relative shadow-lg outline outline-[3px] outline-red-500 rounded-lg"
+</script>
+
+<div 
+  class="w-full h-[650px] overflow-x-auto overflow-y-hidden flex items-center bg-gray-100 rounded-lg"
+  bind:this={container}
+>
+  <div class="flex items-center" style="padding-left: calc(50% - {thumbnailWidth/2}px); padding-right: calc(50% - {thumbnailWidth/2}px);">
+    <!-- Left thumbnails -->
+    {#each leftItems as item, i}
+      <button 
+        class="item thumbnail-item mx-[5px] flex-shrink-0 flex items-center justify-center cursor-pointer relative shadow-md rounded-lg"
         style="
-          background-color: {activeItem?.color || 'transparent'};
-          width: {activeWidth}px;
-          height: {activeWidth}px;
+          background-color: {item.color};
+          width: {thumbnailWidth}px;
+          height: {thumbnailWidth}px;
+          border: none;
+          padding: 0;
         "
+        data-index={i}
+        on:click={() => handleThumbnailClick(i)}
+        aria-label="Select item {i + 1}"
       >
-        <span class="text-white font-bold text-4xl drop-shadow-md">{activeIndex + 1}</span>
-        <div class="absolute bottom-0 left-0 w-full h-24 bg-black bg-opacity-70 text-white text-center flex items-center justify-center text-2xl rounded-b-lg">
-          REMIX
-        </div>
+        <span class="text-white font-bold text-lg drop-shadow-md">{i + 1}</span>
+      </button>
+    {/each}
+    
+    <!-- Active item (larger) -->
+    <div 
+      class="item active-item mx-[5px] flex-shrink-0 flex items-center justify-center relative shadow-lg outline outline-[3px] outline-red-500 rounded-lg"
+      style="
+        background-color: {activeItem?.color || 'transparent'};
+        width: {activeWidth}px;
+        height: {activeWidth}px;
+      "
+      data-index={activeIndex}
+      role="region"
+      aria-label="Active item {activeIndex + 1}"
+    >
+      <span class="text-white font-bold text-4xl drop-shadow-md">{activeIndex + 1}</span>
+      <div class="absolute bottom-0 left-0 w-full h-24 bg-black bg-opacity-70 text-white text-center flex items-center justify-center text-2xl rounded-b-lg">
+        REMIX
       </div>
     </div>
     
-    <!-- Thumbnail scrolling track -->
-    <div 
-      class="w-full h-[120px] overflow-x-auto overflow-y-hidden flex items-center px-4"
-      bind:this={thumbnailTrack}
-    >
-      <div class="flex items-center mx-auto">
-        {#each placeholderItems as item, i}
-          <div 
-            class="thumbnail-item mx-[5px] flex-shrink-0 flex items-center justify-center cursor-pointer relative shadow-md rounded-lg {i === activeIndex ? 'ring-2 ring-white' : ''}"
-            style="
-              background-color: {item.color};
-              width: {thumbnailWidth}px;
-              height: {thumbnailWidth}px;
-            "
-            data-index={i}
-            on:click={() => handleThumbnailClick(i)}
-          >
-            <span class="text-white font-bold text-lg drop-shadow-md">{i + 1}</span>
-          </div>
-        {/each}
-      </div>
-    </div>
+    <!-- Right thumbnails -->
+    {#each rightItems as item, i}
+      <button 
+        class="item thumbnail-item mx-[5px] flex-shrink-0 flex items-center justify-center cursor-pointer relative shadow-md rounded-lg"
+        style="
+          background-color: {item.color};
+          width: {thumbnailWidth}px;
+          height: {thumbnailWidth}px;
+          border: none;
+          padding: 0;
+        "
+        data-index={activeIndex + 1 + i}
+        on:click={() => handleThumbnailClick(activeIndex + 1 + i)}
+        aria-label="Select item {activeIndex + 1 + i + 1}"
+      >
+        <span class="text-white font-bold text-lg drop-shadow-md">{activeIndex + 1 + i + 1}</span>
+      </button>
+    {/each}
   </div>
+</div>
