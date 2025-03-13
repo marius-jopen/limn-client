@@ -258,7 +258,7 @@
     {#each data as item, i}
       <div 
         bind:this={imageContainers[i]}
-        class="w-[30vw] h-[30vw] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
+        class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
         style="transform: {inFocus[i] ? 'scale(1.2) translateY(-15%)' : 'scale(1) translateY(0)'}"
       >
         <LimnGeneratorItem item={item} data={data} currentFocusedIndex={currentFocusedIndex} />
