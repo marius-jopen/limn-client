@@ -130,7 +130,7 @@
     {#if !isWordVisible}
       <div in:fly={{ duration: 200 }} out:fade={{  duration: 200 }} class="flex gap-2 justify-center relative {buttonFlashActive ? 'button-flash' : ''}">
         <Button 
-          label="Remix" 
+          label="Explore" 
           variant="secondary"
           size="sm"
           fullWidth={false}
