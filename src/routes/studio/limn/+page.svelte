@@ -12,7 +12,7 @@
 
 <!-- <LatentSpaceExplorer /> -->
 <!-- <LimnGeneratorVertical /> -->
- <div class="pt-[12%]">
+ <div class="pt-[150px]">
     <LimnGenerator ui_config={UI_CONFIG} workflow={WORKFLOW} />
  </div>
 

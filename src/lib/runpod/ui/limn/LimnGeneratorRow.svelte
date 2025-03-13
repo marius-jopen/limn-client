@@ -163,7 +163,7 @@
   });
 </script>
 
-<div class="h-[1000px] relative">
+<div class="h-[800px] relative">
   <div 
     bind:this={wordDisplay} 
     class="absolute left-1/2 transform -translate-x-1/2 z-0 w-[600px] z-20"
@@ -263,7 +263,7 @@
   <!-- Main carousel container -->
   <div 
     bind:this={carouselContainer}
-    class="h-full flex flex-row w-full overflow-x-auto snap-x snap-mandatory gap-16 pt-[10%]"
+    class="h-full flex flex-row w-full overflow-x-auto snap-x snap-mandatory gap-16 pt-[10%] hide-scrollbar"
     style="scroll-padding: 0 50%;"
   >
     <!-- Spacer for initial padding -->
@@ -273,7 +273,7 @@
       <div 
         bind:this={imageContainers[i]}
         class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
-        style="transform: {inFocus[i] ? 'scale(1.2) translateY(-15%)' : 'scale(1) translateY(0)'}"
+        style="transform: {inFocus[i] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
       >
         <LimnGeneratorItem item={item} data={data} currentFocusedIndex={currentFocusedIndex} />
       </div>
@@ -294,5 +294,15 @@
     0% { opacity: 1; }
     50% { opacity: 0.4; }
     100% { opacity: 1; }
+  }
+
+  /* Hide scrollbar while maintaining scroll functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
   }
 </style>
