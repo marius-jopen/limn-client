@@ -139,7 +139,7 @@
   });
 </script>
 
-<div class="h-[95vh] relative">
+<div class="h-[90vh] relative">
   <!-- Fixed word display at the bottom center using Svelte binding -->
   <div 
     bind:this={wordDisplay} 
