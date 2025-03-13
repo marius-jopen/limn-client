@@ -6,19 +6,7 @@
   import LimnGeneratorControls from './LimnGeneratorControls.svelte';
   import LimnGeneratorItem from './LimnGeneratorItem.svelte';
 
-  // Array with image URLs and words
-  let data = [
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Nature" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Adventure" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Explore" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Discover" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Journey" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Wonder" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Inspire" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Create" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Imagine" },
-    { url: "https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg", word: "Dream" }
-  ];
+  export let data;
   
   // Array to track which image is in focus
   let inFocus = Array(data.length).fill(false);
@@ -58,12 +46,6 @@
       currentFocusedIndex = activeIndex;
     }
   }
-  
-  // Get the active word
-  $: activeWord = (() => {
-    const activeIndex = inFocus.findIndex((focus) => focus === true);
-    return activeIndex >= 0 ? data[activeIndex].word : "New";
-  })();
   
   // Function to toggle word visibility
   function toggleWordVisibility() {
@@ -138,16 +120,15 @@
   });
 </script>
 
-
 <div class="h-[95vh] relative">
   <!-- Fixed word display at the bottom center using Svelte binding -->
   <div 
     bind:this={wordDisplay} 
-    class="absolute left-1/2 transform -translate-x-1/2 z-10 w-[25%]"
+    class="absolute left-1/2 transform -translate-x-1/2 z-0 w-[25%]"
     style="top: 60vh"
   >
     {#if !isWordVisible}
-      <div class="flex gap-2 justify-center relative {buttonFlashActive ? 'button-flash' : ''}">
+      <div in:fly={{ duration: 200 }} out:fade={{  duration: 200 }} class="flex gap-2 justify-center relative {buttonFlashActive ? 'button-flash' : ''}">
         <Button 
           label="Remix" 
           variant="secondary"
@@ -163,7 +144,7 @@
     {#if isWordVisible}
       <div 
         class="h-32 absolute top-0 text-sm bg-gray-200 rounded-lg py-2 px-4 w-full text-center"
-        in:fly={{ y: 0, duration: 800 }}
+        in:fly={{ y: -3, duration: 800 }}
         out:fade={{ duration: 400 }}
       >
       <div class="relative px-4 py-4">
@@ -178,11 +159,7 @@
       </div>
     {/if}
   </div>
-  
-  <!-- Threshold lines for debugging -->
-  <!-- <div class="fixed top-0 h-full w-[1px] bg-red-500 z-50" style="left: 30vw;"></div> -->
-  <!-- <div class="fixed top-0 h-full w-[1px] bg-red-500 z-50" style="left: 70vw;"></div> -->
-  
+
   <!-- Main carousel container -->
   <div 
     bind:this={carouselContainer}
@@ -215,7 +192,7 @@
   
   @keyframes flash {
     0% { opacity: 1; }
-    50% { opacity: 0.6; }
+    50% { opacity: 0.4; }
     100% { opacity: 1; }
   }
 </style>
