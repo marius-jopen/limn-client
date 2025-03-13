@@ -57,19 +57,33 @@
   // Function to toggle word visibility
   function toggleWordVisibility() {
     isWordVisible = !isWordVisible;
+    
+    // If we're showing the word, make sure the current focused item is centered
+    if (isWordVisible && currentFocusedIndex >= 0) {
+      scrollToImage(currentFocusedIndex);
+    }
   }
   
   // Function to scroll to a specific image
   function scrollToImage(index) {
     if (imageContainers[index] && carouselContainer) {
-      const containerRect = carouselContainer.getBoundingClientRect();
+      // Get the current position of the image
       const imageRect = imageContainers[index].getBoundingClientRect();
       
-      // Calculate the scroll position to center the image
-      const scrollLeft = imageContainers[index].offsetLeft - (containerRect.width / 2) + (imageRect.width / 2);
+      // Get the current scroll position
+      const currentScrollLeft = carouselContainer.scrollLeft;
       
+      // Calculate how far the image is from the center of the viewport
+      const viewportCenter = window.innerWidth / 2;
+      const imageCenter = imageRect.left + (imageRect.width / 2);
+      const offset = imageCenter - viewportCenter;
+      
+      // Calculate the new scroll position by adjusting the current position
+      const newScrollLeft = currentScrollLeft + offset;
+      
+      // Apply the scroll
       carouselContainer.scrollTo({
-        left: scrollLeft,
+        left: newScrollLeft,
         behavior: 'smooth'
       });
     }
