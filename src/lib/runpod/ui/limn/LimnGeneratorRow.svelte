@@ -38,6 +38,9 @@
       // Hide the word
       isWordVisible = false;
       
+      // Close the dropdown when focus changes
+      isDropdownOpen = false;
+      
       // Trigger flash effect on the buttons
       buttonFlashActive = true;
       
@@ -149,7 +152,7 @@
 <div class="h-[1000px] relative">
   <div 
     bind:this={wordDisplay} 
-    class="absolute left-1/2 transform -translate-x-1/2 z-0 w-[30%] z-20"
+    class="absolute left-1/2 transform -translate-x-1/2 z-0 w-[600px] z-20"
     style="top: 620px"
   >
     {#if !isWordVisible}
@@ -174,7 +177,7 @@
           
           {#if isDropdownOpen}
             <div 
-              class="overflow-hidden absolute bottom-full left-0 mb-2 bg-white shadow-lg rounded-lg py-2 z-0 min-w-[180px]"
+              class="overflow-hidden absolute bottom-0 right-0 mr-[-185px] bg-gray-200 rounded-lg py-2 z-0 min-w-[180px]"
               in:fly={{ y: 5, duration: 200 }}
               out:fade={{ duration: 150 }}
             >
@@ -218,19 +221,27 @@
 
     {#if isWordVisible}
       <div 
-        class="h-32 absolute top-0 text-sm bg-gray-200 rounded-lg py-2 px-2 w-full text-center"
+        class="absolute top-0 text-sm bg-gray-200 rounded-lg py-2 px-2 w-full text-center"
         in:fly={{ y: -3, duration: 800 }}
         out:fade={{ duration: 400 }}
       >
-      <div class="relative">
-        <!-- <div class="cursor-pointer absolute top-1 right-1" on:click={toggleWordVisibility}>
-          X
-        </div> -->
-
-        <div >
-          <LimnGeneratorControls data={data} currentFocusedIndex={currentFocusedIndex} ui_config={ui_config} workflow={workflow} />
+        <div class="relative">
+          <!-- Close button (x) in the top right -->
+          <button 
+              class="absolute top-0 right-1 text-gray-500 hover:text-gray-700 z-10 w-5 h-5 flex items-center justify-center rounded-full hover:bg-gray-300"
+              on:click={() => isWordVisible = false}
+              title="Close"
+          >
+              ×
+          </button>
+          
+          <LimnGeneratorControls 
+            data={data} 
+            currentFocusedIndex={currentFocusedIndex} 
+            ui_config={ui_config}
+            workflow={workflow}
+          />
         </div>
-      </div>
       </div>
     {/if}
   </div>
