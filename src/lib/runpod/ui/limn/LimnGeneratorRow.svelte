@@ -2,11 +2,12 @@
   import { onMount } from 'svelte';
   import Button from '$lib/atoms/Button.svelte';
   import { fade, fly } from 'svelte/transition';
-  import BookmarkImage from '$lib/supabase/media/BookmarkImage.svelte';
   import LimnGeneratorControls from './LimnGeneratorControls.svelte';
   import LimnGeneratorItem from './LimnGeneratorItem.svelte';
 
   export let data;
+  export let ui_config;
+  export let workflow;
   
   // Array to track which image is in focus
   let inFocus = Array(data.length).fill(false);
@@ -81,6 +82,12 @@
     if (isDropdownOpen && !event.target.closest('.dropdown-container')) {
       isDropdownOpen = false;
     }
+    
+    // Close word display when clicking outside
+    if (isWordVisible && wordDisplay && !wordDisplay.contains(event.target) && 
+        !event.target.closest('.button-container')) {
+      isWordVisible = false;
+    }
   }
   
   onMount(() => {
@@ -140,14 +147,13 @@
 </script>
 
 <div class="h-[90vh] relative">
-  <!-- Fixed word display at the bottom center using Svelte binding -->
   <div 
     bind:this={wordDisplay} 
-    class="absolute left-1/2 transform -translate-x-1/2 z-0 w-[25%]"
+    class="absolute left-1/2 transform -translate-x-1/2 z-0 w-[30%]"
     style="top: 60vh"
   >
     {#if !isWordVisible}
-      <div in:fly={{ duration: 200 }} out:fade={{  duration: 200 }} class="flex gap-2 justify-center relative {buttonFlashActive ? 'button-flash' : ''}">
+      <div in:fly={{ duration: 200 }} out:fade={{  duration: 200 }} class="flex gap-2 justify-center relative button-container {buttonFlashActive ? 'button-flash' : ''}">
         <Button 
           label="Explore" 
           variant="secondary"
@@ -207,26 +213,22 @@
           {/if}
         </div>
 
-        <div>
-          <!-- <BookmarkImage data={data} currentFocusedIndex={currentFocusedIndex} /> -->
-          <!-- Removed "dropdown" text since we're implementing the actual dropdown -->
-        </div>
       </div>
     {/if}
 
     {#if isWordVisible}
       <div 
-        class="h-32 absolute top-0 text-sm bg-gray-200 rounded-lg py-2 px-4 w-full text-center"
+        class="h-32 absolute top-0 text-sm bg-gray-200 rounded-lg py-2 px-2 w-full text-center"
         in:fly={{ y: -3, duration: 800 }}
         out:fade={{ duration: 400 }}
       >
-      <div class="relative px-4 py-4">
-        <div class="cursor-pointer absolute top-1 right-1" on:click={toggleWordVisibility}>
+      <div class="relative">
+        <!-- <div class="cursor-pointer absolute top-1 right-1" on:click={toggleWordVisibility}>
           X
-        </div>
+        </div> -->
 
-        <div>
-          <LimnGeneratorControls data={data} currentFocusedIndex={currentFocusedIndex} />
+        <div >
+          <LimnGeneratorControls data={data} currentFocusedIndex={currentFocusedIndex} ui_config={ui_config} workflow={workflow} />
         </div>
       </div>
       </div>

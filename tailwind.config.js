@@ -19,6 +19,7 @@ export default {
       }
     },
     borderRadius: {
+      'md': '1.15rem',
       'lg': '1.5rem',
       'xl': '2.5rem',
       'full': '9999px',

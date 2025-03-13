@@ -1,7 +1,7 @@
 <script>
     // import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
-    // import UI_CONFIG from '$lib/workflows/deforum/DeforumLimnConfig.json';
-    // import WORKFLOW from '$lib/workflows/deforum/DeforumLimn.json';
+    import UI_CONFIG from '$lib/workflows/deforum/DeforumLimnConfig.json';
+    import WORKFLOW from '$lib/workflows/deforum/DeforumLimn.json';
     // import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';
     // import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
     // import LimnGeneratorVertical from '$lib/runpod/ui/limn/limn-generator-vertical.svelte';
@@ -13,7 +13,7 @@
 <!-- <LatentSpaceExplorer /> -->
 <!-- <LimnGeneratorVertical /> -->
  <div class="pt-[12%]">
-    <LimnGenerator />
+    <LimnGenerator ui_config={UI_CONFIG} workflow={WORKFLOW} />
  </div>
 
 <!-- <div class="flex gap-4 flex-col md:flex-row">

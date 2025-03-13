@@ -61,7 +61,7 @@
             />
         </div>
 
-        <div class="flex flex-col">
+        <!-- <div class="flex flex-col">
             <Label 
                 for_id={`${id}-prompt2`} 
                 label={`Prompt 2 (Frame ${endFrame})`} 
@@ -70,7 +70,7 @@
                 id={`${id}-prompt2`} 
                 bind:value={prompt2} 
             />
-        </div>
+        </div> -->
     </div>
     
     <input type="hidden" {id} {value} />

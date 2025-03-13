@@ -18,6 +18,9 @@
      * @property {string} [batch_name] - Name of the batch this resource belongs to
      */
 
+    export let ui_config
+    export let workflow
+
     // Workflow names to filter by
     const workflowsToFetch = ['deforum-limn', 'deforum-limn-init'];
     
@@ -283,7 +286,7 @@
     <div bind:this={containerElement}>
         {#each visibleBatchNames as batchName}
             <div class="mb-4">
-                <LimnGeneratorRow data={imageBatches[batchName]} />
+                <LimnGeneratorRow data={imageBatches[batchName]} ui_config={ui_config} workflow={workflow} />
             </div>
         {/each}
         
