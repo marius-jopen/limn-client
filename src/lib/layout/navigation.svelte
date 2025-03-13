@@ -29,7 +29,7 @@
         variant="secondary"
         size="sm"
         fullWidth={false}
-        classes="fixed top-3 right-3 z-20"
+        classes="fixed top-3 right-3 z-50"
     />
 
     <div class="fixed top-3 left-3 z-0 font-bold text-xl">

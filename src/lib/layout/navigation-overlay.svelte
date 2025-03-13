@@ -23,7 +23,7 @@
 
 {#if isOpen}
   <div 
-    class="z-10 bg-neutral-100/80 backdrop-blur-2xl w-screen h-screen top-0 left-0 fixed"
+    class="z-40 bg-neutral-100/80 backdrop-blur-2xl w-screen h-screen top-0 left-0 fixed"
     transition:fade={{ duration: 300 }}
   >
     <div class="flex justify-center items-center h-full">

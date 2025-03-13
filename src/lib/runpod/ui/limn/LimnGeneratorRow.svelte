@@ -146,11 +146,11 @@
   });
 </script>
 
-<div class="h-[90vh] relative">
+<div class="h-[1000px] relative">
   <div 
     bind:this={wordDisplay} 
-    class="absolute left-1/2 transform -translate-x-1/2 z-0 w-[30%]"
-    style="top: 60vh"
+    class="absolute left-1/2 transform -translate-x-1/2 z-0 w-[30%] z-20"
+    style="top: 620px"
   >
     {#if !isWordVisible}
       <div in:fly={{ duration: 200 }} out:fade={{  duration: 200 }} class="flex gap-2 justify-center relative button-container {buttonFlashActive ? 'button-flash' : ''}">
@@ -174,7 +174,7 @@
           
           {#if isDropdownOpen}
             <div 
-              class="overflow-hidden absolute top-full left-0 mt-2 bg-white shadow-lg rounded-lg py-2 z-0 min-w-[180px]"
+              class="overflow-hidden absolute bottom-full left-0 mb-2 bg-white shadow-lg rounded-lg py-2 z-0 min-w-[180px]"
               in:fly={{ y: 5, duration: 200 }}
               out:fade={{ duration: 150 }}
             >
