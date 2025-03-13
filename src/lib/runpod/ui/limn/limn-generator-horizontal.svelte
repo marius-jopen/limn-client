@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import Button from '$lib/atoms/Button.svelte';
   import { fade, fly } from 'svelte/transition';
+  import BookmarkImage from '$lib/supabase/media/BookmarkImage.svelte';
+  import LimnGeneratorControls from './LimnGeneratorControls.svelte';
 
   // Array with image URLs and words
   let images = [
@@ -153,12 +155,7 @@
           onClick={toggleWordVisibility}
         />
 
-        <Button 
-          label="Bookmark" 
-          variant="secondary"
-          size="sm"
-          fullWidth={false}
-        />
+        <BookmarkImage />
       </div>
     {/if}
 
@@ -174,7 +171,7 @@
         </div>
 
         <div>
-          {activeWord}
+          <LimnGeneratorControls />
         </div>
       </div>
       </div>
