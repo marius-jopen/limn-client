@@ -1,21 +1,19 @@
 <script>
-    import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
-    import UI_CONFIG from '$lib/workflows/deforum/DeforumLimnConfig.json';
-    import WORKFLOW from '$lib/workflows/deforum/DeforumLimn.json';
-    import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';
-    import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
+    // import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
+    // import UI_CONFIG from '$lib/workflows/deforum/DeforumLimnConfig.json';
+    // import WORKFLOW from '$lib/workflows/deforum/DeforumLimn.json';
+    // import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';
+    // import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
     // import LimnGeneratorVertical from '$lib/runpod/ui/limn/limn-generator-vertical.svelte';
-    import LimnGeneratorHorizontal from '$lib/runpod/ui/limn/limn-generator-horizontal.svelte';
     // import LatentSpaceExplorer from '$lib/runpod/ui/LatentSpaceExplorer/LatentSpaceExplorer.svelte';
+    import LimnGenerator from '$lib/runpod/ui/limn/LimnGenerator.svelte';
 </script>
 
 
 <!-- <LatentSpaceExplorer /> -->
 <!-- <LimnGeneratorVertical /> -->
  <div class="pt-[12%]">
-     <LimnGeneratorHorizontal />
-     <LimnGeneratorHorizontal />
-     <LimnGeneratorHorizontal />
+    <LimnGenerator />
  </div>
 
 <!-- <div class="flex gap-4 flex-col md:flex-row">
