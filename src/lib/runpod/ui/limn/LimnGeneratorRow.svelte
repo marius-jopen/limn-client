@@ -25,6 +25,9 @@
   // Track the currently focused index
   let currentFocusedIndex = -1;
   
+  // Add state to track dropdown visibility
+  let isDropdownOpen = false;
+  
   // Get the currently active word and handle focus changes
   $: {
     const activeIndex = inFocus.findIndex((focus) => focus === true);
@@ -65,6 +68,18 @@
         left: scrollLeft,
         behavior: 'smooth'
       });
+    }
+  }
+  
+  // Function to toggle dropdown visibility
+  function toggleDropdown() {
+    isDropdownOpen = !isDropdownOpen;
+  }
+  
+  // Function to close dropdown when clicking outside
+  function handleClickOutside(event) {
+    if (isDropdownOpen && !event.target.closest('.dropdown-container')) {
+      isDropdownOpen = false;
     }
   }
   
@@ -113,9 +128,13 @@
       scrollToImage(0);
     }, 200);
     
+    // Add event listener for closing dropdown when clicking outside
+    document.addEventListener('click', handleClickOutside);
+    
     return () => {
       carouselContainer.removeEventListener('scroll', checkCenterImage);
       window.removeEventListener('resize', checkCenterImage);
+      document.removeEventListener('click', handleClickOutside);
     };
   });
 </script>
@@ -137,7 +156,61 @@
           onClick={toggleWordVisibility}
         />
 
-        <BookmarkImage data={data} currentFocusedIndex={currentFocusedIndex} />
+        <div class="dropdown-container relative">
+          <Button 
+            label="..." 
+            variant="secondary"
+            size="sm"
+            fullWidth={false}
+            onClick={toggleDropdown}
+            classes="{isDropdownOpen && '!bg-gray-300'}"
+          />
+          
+          {#if isDropdownOpen}
+            <div 
+              class="overflow-hidden absolute top-full left-0 mt-2 bg-white shadow-lg rounded-lg py-2 z-0 min-w-[180px]"
+              in:fly={{ y: 5, duration: 200 }}
+              out:fade={{ duration: 150 }}
+            >
+              <Button 
+                label="Bookmark" 
+                variant="blank"
+                size="sm"
+                fullWidth={false}
+                classes="hover:bg-gray-100 w-full flex !justify-start font-medium"
+              />
+
+              <Button 
+                label="Preview Video" 
+                variant="blank"
+                size="sm"
+                fullWidth={false}
+                classes="hover:bg-gray-100 w-full flex !justify-start font-medium"
+              />
+
+              <Button 
+                label="Delete Image" 
+                variant="blank"
+                size="sm"
+                fullWidth={false}
+                classes="hover:bg-gray-100 w-full flex !justify-start font-medium"
+              />
+
+              <Button 
+                label="Delete Batch" 
+                variant="blank"
+                size="sm"
+                fullWidth={false}
+                classes="hover:bg-gray-100 w-full flex !justify-start font-medium"
+              />
+            </div>
+          {/if}
+        </div>
+
+        <div>
+          <!-- <BookmarkImage data={data} currentFocusedIndex={currentFocusedIndex} /> -->
+          <!-- Removed "dropdown" text since we're implementing the actual dropdown -->
+        </div>
       </div>
     {/if}
 

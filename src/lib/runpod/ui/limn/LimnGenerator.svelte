@@ -27,12 +27,18 @@
     let error = null;
     let subscription;
 
-    // Lazy loading configuration
+    // Lazy loading configuration for UI
     const INITIAL_BATCHES = 2; // Number of batches to load initially
     const BATCHES_PER_LOAD = 2; // Number of batches to load each time
     let visibleBatchCount = INITIAL_BATCHES;
     let containerElement;
     let loadingMore = false;
+
+    // Lazy loading configuration for database queries
+    const IMAGES_PER_PAGE = 50; // Number of images to fetch per page
+    let currentPage = 0;
+    let hasMoreImages = true;
+    let isFetchingImages = false;
 
     // Get user ID from store
     $: userId = $user?.id;
@@ -40,15 +46,16 @@
     // Compute visible batch names based on the current count
     $: visibleBatchNames = batchNames.slice(0, visibleBatchCount);
 
-    // Function to fetch images from Supabase
-    async function fetchImages() {
-        if (!userId) {
-            console.log('No user ID available, skipping fetch');
+    // Function to fetch a page of images from Supabase
+    async function fetchImagePage() {
+        if (!userId || isFetchingImages || !hasMoreImages) {
             return;
         }
 
+        isFetchingImages = true;
+        
         try {
-            console.log('Fetching images for Limn Generator');
+            console.log(`Fetching images page ${currentPage} for Limn Generator`);
             
             let query = supabase
                 .from('resource')
@@ -56,7 +63,8 @@
                 .eq('user_id', userId)
                 .in('workflow_name', workflowsToFetch)
                 .or('visibility.is.null,visibility.eq.true')
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: false })
+                .range(currentPage * IMAGES_PER_PAGE, (currentPage + 1) * IMAGES_PER_PAGE - 1);
             
             const { data, error: fetchError } = await query;
             
@@ -64,47 +72,97 @@
                 throw new Error(fetchError.message || 'Failed to fetch images');
             }
             
-            console.log(`Fetched ${data?.length || 0} images for Limn Generator`);
+            console.log(`Fetched ${data?.length || 0} images for page ${currentPage}`);
             
-            // Group images by batch_name
-            imageBatches = {};
-            (data || []).forEach(resource => {
-                const batchName = resource.batch_name || 'default';
-                
-                if (!imageBatches[batchName]) {
-                    imageBatches[batchName] = [];
-                }
-                
-                // Transform each image URL individually using transformToBunnyUrl
-                imageBatches[batchName].push({
-                    url: transformToBunnyUrl(resource.image_url),
-                    word: resource.workflow_name,
-                    id: resource.id
-                });
-            });
+            // Process the fetched images
+            processImages(data || []);
             
-            // Get sorted batch names (most recent first, based on order of data)
-            batchNames = Object.keys(imageBatches);
+            // Update pagination state
+            currentPage++;
+            hasMoreImages = data.length === IMAGES_PER_PAGE;
             
-            console.log(`Grouped images into ${batchNames.length} batches`);
+            // If we need more batches and there are more images, fetch the next page
+            if (visibleBatchCount > batchNames.length && hasMoreImages) {
+                // Small delay to prevent rapid consecutive requests
+                setTimeout(() => {
+                    fetchImagePage();
+                }, 300);
+            }
             
         } catch (e) {
             error = e.message;
             console.error('Error fetching images for Limn Generator:', e);
+        } finally {
+            isFetchingImages = false;
         }
     }
 
-    // Function to load more batches
+    // Process images and group them by batch
+    function processImages(images) {
+        // Create a copy of the current batches
+        let updatedBatches = { ...imageBatches };
+        
+        // Process new images
+        images.forEach(resource => {
+            const batchName = resource.batch_name || 'default';
+            
+            if (!updatedBatches[batchName]) {
+                updatedBatches[batchName] = [];
+            }
+            
+            // Check if image already exists in this batch
+            const exists = updatedBatches[batchName].some(img => img.id === resource.id);
+            if (!exists) {
+                updatedBatches[batchName].push({
+                    url: transformToBunnyUrl(resource.image_url),
+                    word: resource.workflow_name,
+                    id: resource.id
+                });
+            }
+        });
+        
+        // Update the batches and batch names
+        imageBatches = updatedBatches;
+        batchNames = Object.keys(imageBatches);
+        
+        console.log(`Now have ${batchNames.length} batches with images`);
+    }
+
+    // Function to reset and start fresh
+    function resetAndFetchImages() {
+        // Reset state
+        imageBatches = {};
+        batchNames = [];
+        currentPage = 0;
+        hasMoreImages = true;
+        visibleBatchCount = INITIAL_BATCHES;
+        
+        // Start fetching
+        fetchImagePage();
+    }
+
+    // Function to load more batches (UI)
     function loadMoreBatches() {
-        if (loadingMore || visibleBatchCount >= batchNames.length) return;
+        if (loadingMore || visibleBatchCount >= batchNames.length) {
+            // If we've shown all available batches but there might be more images, fetch more
+            if (hasMoreImages && !isFetchingImages) {
+                fetchImagePage();
+            }
+            return;
+        }
         
         loadingMore = true;
-        console.log('Loading more batches');
+        console.log('Loading more batches for display');
         
         // Increase the visible batch count
         visibleBatchCount = Math.min(visibleBatchCount + BATCHES_PER_LOAD, batchNames.length);
         
-        // Reset loading flag after a short delay to prevent rapid multiple loads
+        // If we're getting close to the end of our loaded batches, fetch more images
+        if (visibleBatchCount + BATCHES_PER_LOAD >= batchNames.length && hasMoreImages && !isFetchingImages) {
+            fetchImagePage();
+        }
+        
+        // Reset loading flag after a short delay
         setTimeout(() => {
             loadingMore = false;
         }, 300);
@@ -126,7 +184,7 @@
             }
         }, {
             root: null,
-            rootMargin: '300px', // Load more when within 300px of the sentinel (increased for smoother experience)
+            rootMargin: '300px', // Load more when within 300px of the sentinel
             threshold: 0.1
         });
         
@@ -170,7 +228,8 @@
                         filter: `user_id=eq.${userId}`
                     },
                     () => {
-                        fetchImages();
+                        // When data changes, reset and fetch fresh
+                        resetAndFetchImages();
                     }
                 )
                 .subscribe();
@@ -187,7 +246,8 @@
     // Initial setup
     let observer;
     onMount(() => {
-        fetchImages();
+        // Start fetching the first page of images
+        fetchImagePage();
         setupSubscription();
         
         // Set up intersection observer after initial render
@@ -208,14 +268,14 @@
 
     // Watch for user changes
     $: if (userId) {
-        fetchImages();
+        resetAndFetchImages();
         setupSubscription();
     }
 </script>
 
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
-{:else if batchNames.length === 0}
+{:else if batchNames.length === 0 && !isFetchingImages}
     <!-- <div class="min-h-[200px] flex items-center justify-center">
         <p class="text-gray-500 text-lg">No Limn images found in your account</p>
     </div> -->
@@ -228,9 +288,13 @@
         {/each}
         
         <!-- Sentinel element for intersection observer -->
-        {#if visibleBatchCount < batchNames.length}
+        {#if visibleBatchCount < batchNames.length || hasMoreImages}
             <div id="limn-load-more-sentinel" class="h-20 flex items-center justify-center">
-                <div class="w-8 h-8 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+                {#if isFetchingImages || loadingMore}
+                    <div class="w-8 h-8 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+                {:else}
+                    <div class="h-10"></div>
+                {/if}
             </div>
         {/if}
     </div>
