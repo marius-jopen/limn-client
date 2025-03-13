@@ -1,7 +1,7 @@
 <script>
-    import LimnGeneratoritem from '$lib/runpod/ui/limn/LimnGeneratoritem.svelte';
+    import LimnGeneratorRow from '$lib/runpod/ui/limn/LimnGeneratorRow.svelte';
 </script>
 
-<LimnGeneratoritem />
-<LimnGeneratoritem />
-<LimnGeneratoritem />
+<LimnGeneratorRow />
+<LimnGeneratorRow />
+<LimnGeneratorRow />
