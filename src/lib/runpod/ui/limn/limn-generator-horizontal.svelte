@@ -158,7 +158,6 @@
           variant="secondary"
           size="sm"
           fullWidth={false}
-          onClick={toggleWordVisibility}
         />
       </div>
     {/if}
