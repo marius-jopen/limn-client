@@ -34,6 +34,39 @@
   // Add state to track dropdown visibility
   let isDropdownOpen = false;
   
+  // Add state for aspect ratio
+  let currentAspectRatio = "1:1";
+  
+  // Calculate dimensions based on aspect ratio with max dimension of 450px
+  $: generatorDimensions = calculateDimensions(currentAspectRatio);
+  
+  function calculateDimensions(ratio) {
+    const maxDimension = 450; // Maximum width or height
+    
+    let width, height;
+    
+    switch(ratio) {
+      case "16:9":
+        // 16:9 aspect ratio (horizontal)
+        width = maxDimension;
+        height = Math.round(width * (9/16));
+        break;
+      case "9:16":
+        // 9:16 aspect ratio (vertical)
+        height = maxDimension;
+        width = Math.round(height * (9/16));
+        break;
+      case "1:1":
+      default:
+        // Square 1:1 aspect ratio
+        width = maxDimension;
+        height = maxDimension;
+        break;
+    }
+    
+    return { width, height };
+  }
+  
   // Get the currently active word and handle focus changes
   $: {
     const activeIndex = inFocus.findIndex((focus) => focus === true);
@@ -134,6 +167,11 @@
         !event.target.closest('.button-container')) {
       isWordVisible = false;
     }
+  }
+  
+  // Function to handle aspect ratio change
+  function handleAspectRatioChange(event) {
+    currentAspectRatio = event.detail.aspectRatio;
   }
   
   onMount(() => {
@@ -300,6 +338,8 @@
             ui_config={ui_config}
             workflow={workflow}
             isFirstRow={isFirstRow}
+            aspectRatio={currentAspectRatio}
+            on:aspectRatioChange={handleAspectRatioChange}
           />
         </div>
       </div>
@@ -316,21 +356,31 @@
     <div class="w-[31vw] flex-shrink-0"></div>
     
     {#if isFirstRow}
-      <!-- Generator Builder -->
+      <!-- Generator Builder - Keep the container at 450x450 for consistent spacing -->
       <div 
         bind:this={generatorContainer}
-        class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
+        class="w-[450px] h-[450px] rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center flex items-center justify-center"
         style="transform: {isGeneratorFocused ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
       >
-        <LimnGeneratorBuilder />
+        <!-- Inner container with the actual aspect ratio -->
+        <div 
+          class="overflow-hidden rounded-xl"
+          style="width: {generatorDimensions.width}px; height: {generatorDimensions.height}px;"
+        >
+          <LimnGeneratorBuilder aspectRatio={currentAspectRatio} />
+        </div>
       </div>
     {/if}
 
     {#each data as item, i}
       <div
         bind:this={imageContainers[i]}
-        class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
-        style="transform: {inFocus[i] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
+        class="rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
+        style="
+          width: 450px; 
+          height: 450px;
+          transform: {inFocus[i] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}
+        "
       >
         <LimnGeneratorItem item={item} data={data} currentFocusedIndex={currentFocusedIndex} />
       </div>

@@ -1,6 +1,9 @@
 <script>
     import { fly, fade } from 'svelte/transition';
     import Button from '$lib/atoms/Button.svelte';
+    import { createEventDispatcher } from 'svelte';
+    
+    const dispatch = createEventDispatcher();
     
     export let data;
     export let currentFocusedIndex;
@@ -8,6 +11,8 @@
     export let workflow;
     // Add a new prop to indicate if this is the first row (generator builder)
     export let isFirstRow = false;
+    // Add a prop to receive the initial aspect ratio
+    export let aspectRatio = "1:1";
     
     // Dropdown states
     let isAspectRatioOpen = false;
@@ -17,7 +22,7 @@
     let isPresetsOpen = false;
     
     // Selected values
-    let selectedAspectRatio = "1:1";
+    let selectedAspectRatio = aspectRatio;
     let selectedDuration = "5s";
     let selectedVersion = "basic";
     
@@ -67,6 +72,8 @@
     function selectAspectRatio(ratio) {
         selectedAspectRatio = ratio;
         isAspectRatioOpen = false;
+        // Dispatch an event when aspect ratio changes
+        dispatch('aspectRatioChange', { aspectRatio: ratio });
     }
 
     function selectDuration(duration) {

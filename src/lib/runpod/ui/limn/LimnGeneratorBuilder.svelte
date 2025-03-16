@@ -1,5 +1,8 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  
+  // Add prop for aspect ratio but we won't calculate dimensions here
+  export let aspectRatio = "1:1";
   
   let dragActive = false;
   let initImage = null;
@@ -78,8 +81,6 @@
   }
   
   // Add and remove global event listeners
-  import { onMount, onDestroy } from 'svelte';
-  
   onMount(() => {
     window.addEventListener('dragend', handleWindowDragEnd);
     window.addEventListener('dragleave', (e) => {
@@ -96,7 +97,7 @@
 </script>
 
 <div 
-  class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-all duration-300 flex-shrink-0 snap-center {dragActive ? 'bg-indigo-100 border-2 border-indigo-300' : 'bg-gray-200'} flex flex-col items-center justify-center gap-4"
+  class="w-full h-full rounded-xl overflow-hidden transition-all duration-300 {dragActive ? 'bg-indigo-100 border-2 border-indigo-300' : 'bg-gray-200'} flex flex-col items-center justify-center gap-4"
   on:dragenter={handleDragEnter}
   on:dragleave={handleDragLeave}
   on:dragover={handleDragOver}
