@@ -9,9 +9,12 @@
   export let data;
   export let ui_config;
   export let workflow;
+  export let isFirstRow = false;
+  export let startWithUIOpen = false;
   
-  // Array to track which image is in focus (including generator)
-  let inFocus = Array(data.length + 1).fill(false);
+  // Array to track which image is in focus
+  let inFocus = Array(data.length).fill(false);
+  let isGeneratorFocused = false;
   
   // State to track button flash effect
   let buttonFlashActive = false;
@@ -23,7 +26,7 @@
   let wordDisplay;
   
   // State to track if word is visible
-  let isWordVisible = false;
+  let isWordVisible = startWithUIOpen;
   
   // Track the currently focused index
   let currentFocusedIndex = -1;
@@ -37,8 +40,10 @@
     
     // If the focused image has changed
     if (activeIndex !== currentFocusedIndex && activeIndex >= 0) {
-      // Hide the word
-      isWordVisible = false;
+      // Only hide the word if we're not in the generator row with startWithUIOpen
+      if (!startWithUIOpen || !isFirstRow) {
+        isWordVisible = false;
+      }
       
       // Close the dropdown when focus changes
       isDropdownOpen = false;
@@ -58,6 +63,10 @@
   
   // Function to toggle word visibility
   function toggleWordVisibility() {
+    // If this is the generator row and startWithUIOpen is true, don't allow closing
+    if (isFirstRow && startWithUIOpen) {
+      return;
+    }
     isWordVisible = !isWordVisible;
     
     // If we're showing the word, make sure the current focused item is centered
@@ -66,9 +75,9 @@
     }
   }
   
-  // Function to scroll to a specific image or generator
+  // Function to scroll to a specific image
   function scrollToImage(index) {
-    const container = index === 0 ? generatorContainer : imageContainers[index - 1];
+    const container = imageContainers[index];
     
     if (container && carouselContainer) {
       // Get the current position of the image
@@ -88,6 +97,22 @@
       // Apply the scroll
       carouselContainer.scrollTo({
         left: newScrollLeft,
+        behavior: 'smooth'
+      });
+    }
+  }
+  
+  // Function to scroll to generator
+  function scrollToGenerator() {
+    if (generatorContainer && carouselContainer) {
+      const rect = generatorContainer.getBoundingClientRect();
+      const currentScrollLeft = carouselContainer.scrollLeft;
+      const viewportCenter = window.innerWidth / 2;
+      const elementCenter = rect.left + rect.width / 2;
+      const offset = elementCenter - viewportCenter;
+      
+      carouselContainer.scrollTo({
+        left: currentScrollLeft + offset,
         behavior: 'smooth'
       });
     }
@@ -119,17 +144,19 @@
       
       // Reset all focus states first
       inFocus = inFocus.map(() => false);
+      isGeneratorFocused = false;
       
       // Find the image closest to the center
       let closestIndex = -1;
       let smallestDistance = Infinity;
       
-      // Check generator first
-      if (generatorContainer) {
+      // Check generator first if this is the first row
+      if (isFirstRow && generatorContainer) {
         const rect = generatorContainer.getBoundingClientRect();
         const elementCenter = rect.left + rect.width / 2;
         smallestDistance = Math.abs(elementCenter - centerPoint);
-        closestIndex = 0;
+        isGeneratorFocused = true;
+        closestIndex = -1;
       }
       
       // Then check all images
@@ -141,7 +168,8 @@
           
           if (distance < smallestDistance) {
             smallestDistance = distance;
-            closestIndex = index + 1; // +1 because generator is index 0
+            closestIndex = index;
+            isGeneratorFocused = false;
           }
         }
       });
@@ -161,8 +189,12 @@
     // Initial check after a short delay to ensure DOM is fully rendered
     setTimeout(() => {
       checkCenterImage();
-      // Start with the generator in focus
-      scrollToImage(0);
+      // Start with the first image in focus
+      if (isFirstRow) {
+        scrollToGenerator();
+      } else {
+        scrollToImage(0);
+      }
     }, 200);
     
     // Add event listener for closing dropdown when clicking outside
@@ -282,20 +314,22 @@
     <!-- Spacer for initial padding -->
     <div class="w-[31vw] flex-shrink-0"></div>
     
-    <!-- Generator Builder -->
-    <div 
-      bind:this={generatorContainer}
-      class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
-      style="transform: {inFocus[0] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
-    >
-      <LimnGeneratorBuilder />
-    </div>
+    {#if isFirstRow}
+      <!-- Generator Builder -->
+      <div 
+        bind:this={generatorContainer}
+        class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
+        style="transform: {isGeneratorFocused ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
+      >
+        <LimnGeneratorBuilder />
+      </div>
+    {/if}
 
     {#each data as item, i}
       <div 
         bind:this={imageContainers[i]}
         class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
-        style="transform: {inFocus[i + 1] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
+        style="transform: {inFocus[i] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
       >
         <LimnGeneratorItem item={item} data={data} currentFocusedIndex={currentFocusedIndex} />
       </div>

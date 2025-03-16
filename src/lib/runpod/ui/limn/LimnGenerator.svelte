@@ -284,9 +284,27 @@
     </div> -->
 {:else}
     <div bind:this={containerElement}>
+        <!-- Special generator row -->
+        <div class="mb-4">
+            <LimnGeneratorRow 
+                data={[]} 
+                ui_config={ui_config} 
+                workflow={workflow}
+                isFirstRow={true}
+                startWithUIOpen={true}
+            />
+        </div>
+
+        <!-- Batch rows -->
         {#each visibleBatchNames as batchName}
             <div class="mb-4">
-                <LimnGeneratorRow data={imageBatches[batchName]} ui_config={ui_config} workflow={workflow} />
+                <LimnGeneratorRow 
+                    data={imageBatches[batchName]} 
+                    ui_config={ui_config} 
+                    workflow={workflow}
+                    isFirstRow={false}
+                    startWithUIOpen={false}
+                />
             </div>
         {/each}
         
