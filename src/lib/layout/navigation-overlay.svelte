@@ -3,7 +3,7 @@
   import { fade } from 'svelte/transition';
   import { createEventDispatcher } from 'svelte';
   import Logout from '$lib/supabase/userarea/Logout.svelte';
-  import Button from '$lib/atoms/Button.svelte';
+  // import Button from '$lib/atoms/Button.svelte';
 
   const dispatch = createEventDispatcher();
   

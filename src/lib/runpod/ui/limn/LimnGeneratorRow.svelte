@@ -326,7 +326,7 @@
     {/if}
 
     {#each data as item, i}
-      <div 
+      <div
         bind:this={imageContainers[i]}
         class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
         style="transform: {inFocus[i] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
