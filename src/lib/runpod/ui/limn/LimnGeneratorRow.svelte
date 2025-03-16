@@ -299,6 +299,7 @@
             currentFocusedIndex={currentFocusedIndex} 
             ui_config={ui_config}
             workflow={workflow}
+            isFirstRow={isFirstRow}
           />
         </div>
       </div>

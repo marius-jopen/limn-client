@@ -6,6 +6,8 @@
     export let currentFocusedIndex;
     export let ui_config;
     export let workflow;
+    // Add a new prop to indicate if this is the first row (generator builder)
+    export let isFirstRow = false;
     
     // Dropdown states
     let isAspectRatioOpen = false;
@@ -98,45 +100,46 @@
     ></textarea>
 
     <div class="flex gap-2 mt-2">
-        <!-- Aspect Ratio Dropdown -->
-        <div class="dropdown-container relative">
-            <Button 
-                label={`${getSelectedIcon('aspectRatio')} ${selectedAspectRatio}`}
-                variant="secondary"
-                size="sm"
-                fullWidth={false}
-                onClick={toggleAspectRatio}
-                classes="{isAspectRatioOpen ? '!bg-gray-300' : ''} border border-gray-300"
-            />
-            
-            {#if isAspectRatioOpen}
-                <div 
-                    class="overflow-hidden absolute bottom-full left-0 mb-2 bg-gray-200 shadow-lg rounded-lg py-2 z-10 min-w-[180px] text-black"
-                    in:fly={{ y: 5, duration: 200 }}
-                    out:fade={{ duration: 150 }}
-                >
-                    <h3 class="px-4 py-2 font-medium">Aspect ratio</h3>
-                    
-                    {#each aspectRatios as ratio}
-                        <div class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer" on:click={() => selectAspectRatio(ratio.value)}>
-                            <div class="flex items-center gap-2">
-                                <!-- Replace custom rectangles with the emoji icons -->
-                                <div class="flex items-center justify-center text-xl">
-                                    {ratio.icon}
+        <!-- Aspect Ratio Dropdown - Only show in first row (generator builder) -->
+        {#if isFirstRow}
+            <div class="dropdown-container relative">
+                <Button 
+                    label={`${getSelectedIcon('aspectRatio')} ${selectedAspectRatio}`}
+                    variant="secondary"
+                    size="sm"
+                    fullWidth={false}
+                    onClick={toggleAspectRatio}
+                    classes="{isAspectRatioOpen ? '!bg-gray-300' : ''} border border-gray-300"
+                />
+                
+                {#if isAspectRatioOpen}
+                    <div 
+                        class="overflow-hidden absolute bottom-full left-0 mb-2 bg-gray-200 shadow-lg rounded-lg py-2 z-10 min-w-[180px] text-black"
+                        in:fly={{ y: 5, duration: 200 }}
+                        out:fade={{ duration: 150 }}
+                    >
+                        <h3 class="px-4 py-2 font-medium">Aspect ratio</h3>
+                        
+                        {#each aspectRatios as ratio}
+                            <div class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer" on:click={() => selectAspectRatio(ratio.value)}>
+                                <div class="flex items-center gap-2">
+                                    <!-- Replace custom rectangles with the emoji icons -->
+                                    <div class="flex items-center justify-center text-xl">
+                                        {ratio.icon}
+                                    </div>
+                                    <span>{ratio.label}</span>
                                 </div>
-                                <span>{ratio.label}</span>
+                                <div class="w-6 h-6 rounded-full border border-gray-500 flex items-center justify-center">
+                                    {#if selectedAspectRatio === ratio.value}
+                                        <div class="w-4 h-4 bg-gray-500 rounded-full"></div>
+                                    {/if}
+                                </div>
                             </div>
-                            <div class="w-6 h-6 rounded-full border border-gray-500 flex items-center justify-center">
-                                {#if selectedAspectRatio === ratio.value}
-                                    <div class="w-4 h-4 bg-gray-500 rounded-full"></div>
-                                {/if}
-                            </div>
-                        </div>
-                    {/each}
-                </div>
-            {/if}
-        </div>
-        
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+        {/if}
         
         <!-- Duration Dropdown -->
         <div class="dropdown-container relative">
@@ -217,16 +220,18 @@
         <!-- Spacer to push buttons to the right -->
         <div class="flex-grow"></div>
         
-        <!-- Cancel Button -->
-        <Button 
-            label="Stop"
-            variant="secondary"
-            size="sm"
-            fullWidth={false}
-            onClick={() => {}}
-            classes="border border-gray-300 bg-gray-300 hover:!bg-red-400"
-            title="Cancel"
-        />
+        <!-- Cancel Button - Only show in first row (generator builder) -->
+        {#if isFirstRow}
+            <Button 
+                label="Stop"
+                variant="secondary"
+                size="sm"
+                fullWidth={false}
+                onClick={() => {}}
+                classes="border border-gray-300 bg-gray-300 hover:!bg-red-400"
+                title="Cancel"
+            />
+        {/if}
         
         <!-- Submit Button -->
         <Button 
