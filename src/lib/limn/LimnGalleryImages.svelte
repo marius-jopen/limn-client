@@ -2,14 +2,15 @@
     import { onDestroy, onMount } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
-    import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
     import LimnGalleryImageItem from './LimnGalleryImageItem.svelte';
-    import { transformResourceUrls } from '$lib/bunny/BunnyClient';
+    import { transformResourceUrls, transformToBunnyUrl } from '$lib/bunny/BunnyClient';
     
-    // Configuration for pagination
-    const IMAGES_PER_PAGE = 40; // Number of images to load initially and on each "Load More" click
+    // Configuration
+    const IMAGES_PER_PAGE = 40;
+    const SYNC_INTERVAL = 3000; // Check for updates every 3 seconds
     
-    // Define interfaces for our data structures
+    // Define interfaces
     interface Resource {
         id: string;
         image_url: string;
@@ -19,6 +20,8 @@
         name?: string;
         visibility?: boolean;
         type?: 'uploaded' | 'generated' | string;
+        _isTemporary?: boolean;
+        _originalUrl?: string; // Store the original S3 URL
     }
 
     interface RunStateImage {
@@ -26,91 +29,81 @@
         image_url?: string;
     }
 
+    // Props
     export let workflow_name: string | undefined = undefined;
     export let workflow_names: string[] = [];
     export let type: string | string[] | undefined = undefined;
-    export let defaultImagesPerRow: number = 8; // Default number of images per row
+    export let defaultImagesPerRow: number = 8;
     
     // Convert type to array if it's a string
     $: typeArray = typeof type === 'string' ? [type] : Array.isArray(type) ? type : [];
     
-    // Grid layout state - using static classes based on defaultImagesPerRow
+    // Grid layout state
     $: gridClass = getGridClass(defaultImagesPerRow);
     
-    // Function to determine the appropriate grid class based on the defaultImagesPerRow
-    function getGridClass(columns) {
-        // Default responsive grid classes
-        const baseClasses = "grid-cols-1 sm:grid-cols-2 md:grid-cols-3";
-        
-        // Add the large screen grid class based on columns
-        switch(columns) {
-            case 4:
-                return `${baseClasses} lg:grid-cols-4`;
-            case 5:
-                return `${baseClasses} lg:grid-cols-5`;
-            case 6:
-                return `${baseClasses} lg:grid-cols-6`;
-            case 7:
-                return `${baseClasses} lg:grid-cols-7`;
-            case 8:
-                return `${baseClasses} lg:grid-cols-8`;
-            case 9:
-                return `${baseClasses} lg:grid-cols-9`;
-            case 10:
-                return `${baseClasses} lg:grid-cols-10`;
-            case 11:
-                return `${baseClasses} lg:grid-cols-11`;
-            case 12:
-                return `${baseClasses} lg:grid-cols-12`;
-            default:
-                return `${baseClasses} lg:grid-cols-4`; // Default to 4 columns if unrecognized value
-        }
-    }
-    
-    // Pagination state
-    let allResources: Resource[] = []; // All fetched resources
-    let displayedResources: Resource[] = []; // Resources currently displayed
-    let displayCount = IMAGES_PER_PAGE; // Number of resources to display
-    let hasMoreToLoad = true; // Whether there are more resources to load - always default to true
-    
-    // Log props on mount
-    onMount(() => {
-        console.log('GalleryImages component mounted with props:', {
-            workflow_name,
-            workflow_names,
-            type,
-            typeArray,
-            defaultImagesPerRow
-        });
-    });
-    
-    // Combine both props into a single array for internal use
-    $: workflowsToFetch = workflow_name 
-        ? [workflow_name] 
-        : workflow_names;
-        
-    $: console.log('workflowsToFetch updated:', workflowsToFetch);
-    
+    // State variables
+    let allResources: Resource[] = [];
+    let displayedResources: Resource[] = [];
+    let displayCount = IMAGES_PER_PAGE;
+    let hasMoreToLoad = true;
     let error: string | null = null;
-    let subscription: any; // Type will depend on your Supabase client type
-
+    let subscription: any;
+    let isLoading = false;
+    let syncTimer: number | null = null;
+    let lastSyncTime = 0;
+    
+    // Get user ID from store
     $: user_id = $user?.id;
-
-    // Update displayed resources
+    
+    // Combine workflow props into a single array
+    $: workflowsToFetch = workflow_name ? [workflow_name] : workflow_names;
+    
+    // Update displayed resources when allResources or displayCount changes
     $: {
         displayedResources = allResources.slice(0, displayCount);
-        console.log(`Displaying ${displayedResources.length} resources`);
     }
 
+    // Grid class helper function
+    function getGridClass(columns) {
+        const baseClasses = "grid-cols-1 sm:grid-cols-2 md:grid-cols-3";
+        
+        switch(columns) {
+            case 4: return `${baseClasses} lg:grid-cols-4`;
+            case 5: return `${baseClasses} lg:grid-cols-5`;
+            case 6: return `${baseClasses} lg:grid-cols-6`;
+            case 7: return `${baseClasses} lg:grid-cols-7`;
+            case 8: return `${baseClasses} lg:grid-cols-8`;
+            case 9: return `${baseClasses} lg:grid-cols-9`;
+            case 10: return `${baseClasses} lg:grid-cols-10`;
+            case 11: return `${baseClasses} lg:grid-cols-11`;
+            case 12: return `${baseClasses} lg:grid-cols-12`;
+            default: return `${baseClasses} lg:grid-cols-4`;
+        }
+    }
+
+    // Helper function to get image URL from different formats
     function getImageUrl(img: string | RunStateImage | null): string {
         if (!img) return '';
         if (typeof img === 'string') return img;
         return img.url || img.image_url || '';
     }
 
+    // Function to create a temporary resource from a runState image
+    function createTempResource(img: string | RunStateImage): Resource {
+        const originalUrl = getImageUrl(img);
+        return {
+            id: `temp-${crypto.randomUUID()}`,
+            image_url: originalUrl, // Use original URL directly for temporary resources
+            user_id: user_id || '',
+            workflow_name: workflow_name || '',
+            created_at: new Date().toISOString(),
+            _isTemporary: true,
+            _originalUrl: originalUrl // Store the original URL
+        };
+    }
+
     // Function to load more images
     function loadMore() {
-        console.log(`Loading more images. Current count: ${displayCount}`);
         displayCount += IMAGES_PER_PAGE;
         
         // If we've displayed all the currently fetched resources, fetch more
@@ -121,10 +114,12 @@
 
     // Helper function to fetch resources from Supabase
     async function fetchResourcesFromSupabase(options) {
-        const { 
-            offset = 0, 
-            limit = IMAGES_PER_PAGE 
-        } = options;
+        const { offset = 0, limit = IMAGES_PER_PAGE } = options;
+        
+        if (!user_id) return [];
+        
+        const wasLoading = isLoading;
+        if (!wasLoading) isLoading = true;
         
         try {
             let query = supabase
@@ -137,13 +132,11 @@
             // Filter by workflow names if provided
             if (workflowsToFetch && workflowsToFetch.length > 0) {
                 query = query.in('workflow_name', workflowsToFetch);
-                console.log('Filtering by workflows:', workflowsToFetch);
             }
             
             // Filter by type if provided
             if (typeArray && typeArray.length > 0) {
                 query = query.in('type', typeArray);
-                console.log('Filtering by types:', typeArray);
             }
             
             // Add pagination
@@ -153,107 +146,223 @@
                 query = query.limit(limit);
             }
             
-            const { data, error } = await query;
+            const { data, error: fetchError } = await query;
             
-            if (error) {
-                console.error(`Error fetching resources:`, error);
+            if (fetchError) {
+                console.error(`Error fetching resources:`, fetchError);
                 return [];
             }
             
-            console.log(`Fetched ${data?.length || 0} resources`);
+            // Store original URLs before transforming
+            const resourcesWithOriginalUrls = (data || []).map(resource => ({
+                ...resource,
+                _originalUrl: resource.image_url // Store the original S3 URL
+            }));
             
             // Transform S3 URLs to Bunny.net URLs
-            const transformedData = transformResourceUrls(data || []);
-            
-            return transformedData;
+            return transformResourceUrls(resourcesWithOriginalUrls);
         } catch (e) {
             console.error('Error in fetchResourcesFromSupabase:', e);
             return [];
+        } finally {
+            if (!wasLoading) isLoading = false;
         }
     }
 
     // Function to fetch more images beyond the initial batch
     async function fetchMoreImages() {
-        try {
-            if (!user_id) {
-                console.log('No user_id available, skipping fetch');
-                return;
-            }
-            
-            console.log('Fetching more images...');
-            
-            // Use a single query to fetch more images
-            const offset = allResources.length;
-            const additionalResources = await fetchResourcesFromSupabase({ offset });
-            
-            if (additionalResources.length > 0) {
-                console.log(`Adding ${additionalResources.length} more images to the collection`);
-                
-                // Add new resources to allResources
-                const existingIds = new Set(allResources.map(r => r.id));
-                const uniqueNewResources = additionalResources.filter(img => !existingIds.has(img.id));
-                
-                if (uniqueNewResources.length > 0) {
-                    allResources = [...allResources, ...uniqueNewResources];
-                    console.log(`Total resources now: ${allResources.length}`);
-                }
-            } else {
-                console.log('No additional resources found');
-            }
-            
-        } catch (e) {
-            error = e.message;
-            console.error('Error fetching more images:', e);
-        }
-    }
-
-    // Handle runState images immediately
-    $: if ($runState.images?.length) {
-        const newImages = $runState.images.map(img => ({
-            id: crypto.randomUUID(), // Add a random UUID for the id
-            image_url: getImageUrl(img),
-            user_id: user_id,
-            workflow_name: workflow_name,
-            created_at: new Date().toISOString()
-        }));
+        if (!user_id) return;
         
-        // Merge new images with existing ones, avoiding duplicates
-        const existingUrls = new Set(allResources.map(r => r.image_url));
-        const uniqueNewImages = newImages.filter(img => !existingUrls.has(img.image_url));
-        allResources = [...uniqueNewImages, ...allResources];
+        // Count only permanent resources for offset calculation
+        const permanentCount = allResources.filter(r => !r._isTemporary).length;
+        const offset = permanentCount;
+        
+        const additionalResources = await fetchResourcesFromSupabase({ offset });
+        
+        if (additionalResources.length > 0) {
+            // Add new resources to allResources, avoiding duplicates
+            mergeResources(additionalResources, false);
+        }
+        
+        // Update hasMoreToLoad flag
+        hasMoreToLoad = additionalResources.length === IMAGES_PER_PAGE;
     }
 
-    // Simplified fetch function
-    async function fetchUserImages() {
-        try {
-            if (!user_id) {
-                console.log('No user_id available, skipping fetch');
-                return;
+    // Function to merge resources, avoiding duplicates
+    function mergeResources(newResources, addToBeginning = true) {
+        if (!newResources || newResources.length === 0) return;
+        
+        // Create maps for faster lookups
+        const existingUrlMap = new Map();
+        const existingIdMap = new Map();
+        const existingOriginalUrlMap = new Map();
+        
+        // Populate maps
+        allResources.forEach(resource => {
+            existingUrlMap.set(resource.image_url, resource);
+            existingIdMap.set(resource.id, resource);
+            if (resource._originalUrl) {
+                existingOriginalUrlMap.set(resource._originalUrl, resource);
+            }
+        });
+        
+        // Filter out duplicates and update existing resources
+        const uniqueNewResources = [];
+        const updatedResources = [...allResources];
+        
+        for (const newResource of newResources) {
+            // Check if we already have this resource by ID
+            if (existingIdMap.has(newResource.id)) {
+                // Update the existing resource
+                const index = updatedResources.findIndex(r => r.id === newResource.id);
+                if (index >= 0) {
+                    updatedResources[index] = newResource;
+                }
+                continue;
             }
             
-            console.log('Fetching user images');
+            // Check if we have a temporary version of this resource by original URL
+            if (newResource._originalUrl) {
+                const existingTemp = existingOriginalUrlMap.get(newResource._originalUrl) || 
+                                    existingUrlMap.get(newResource._originalUrl);
+                
+                if (existingTemp && existingTemp._isTemporary) {
+                    // Replace the temporary resource with the permanent one
+                    const index = updatedResources.findIndex(r => r.id === existingTemp.id);
+                    if (index >= 0) {
+                        updatedResources[index] = newResource;
+                    }
+                    continue;
+                }
+            }
             
-            // Single query to fetch all resources for the user
-            const fetchedResources = await fetchResourcesFromSupabase({});
-            
-            console.log(`Fetched ${fetchedResources.length} resources`);
-            allResources = fetchedResources;
-        } catch (e) {
-            error = e.message;
-            console.error('Error fetching images:', e);
+            // If it's a new unique resource, add it to our list
+            if (!existingUrlMap.has(newResource.image_url) && 
+                !existingOriginalUrlMap.has(newResource._originalUrl || '')) {
+                uniqueNewResources.push(newResource);
+                existingUrlMap.set(newResource.image_url, newResource);
+                if (newResource._originalUrl) {
+                    existingOriginalUrlMap.set(newResource._originalUrl, newResource);
+                }
+            }
+        }
+        
+        // Add unique new resources
+        if (uniqueNewResources.length > 0) {
+            if (addToBeginning) {
+                allResources = [...uniqueNewResources, ...updatedResources];
+            } else {
+                allResources = [...updatedResources, ...uniqueNewResources];
+            }
+        } else if (updatedResources !== allResources) {
+            // If we only updated existing resources
+            allResources = updatedResources;
         }
     }
 
-    // Simplified subscription setup
+    // Function to sync temporary resources with database
+    async function syncTemporaryResources() {
+        if (!user_id) return;
+        
+        // Only sync if we have temporary resources
+        const tempResources = allResources.filter(r => r._isTemporary);
+        if (tempResources.length === 0) return;
+        
+        // Get all image URLs we need to check
+        const tempUrls = tempResources.map(r => r._originalUrl || r.image_url);
+        
+        try {
+            // Fetch resources that match our temporary URLs
+            const { data, error } = await supabase
+                .from('resource')
+                .select('*')
+                .eq('user_id', user_id)
+                .in('image_url', tempUrls);
+                
+            if (error) {
+                console.error('Error syncing temporary resources:', error);
+                return;
+            }
+            
+            if (data && data.length > 0) {
+                // Store original URLs before transforming
+                const resourcesWithOriginalUrls = data.map(resource => ({
+                    ...resource,
+                    _originalUrl: resource.image_url // Store the original S3 URL
+                }));
+                
+                // Transform the URLs
+                const transformedResources = transformResourceUrls(resourcesWithOriginalUrls);
+                
+                // Replace temporary resources with permanent ones
+                mergeResources(transformedResources, false);
+            }
+        } catch (e) {
+            console.error('Error in syncTemporaryResources:', e);
+        }
+        
+        // Update last sync time
+        lastSyncTime = Date.now();
+    }
+
+    // Initial fetch of user images
+    async function fetchUserImages() {
+        if (!user_id) return;
+        
+        const fetchedResources = await fetchResourcesFromSupabase({});
+        
+        // Merge with any existing temporary resources
+        if (fetchedResources.length > 0) {
+            mergeResources(fetchedResources, false);
+        }
+        
+        // Start periodic sync for temporary resources
+        startPeriodicSync();
+    }
+
+    // Start periodic sync for temporary resources
+    function startPeriodicSync() {
+        // Clear any existing timer
+        if (syncTimer) {
+            clearInterval(syncTimer);
+        }
+        
+        // Set up new timer
+        syncTimer = setInterval(() => {
+            // Only sync if we have temporary resources
+            const hasTempResources = allResources.some(r => r._isTemporary);
+            if (hasTempResources) {
+                syncTemporaryResources();
+            } else {
+                // If no temporary resources, clear the timer
+                clearInterval(syncTimer);
+                syncTimer = null;
+            }
+        }, SYNC_INTERVAL);
+    }
+
+    // Handle new runState images
+    $: if ($runState.images?.length) {
+        // Create temporary resources for new images
+        const newTempResources = $runState.images
+            .map(img => createTempResource(img));
+        
+        // Merge with existing resources
+        mergeResources(newTempResources, true);
+        
+        // Ensure sync timer is running
+        if (!syncTimer) {
+            startPeriodicSync();
+        }
+    }
+
+    // Setup subscription for real-time updates
     function setupSubscription() {
-        // Clean up existing subscription
         if (subscription && typeof subscription.unsubscribe === 'function') {
             subscription.unsubscribe();
         }
 
         if (user_id) {
-            console.log('Setting up subscription for resource changes');
-            
             subscription = supabase
                 .channel(`resource_changes_${user_id}`)
                 .on(
@@ -264,122 +373,137 @@
                         table: 'resource',
                         filter: `user_id=eq.${user_id}`
                     },
-                    () => {
-                        fetchUserImages();
+                    (payload) => {
+                        // Handle different types of changes
+                        if (payload.eventType === 'INSERT') {
+                            handleResourceInserted(payload.new);
+                        } else if (payload.eventType === 'DELETE') {
+                            handleResourceDeleted(payload.old);
+                        } else if (payload.eventType === 'UPDATE') {
+                            handleResourceUpdated(payload.new);
+                        }
                     }
                 )
                 .subscribe();
         }
     }
+    
+    // Handle new resource inserted
+    function handleResourceInserted(newResource) {
+        // Check if this resource matches our filters
+        if (shouldIncludeResource(newResource)) {
+            // Store original URL before transforming
+            const resourceWithOriginalUrl = {
+                ...newResource,
+                _originalUrl: newResource.image_url
+            };
+            
+            // Transform the URL
+            const transformedResource = transformResourceUrls([resourceWithOriginalUrl])[0];
+            
+            // Merge with existing resources
+            mergeResources([transformedResource], true);
+        }
+    }
+    
+    // Handle resource deleted
+    function handleResourceDeleted(oldResource) {
+        // Remove the resource from our array
+        allResources = allResources.filter(r => r.id !== oldResource.id);
+    }
+    
+    // Handle resource updated
+    function handleResourceUpdated(updatedResource) {
+        // Check if this resource matches our filters
+        if (shouldIncludeResource(updatedResource)) {
+            // Store original URL before transforming
+            const resourceWithOriginalUrl = {
+                ...updatedResource,
+                _originalUrl: updatedResource.image_url
+            };
+            
+            // Transform the URL
+            const transformedResource = transformResourceUrls([resourceWithOriginalUrl])[0];
+            
+            // Update the resource
+            const index = allResources.findIndex(r => r.id === transformedResource.id);
+            
+            if (index >= 0) {
+                allResources[index] = transformedResource;
+                allResources = [...allResources]; // Trigger reactivity
+            }
+        } else {
+            // If it no longer matches our filters, remove it
+            allResources = allResources.filter(r => r.id !== updatedResource.id);
+        }
+    }
+    
+    // Helper to check if a resource matches our filters
+    function shouldIncludeResource(resource) {
+        // Check workflow filter
+        if (workflowsToFetch && workflowsToFetch.length > 0) {
+            if (!workflowsToFetch.includes(resource.workflow_name)) {
+                return false;
+            }
+        }
+        
+        // Check type filter
+        if (typeArray && typeArray.length > 0) {
+            if (!typeArray.includes(resource.type)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
 
-    // Clean up subscription when component is destroyed
+    // Clean up subscription and sync timer when component is destroyed
     onDestroy(() => {
         if (subscription && typeof subscription.unsubscribe === 'function') {
             subscription.unsubscribe();
         }
-    });
-
-    // Initial setup
-    let initialLoadComplete = false;
-    $: {
-        if (user_id && !initialLoadComplete) {
-            console.log('Initial component setup');
-            setupSubscription();
-            allResources = []; // Clear existing resources
-            fetchUserImages();
-            initialLoadComplete = true;
+        
+        if (syncTimer) {
+            clearInterval(syncTimer);
+            syncTimer = null;
         }
-    }
+    });
 
     // Handle image deletion
     function handleImageDeleted(event) {
         const { id } = event.detail;
-        console.log(`Image deleted: ${id}`);
         allResources = allResources.filter(r => r.id !== id);
     }
 
-    // State variables
-    let resources: Resource[] = [];
-    let isLoading = false;
-    let hasMore = true;
-    let page = 0;
-    let selectedWorkflow = workflow_name;
-    let selectedType: string | null = null;
-    
-    // Get user ID from store
-    $: userId = $user?.id;
-    
-    // Watch for changes to workflow_name prop
-    $: if (workflow_name !== selectedWorkflow) {
-        selectedWorkflow = workflow_name;
-        resetAndFetch();
-    }
-    
-    // Function to reset state and fetch images
-    function resetAndFetch() {
-        resources = [];
-        page = 0;
-        hasMore = true;
-        fetchImages();
-    }
-    
-    // Function to fetch images from Supabase
-    async function fetchImages() {
-        if (!userId || isLoading || !hasMore) return;
-        
-        isLoading = true;
-        error = null;
-        
-        try {
-            console.log(`Fetching images for user ${userId}, page ${page}, workflow ${selectedWorkflow}`);
-            
-            // Start building the query
-            let query = supabase
-                .from('resource')
-                .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .range(page * IMAGES_PER_PAGE, (page + 1) * IMAGES_PER_PAGE - 1);
-            
-            // Add workflow filter if specified
-            if (selectedWorkflow) {
-                query = query.eq('workflow_name', selectedWorkflow);
-            } else if (workflow_names && workflow_names.length > 0) {
-                query = query.in('workflow_name', workflow_names);
+    // Initialize component
+    let initialLoadComplete = false;
+    $: {
+        if (user_id && !initialLoadComplete) {
+            // Show any runState images immediately
+            if ($runState.images?.length) {
+                const tempImages = $runState.images.map(img => createTempResource(img));
+                allResources = tempImages;
             }
             
-            // Add type filter if specified
-            if (typeArray && typeArray.length > 0) {
-                query = query.in('type', typeArray);
-            }
+            // Setup subscription for real-time updates
+            setupSubscription();
             
-            // Add selected type filter if specified
-            if (selectedType) {
-                query = query.eq('type', selectedType);
-            }
+            // Fetch images from Supabase
+            fetchUserImages();
             
-            const { data, error: fetchError } = await query;
-            
-            if (fetchError) {
-                throw new Error(fetchError.message || 'Failed to fetch images');
-            }
-            
-            // Transform S3 URLs to Bunny.net URLs
-            const transformedData = transformResourceUrls(data || []);
-            
-            // Update state
-            resources = [...resources, ...transformedData];
-            page += 1;
-            hasMore = (data?.length || 0) === IMAGES_PER_PAGE;
-            
-            console.log(`Fetched ${data?.length} images, total now: ${resources.length}`);
-            
-        } catch (e) {
-            error = e.message;
-            console.error('Error fetching images:', e);
-        } finally {
-            isLoading = false;
+            initialLoadComplete = true;
         }
+    }
+    
+    // Function to handle preview for temporary images
+    function handleTempPreview(imageUrl) {
+        // Create a custom event that mimics the one from LimnGalleryImageItem
+        const previewEvent = new CustomEvent('preview', {
+            detail: { imageUrl }
+        });
+        
+        // Dispatch the event
+        window.dispatchEvent(previewEvent);
     }
 </script>
 
@@ -389,10 +513,55 @@
     <div class="grid gap-1 {gridClass}">
         {#if displayedResources.length > 0}
             {#each displayedResources as resource (resource.id)}
-                <LimnGalleryImageItem 
-                    {resource} 
-                    on:imageDeleted={handleImageDeleted}
-                />
+                {#if resource._isTemporary}
+                    <!-- Temporary resource with basic interactions - use original S3 URL -->
+                    <div class="aspect-square overflow-hidden relative group">
+                        <img 
+                            src={resource._originalUrl || resource.image_url}
+                            alt="Generated image" 
+                            class="w-full h-full object-cover"
+                            loading="lazy"
+                        />
+                        
+                        <!-- Overlay with basic interactions -->
+                        <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity p-1">
+                            <div class="w-full h-full grid grid-cols-3 grid-rows-2 gap-1">
+                                <button
+                                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                                    on:click={() => handleTempPreview(resource._originalUrl || resource.image_url)}
+                                    title="Preview"
+                                >
+                                    🔍
+                                </button>
+                                
+                                <!-- Other buttons are disabled for temporary resources -->
+                                <div class="bg-gray-300 text-gray-500 rounded-md flex items-center justify-center text-sm shadow-md opacity-50">
+                                    ℹ️
+                                </div>
+                                <div class="bg-gray-300 text-gray-500 rounded-md flex items-center justify-center text-sm shadow-md opacity-50">
+                                    🎞️
+                                </div>
+                                <div class="bg-gray-300 text-gray-500 rounded-md flex items-center justify-center text-sm shadow-md opacity-50">
+                                    ☀️
+                                </div>
+                                <div class="bg-gray-300 text-gray-500 rounded-md flex items-center justify-center text-sm shadow-md opacity-50">
+                                    🗑️
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- New badge - only shown for temporary resources -->
+                        <div class="absolute top-0 left-0 bg-amber-500 text-white px-2 py-0.5 font-medium">
+                            New
+                        </div>
+                    </div>
+                {:else}
+                    <!-- Full functionality for permanent resources - use CDN URL -->
+                    <LimnGalleryImageItem 
+                        {resource} 
+                        on:imageDeleted={handleImageDeleted}
+                    />
+                {/if}
             {/each}
         {:else if allResources.length === 0}
             <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
@@ -405,14 +574,15 @@
         {/if}
     </div>
     
-    <!-- Always show Load More button if there are images -->
-    {#if displayedResources.length > 0}
+    <!-- Load More button -->
+    {#if displayedResources.length > 0 && hasMoreToLoad}
         <div class="mt-4 flex justify-center">
             <button 
                 class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md"
                 on:click={loadMore}
+                disabled={isLoading}
             >
-                Load More
+                {isLoading ? 'Loading...' : 'Load More'}
             </button>
         </div>
     {/if}

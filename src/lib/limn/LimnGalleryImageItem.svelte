@@ -178,20 +178,6 @@
                     🔍
                 </button>
                 <a
-                    href={`/studio/${currentResource.id}`}
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
-                    title="Details"
-                >
-                    ℹ️
-                </a>
-                <a
-                    href={`/studio/deforum/${currentResource.id}`}
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
-                    title="Deforum"
-                >
-                    🎞️
-                </a>
-                <a
                     href={`/studio/deforum-limn/${currentResource.id}`}
                     class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
                     title="Deforum Limn"
