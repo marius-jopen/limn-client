@@ -1,7 +1,8 @@
 <script>
     import { fly, fade } from 'svelte/transition';
     import Button from '$lib/atoms/Button.svelte';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
+    import { generatorStore } from './LimnGeneratorStore.js';
     
     const dispatch = createEventDispatcher();
     
@@ -22,9 +23,35 @@
     let isPresetsOpen = false;
     
     // Selected values
+    let prompt = '';
     let selectedAspectRatio = aspectRatio;
     let selectedDuration = "5s";
     let selectedVersion = "basic";
+    
+    // Subscribe to the store to get initial values
+    const unsubscribe = generatorStore.subscribe(state => {
+        // Only update local state if the store has values
+        if (state) {
+            // Don't override the passed aspectRatio prop on first load
+            if (state.prompt) prompt = state.prompt;
+            if (state.duration) selectedDuration = state.duration;
+            if (state.version) selectedVersion = state.version;
+            
+            // For aspect ratio, only update if we're in the first row (generator)
+            if (isFirstRow && state.aspectRatio) {
+                selectedAspectRatio = state.aspectRatio;
+                // Also dispatch the event to update parent components
+                dispatch('aspectRatioChange', { aspectRatio: state.aspectRatio });
+            }
+        }
+    });
+    
+    // Clean up subscription when component is destroyed
+    onMount(() => {
+        return () => {
+            unsubscribe();
+        };
+    });
     
     // Options with icons - updated aspect ratio icons to match screenshot
     const aspectRatios = [
@@ -72,18 +99,36 @@
     function selectAspectRatio(ratio) {
         selectedAspectRatio = ratio;
         isAspectRatioOpen = false;
-        // Dispatch an event when aspect ratio changes
+        
+        // Update the store
+        generatorStore.setAspectRatio(ratio);
+        
+        // Dispatch event for parent components
         dispatch('aspectRatioChange', { aspectRatio: ratio });
     }
 
     function selectDuration(duration) {
         selectedDuration = duration;
         isDurationOpen = false;
+        
+        // Update the store
+        generatorStore.setDuration(duration);
     }
     
     function selectVersion(version) {
         selectedVersion = version;
         isVersionOpen = false;
+        
+        // Update the store
+        generatorStore.setVersion(version);
+    }
+    
+    // Handle prompt changes
+    function handlePromptChange(event) {
+        prompt = event.target.value;
+        
+        // Update the store
+        generatorStore.setPrompt(prompt);
     }
     
     // Helper function to get the icon for the selected value
@@ -103,7 +148,9 @@
     <textarea 
         class="w-full px-4 pt-2 pb-2 bg-gray-200 border-none resize-none focus:outline-none focus:ring-0" 
         placeholder="Enter a prompt"
-        style="padding-top: 8px; text-align: left;" 
+        style="padding-top: 8px; text-align: left;"
+        bind:value={prompt}
+        on:input={handlePromptChange}
     ></textarea>
 
     <div class="flex gap-2 mt-2">

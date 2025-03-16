@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { generatorStore } from './LimnGeneratorStore.js';
   
   // Add prop for aspect ratio but we won't calculate dimensions here
   export let aspectRatio = "1:1";
@@ -12,6 +13,18 @@
   
   // Track drag counter to handle nested elements
   let dragCounter = 0;
+  
+  // Subscribe to the store to get/set the initial image
+  const unsubscribe = generatorStore.subscribe(state => {
+    if (state && state.initImage !== undefined) {
+      initImage = state.initImage;
+    }
+  });
+  
+  // Clean up subscription when component is destroyed
+  onDestroy(() => {
+    unsubscribe();
+  });
   
   function handleDragEnter(e) {
     e.preventDefault();
@@ -65,6 +78,11 @@
       
       reader.onload = (e) => {
         initImage = e.target.result;
+        
+        // Update the store with the new image
+        generatorStore.setInitImage(initImage);
+        
+        // Also dispatch the event for any parent components
         dispatch('imageSelected', { 
           image: initImage,
           file: file
@@ -77,6 +95,11 @@
   
   function removeImage() {
     initImage = null;
+    
+    // Update the store to remove the image
+    generatorStore.setInitImage(null);
+    
+    // Also dispatch the event for any parent components
     dispatch('imageSelected', { image: null, file: null });
   }
   
