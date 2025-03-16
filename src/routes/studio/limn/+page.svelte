@@ -1,32 +1,47 @@
 <script>
-    // import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
-    import UI_CONFIG from '$lib/workflows/deforum/DeforumLimnConfig.json';
-    import WORKFLOW from '$lib/workflows/deforum/DeforumLimn.json';
-    // import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';
-    // import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
-    // import LimnGeneratorVertical from '$lib/runpod/ui/limn/limn-generator-vertical.svelte';
-    // import LatentSpaceExplorer from '$lib/runpod/ui/LatentSpaceExplorer/LatentSpaceExplorer.svelte';
-    import LimnGenerator from '$lib/runpod/ui/limn/LimnGenerator.svelte';
+    import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
+    import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
+    import GalleryDeforumVideos from '$lib/supabase/media/GalleryDeforumVideos.svelte';
+    import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
+    import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
+    import Cancel from '$lib/runpod/Cancel.svelte';
+    import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
+    import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';
+    import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
 </script>
 
+<div class="p-4">
+    <h1>
+        Deforum Init
+    </h1>
 
-<!-- <LatentSpaceExplorer /> -->
-<!-- <LimnGeneratorVertical /> -->
- <div class="pt-[150px]">
-    <LimnGenerator ui_config={UI_CONFIG} workflow={WORKFLOW} />
- </div>
+    <div class="flex gap-4 flex-col md:flex-row">
+        <div class="md:w-1/2">
+            <DeforumRun 
+                workflow_name="deforum-basic"
+                ui_config={UI_CONFIG}
+                workflow={WORKFLOW}
+            />
+            <Cancel />
 
-<!-- <div class="flex gap-4 flex-col md:flex-row">
-    <div class="md:w-1/2">
-        <DeforumRun 
-            workflow_name="deforum-limn"
-            ui_config={UI_CONFIG}
-            workflow={WORKFLOW}
-        />
+            <StatusTable 
+                workflow_name="deforum-basic"
+                label="Deforum Status" 
+                id="deforum-status" 
+            />
+            <LogViewer id="log-viewer" label="Generation Logs" />
+        </div>
+        
+        <div class="md:w-1/2">
+            <PreviewVideo />
+            <PreviewImages />
+            <GalleryDeforumVideos workflow_names={["deforum-init", "deforum-basic"]} />
+            <GalleryImages 
+                type={["uploaded", "generated"]} 
+                workflow_names={["deforum-init", "deforum-basic"]} 
+                defaultImagesPerRow={8}
+            />        
+        </div>
     </div>
-    
-    <div class="md:w-1/2">
-        <PreviewVideo />
-        <PreviewImages />    
-    </div>
-</div> -->
+</div>

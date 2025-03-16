@@ -37,26 +37,16 @@
                     on:navigate={handleNavigate}
                 />
             </div>
-            
-            <div in:fade={{ duration: 800, delay: 250 }}>
+
+            <div in:fade={{ duration: 800, delay: 300 }}>
                 <NavigationItem 
                     href="/studio/limn"
-                    imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/fashion.png"
-                    imageAlt="Limn"
-                    title="Generator"
+                    imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/abstract.jpg"
+                    imageAlt="Abstract"
+                    title="Limn"
                     on:navigate={handleNavigate}
                 />
             </div>
-
-            <!-- <div in:fade={{ duration: 800, delay: 300 }}>
-                <NavigationItem 
-                    href="/studio/comfyui-flux"
-                    imageSrc="https://limn-data.s3.eu-central-1.amazonaws.com/ui/abstract.jpg"
-                    imageAlt="Abstract"
-                    title="ComfyUI Flux"
-                    on:navigate={handleNavigate}
-                />
-            </div> -->
         </div>
     </div>
 
