@@ -63,9 +63,9 @@
   
   // Function to toggle word visibility
   function toggleWordVisibility() {
-    // If this is the generator row and startWithUIOpen is true, don't allow closing
-    if (isFirstRow && startWithUIOpen) {
-      return;
+    // If this is the generator row and startWithUIOpen is true, only allow reopening
+    if (isFirstRow && startWithUIOpen && isWordVisible) {
+      return; // Only prevent closing, not reopening
     }
     isWordVisible = !isWordVisible;
     
