@@ -4,19 +4,21 @@
   import { fade, fly } from 'svelte/transition';
   import LimnGeneratorControls from './LimnGeneratorControls.svelte';
   import LimnGeneratorItem from './LimnGeneratorItem.svelte';
+  import LimnGeneratorBuilder from './LimnGeneratorBuilder.svelte';
 
   export let data;
   export let ui_config;
   export let workflow;
   
-  // Array to track which image is in focus
-  let inFocus = Array(data.length).fill(false);
+  // Array to track which image is in focus (including generator)
+  let inFocus = Array(data.length + 1).fill(false);
   
   // State to track button flash effect
   let buttonFlashActive = false;
   
   // Reference to DOM elements using Svelte bindings
   let imageContainers = [];
+  let generatorContainer;
   let carouselContainer;
   let wordDisplay;
   
@@ -64,11 +66,13 @@
     }
   }
   
-  // Function to scroll to a specific image
+  // Function to scroll to a specific image or generator
   function scrollToImage(index) {
-    if (imageContainers[index] && carouselContainer) {
+    const container = index === 0 ? generatorContainer : imageContainers[index - 1];
+    
+    if (container && carouselContainer) {
       // Get the current position of the image
-      const imageRect = imageContainers[index].getBoundingClientRect();
+      const imageRect = container.getBoundingClientRect();
       
       // Get the current scroll position
       const currentScrollLeft = carouselContainer.scrollLeft;
@@ -120,6 +124,15 @@
       let closestIndex = -1;
       let smallestDistance = Infinity;
       
+      // Check generator first
+      if (generatorContainer) {
+        const rect = generatorContainer.getBoundingClientRect();
+        const elementCenter = rect.left + rect.width / 2;
+        smallestDistance = Math.abs(elementCenter - centerPoint);
+        closestIndex = 0;
+      }
+      
+      // Then check all images
       imageContainers.forEach((container, index) => {
         if (container) {
           const rect = container.getBoundingClientRect();
@@ -128,7 +141,7 @@
           
           if (distance < smallestDistance) {
             smallestDistance = distance;
-            closestIndex = index;
+            closestIndex = index + 1; // +1 because generator is index 0
           }
         }
       });
@@ -148,7 +161,7 @@
     // Initial check after a short delay to ensure DOM is fully rendered
     setTimeout(() => {
       checkCenterImage();
-      // Start with the first image in focus
+      // Start with the generator in focus
       scrollToImage(0);
     }, 200);
     
@@ -269,11 +282,20 @@
     <!-- Spacer for initial padding -->
     <div class="w-[31vw] flex-shrink-0"></div>
     
+    <!-- Generator Builder -->
+    <div 
+      bind:this={generatorContainer}
+      class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
+      style="transform: {inFocus[0] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
+    >
+      <LimnGeneratorBuilder />
+    </div>
+
     {#each data as item, i}
       <div 
         bind:this={imageContainers[i]}
         class="w-[450px] h-[450px] aspect-square rounded-xl overflow-hidden transition-transform duration-300 flex-shrink-0 snap-center"
-        style="transform: {inFocus[i] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
+        style="transform: {inFocus[i + 1] ? 'scale(1.2) translateY(-38px)' : 'scale(1) translateY(0)'}"
       >
         <LimnGeneratorItem item={item} data={data} currentFocusedIndex={currentFocusedIndex} />
       </div>
