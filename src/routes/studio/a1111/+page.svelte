@@ -1,11 +1,11 @@
 <script>
     import A1111Run from '$lib/runpod/api/A1111Run.svelte';  
-    import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
+    import Gallery from '$lib/supabase/media/Gallery.svelte';
     import UI_CONFIG from '$lib/workflows/a1111/A1111TestConfig.json';
     import WORKFLOW from '$lib/workflows/a1111/A1111Test.json';
-    import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
-    import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
-    import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
+    import StatusTable from '$lib/runpod/components/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/components/LogViewer.svelte';
+    import PreviewImages from '$lib/runpod/components/PreviewImages.svelte';
 </script>
 
 <div class="p-4">
@@ -32,7 +32,7 @@
         
         <div class="md:w-1/2">
             <PreviewImages />
-            <GalleryImages 
+            <Gallery 
                 type={["uploaded", "generated"]} 
                 workflow_names={["a1111-test"]} 
                 defaultImagesPerRow={8}

@@ -1,14 +1,14 @@
 <script lang="ts">
     import { user } from '$lib/supabase/helper/StoreSupabase';
-    import Textarea from '$lib/runpod/ui/inputs/TextareaUi.svelte';
-    import Number from '$lib/runpod/ui/inputs/NumberUi.svelte';
-    import Dropdown from '$lib/runpod/ui/inputs/DropdownUi.svelte';
-    import SliderUi from '$lib/runpod/ui/inputs/SliderUi.svelte';
-    import BooleanUi from '$lib/runpod/ui/inputs/BooleanUi.svelte';
-    import UploadImageUi from '$lib/runpod/ui/inputs/UploadImageUi.svelte';
-    import InitImageUi from '$lib/runpod/ui/inputs/InitImageUi.svelte';
-    import PromptsUi from '$lib/runpod/ui/inputs/PromptsUi.svelte';
-    import PromptsSimpleUi from '$lib/runpod/ui/inputs/PromptsSimpleUi.svelte';
+    import Textarea from '$lib/runpod/inputs/TextareaUi.svelte';
+    import Number from '$lib/runpod/inputs/NumberUi.svelte';
+    import Dropdown from '$lib/runpod/inputs/DropdownUi.svelte';
+    import SliderUi from '$lib/runpod/inputs/SliderUi.svelte';
+    import BooleanUi from '$lib/runpod/inputs/BooleanUi.svelte';
+    import UploadImageUi from '$lib/runpod/inputs/UploadImageUi.svelte';
+    import InitImageUi from '$lib/runpod/inputs/InitImageUi.svelte';
+    import PromptsUi from '$lib/runpod/inputs/PromptsUi.svelte';
+    import PromptsSimpleUi from '$lib/runpod/inputs/PromptsSimpleUi.svelte';
 
     type BaseField = {
         id: string;

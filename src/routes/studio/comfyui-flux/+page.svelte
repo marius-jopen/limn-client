@@ -1,11 +1,11 @@
 <script>
     import ComfyuiRun from '$lib/runpod/api/ComfyuiRun.svelte';  
-    import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
+    import Gallery from '$lib/supabase/media/Gallery.svelte';
     import UI_CONFIG from '$lib/workflows/comfyui/ComfyuiFluxConfig.json';
     import WORKFLOW from '$lib/workflows/comfyui/ComfyuiFlux.json';
-    import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
-    import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
-    import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
+    import StatusTable from '$lib/runpod/components/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/components/LogViewer.svelte';
+    import PreviewImages from '$lib/runpod/components/PreviewImages.svelte';
 </script>
 
 <div class="p-4">
@@ -32,7 +32,7 @@
         
         <div class="md:w-1/2">
             <PreviewImages />
-            <GalleryImages 
+            <Gallery 
                 type={["uploaded", "generated"]} 
                 workflow_names={["comfyui-flux"]} 
                 defaultImagesPerRow={8}

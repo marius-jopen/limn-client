@@ -3,7 +3,7 @@
     import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow';
     import { runState, loadWorkflowState } from '$lib/runpod/helper/StoreRun.js';
     import Button from '$lib/atoms/Button.svelte';
-    import InputRepeater from '$lib/runpod/ui/InputRepeater.svelte';
+    import InputRepeater from '$lib/runpod/components/InputRepeater.svelte';
     import { onMount } from 'svelte';
 
     interface UIConfigField {

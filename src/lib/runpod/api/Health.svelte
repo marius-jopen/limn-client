@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import Button from '$lib/atoms/Button.svelte';
-    import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
+    import StatusTable from '$lib/runpod/components/StatusTable.svelte';
 
     export let service;
 

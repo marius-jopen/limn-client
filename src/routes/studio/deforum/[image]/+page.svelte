@@ -1,15 +1,15 @@
 <script lang="ts">
     import type { PageData } from '@sveltejs/kit';
     import DeforumRun from '$lib/runpod/api/DeforumRun.svelte';  
-    import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
-    import GalleryDeforumVideos from '$lib/supabase/media/GalleryDeforumVideos.svelte';
+    import Gallery from '$lib/supabase/media/Gallery.svelte';
+    import VideosDeforum from '$lib/supabase/media/VideosDeforum.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicInitConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
     import Cancel from '$lib/runpod/api/Cancel.svelte';
-    import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
-    import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
-    import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';
-    import PreviewImages from '$lib/runpod/ui/PreviewImages.svelte';
+    import StatusTable from '$lib/runpod/components/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/components/LogViewer.svelte';
+    import PreviewVideo from '$lib/runpod/components/PreviewVideo.svelte';
+    import PreviewImages from '$lib/runpod/components/PreviewImages.svelte';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
 
     export let data: PageData;
@@ -44,8 +44,8 @@
         <div class="md:w-1/2">
             <PreviewVideo />
             <PreviewImages />
-            <GalleryDeforumVideos workflow_names={["deforum-init", "deforum-basic"]} />
-            <GalleryImages 
+            <VideosDeforum workflow_names={["deforum-init", "deforum-basic"]} />
+            <Gallery 
                 type={["uploaded", "generated"]} 
                 workflow_names={["deforum-init", "deforum-basic"]} 
                 defaultImagesPerRow={8}

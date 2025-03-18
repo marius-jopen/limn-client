@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { onDestroy, onMount } from 'svelte';
+    import { onDestroy } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import Button from '$lib/atoms/Button.svelte';
     import VideoLooper from '$lib/layout/ui/VideoLooper.svelte';
-    import { transformToBunnyUrl, transformResourceUrls } from '$lib/bunny/BunnyClient';
+    import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
     
     // Configuration for video playback
     const VIDEO_FPS = 15; // Frames per second for video animations
