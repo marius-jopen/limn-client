@@ -19,6 +19,7 @@
         name?: string;
         visibility?: boolean;
         type?: 'uploaded' | 'generated' | string;
+        batch_name?: string;
     }
 
     interface RunStateImage {
@@ -73,7 +74,37 @@
     let displayCount = IMAGES_PER_PAGE; // Number of resources to display
     let hasMoreToLoad = true; // Whether there are more resources to load - always default to true
     
-    // Log props on mount
+    // For batch grouping
+    $: groupedResources = groupResourcesByBatch(displayedResources);
+    
+    // Function to group resources by batch_name
+    function groupResourcesByBatch(resources: Resource[]) {
+        const groups: {[key: string]: Resource[]} = {};
+        
+        // Group resources by batch_name
+        resources.forEach(resource => {
+            // Skip resources without batch_name (no more "Ungrouped" category)
+            const batchName = resource.batch_name;
+            if (!batchName) return;
+            
+            if (!groups[batchName]) {
+                groups[batchName] = [];
+            }
+            groups[batchName].push(resource);
+        });
+        
+        // Convert to array of group objects for easier rendering
+        return Object.entries(groups).map(([batchName, resources]) => ({
+            batchName,
+            resources,
+            // Sort batches with most recent first based on the newest image in each batch
+            timestamp: Math.max(...resources.map(r => new Date(r.created_at).getTime()))
+        })).sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp (newest first)
+    }
+    
+    // Add a timer that periodically checks for batch name updates
+    let batchUpdateInterval: number;
+    
     onMount(() => {
         console.log('GalleryImages component mounted with props:', {
             workflow_name,
@@ -82,7 +113,58 @@
             typeArray,
             defaultImagesPerRow
         });
+        
+        // Set up an interval to refresh batch assignments
+        batchUpdateInterval = setInterval(updateBatchAssignments, 5000); // Check every 5 seconds
     });
+    
+    onDestroy(() => {
+        if (subscription && typeof subscription.unsubscribe === 'function') {
+            subscription.unsubscribe();
+        }
+        
+        // Clear the interval when component is destroyed
+        if (batchUpdateInterval) {
+            clearInterval(batchUpdateInterval);
+        }
+    });
+    
+    // Function to fetch batch name updates without replacing all resources
+    async function updateBatchAssignments() {
+        if (!user_id) return;
+        
+        try {
+            console.log('Checking for batch name updates...');
+            
+            // Fetch current resources from database
+            const fetchedResources = await fetchResourcesFromSupabase({});
+            
+            // Create a map of image_url to batch_name from database resources
+            const batchMap = new Map();
+            fetchedResources.forEach(resource => {
+                if (resource.batch_name) {
+                    batchMap.set(resource.image_url, resource.batch_name);
+                }
+            });
+            
+            // Update any client-side resources with batch names from the database
+            let hasUpdates = false;
+            allResources = allResources.map(resource => {
+                if (!resource.batch_name && batchMap.has(resource.image_url)) {
+                    hasUpdates = true;
+                    console.log(`Updating batch name for ${resource.image_url} to ${batchMap.get(resource.image_url)}`);
+                    return { ...resource, batch_name: batchMap.get(resource.image_url) };
+                }
+                return resource;
+            });
+            
+            if (hasUpdates) {
+                console.log('Updated batch assignments for existing resources');
+            }
+        } catch (e) {
+            console.error('Error updating batch assignments:', e);
+        }
+    }
     
     // Combine both props into a single array for internal use
     $: workflowsToFetch = workflow_name 
@@ -209,39 +291,29 @@
 
     // Handle runState images immediately
     $: if ($runState.images?.length) {
+        console.log('Processing runState images with batch:', $runState.batch_name);
+        
+        // First show the images immediately for better UX
         const newImages = $runState.images.map(img => ({
-            id: crypto.randomUUID(), // Add a random UUID for the id
+            id: crypto.randomUUID(), 
             image_url: getImageUrl(img),
             user_id: user_id,
             workflow_name: workflow_name,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            batch_name: $runState.batch_name || undefined
         }));
         
         // Merge new images with existing ones, avoiding duplicates
         const existingUrls = new Set(allResources.map(r => r.image_url));
         const uniqueNewImages = newImages.filter(img => !existingUrls.has(img.image_url));
         allResources = [...uniqueNewImages, ...allResources];
-    }
-
-    // Simplified fetch function
-    async function fetchUserImages() {
-        try {
-            if (!user_id) {
-                console.log('No user_id available, skipping fetch');
-                return;
-            }
-            
-            console.log('Fetching user images');
-            
-            // Single query to fetch all resources for the user
-            const fetchedResources = await fetchResourcesFromSupabase({});
-            
-            console.log(`Fetched ${fetchedResources.length} resources`);
-            allResources = fetchedResources;
-        } catch (e) {
-            error = e.message;
-            console.error('Error fetching images:', e);
-        }
+        
+        // Then set up a short delay to fetch from database instead
+        // This gives Supabase time to create the records with proper batch names
+        setTimeout(() => {
+            console.log('Refreshing images from database after generation');
+            fetchUserImages();
+        }, 2000); // 2 second delay
     }
 
     // Simplified subscription setup
@@ -259,12 +331,28 @@
                 .on(
                     'postgres_changes',
                     {
-                        event: '*',
+                        event: 'INSERT',
                         schema: 'public',
                         table: 'resource',
                         filter: `user_id=eq.${user_id}`
                     },
-                    () => {
+                    (payload) => {
+                        console.log('New resource inserted:', payload.new?.batch_name);
+                        // Refresh all resources on new inserts
+                        fetchUserImages();
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'resource',
+                        filter: `user_id=eq.${user_id}`
+                    },
+                    (payload) => {
+                        console.log('Resource updated:', payload.new?.batch_name);
+                        // Refresh all resources on updates
                         fetchUserImages();
                     }
                 )
@@ -381,29 +469,56 @@
             isLoading = false;
         }
     }
+
+    // Simplified fetch function
+    async function fetchUserImages() {
+        try {
+            if (!user_id) {
+                console.log('No user_id available, skipping fetch');
+                return;
+            }
+            
+            console.log('Fetching user images');
+            
+            // Single query to fetch all resources for the user
+            const fetchedResources = await fetchResourcesFromSupabase({});
+            
+            console.log(`Fetched ${fetchedResources.length} resources`);
+            allResources = fetchedResources;
+        } catch (e) {
+            error = e.message;
+            console.error('Error fetching images:', e);
+        }
+    }
 </script>
 
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
-    <div class="grid gap-1 {gridClass}">
-        {#if displayedResources.length > 0}
-            {#each displayedResources as resource (resource.id)}
-                <GalleryImageItem 
-                    {resource} 
-                    on:imageDeleted={handleImageDeleted}
-                />
-            {/each}
-        {:else if allResources.length === 0}
-            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
-                <p class="text-gray-500 text-lg">No images found in your account</p>
+    {#if displayedResources.length > 0}
+        {#each groupedResources as group}
+            <div class="mb-8">
+                <h3 class="text-lg font-medium mb-2 text-gray-800">{group.batchName}</h3>
+                <div class="grid gap-1 {gridClass}">
+                    {#each group.resources as resource (resource.id)}
+                        <GalleryImageItem 
+                            {resource} 
+                            on:imageDeleted={handleImageDeleted}
+                        />
+                    {/each}
+                </div>
             </div>
-        {:else}
-            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
-                <p class="text-gray-500 text-lg">No images to display</p>
-            </div>
-        {/if}
-    </div>
+        {/each}
+        
+    {:else if allResources.length === 0}
+        <div class="min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
+            <p class="text-gray-500 text-lg">No images found in your account</p>
+        </div>
+    {:else}
+        <div class="min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
+            <p class="text-gray-500 text-lg">No images to display</p>
+        </div>
+    {/if}
     
     <!-- Always show Load More button if there are images -->
     {#if displayedResources.length > 0}
