@@ -4,6 +4,7 @@
     import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow.js';
     import Button from '$lib/atoms/Button.svelte';
     import InputRepeater from '$lib/runpod/components/InputRepeater.svelte';
+    import InputController from '$lib/runpod/components/InputController.svelte';
     import { onMount } from 'svelte';
 
     // TYPESCRIPT TYPES
@@ -567,6 +568,7 @@
 </script>
 
 <div>
-    <InputRepeater UI={castUIConfig(ui_config)} bind:values />
+    <InputController UI={castUIConfig(ui_config)} bind:values />
+    <!-- <InputRepeater UI={castUIConfig(ui_config)} bind:values /> -->
     <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
 </div>
