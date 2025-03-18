@@ -32,6 +32,7 @@
     export let workflow_names: string[] = [];
     export let type: string | string[] | undefined = undefined;
     export let defaultImagesPerRow: number = 8; // Default number of images per row
+    export let batchDisplayMode: 'all' | 'latest-only' | 'exclude-latest' = 'all'; // New prop for batch display control
     
     // Convert type to array if it's a string
     $: typeArray = typeof type === 'string' ? [type] : Array.isArray(type) ? type : [];
@@ -74,11 +75,6 @@
     let visibleBatchCount = INITIAL_BATCH_COUNT; // Number of batches currently visible
     let hasMoreToLoad = true; // Whether there are more resources to load
     
-    // For batch grouping
-    $: groupedResources = groupResourcesByBatch(allResources);
-    $: visibleGroups = groupedResources.slice(0, visibleBatchCount);
-    $: hasMoreBatches = visibleBatchCount < groupedResources.length || hasMoreToLoad;
-    
     // Function to group resources by batch_name
     function groupResourcesByBatch(resources: Resource[]) {
         const groups: {[key: string]: Resource[]} = {};
@@ -103,6 +99,26 @@
             timestamp: Math.max(...resources.map(r => new Date(r.created_at).getTime()))
         })).sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp (newest first)
     }
+    
+    // For batch grouping
+    $: groupedResources = groupResourcesByBatch(allResources);
+    $: filteredGroups = (() => {
+        if (batchDisplayMode === 'latest-only' && groupedResources.length > 0) {
+            return [groupedResources[0]]; // Return only the first batch (most recent)
+        } else if (batchDisplayMode === 'exclude-latest' && groupedResources.length > 1) {
+            return groupedResources.slice(1); // Skip the first batch (most recent)
+        } else {
+            return groupedResources; // Show all batches
+        }
+    })();
+    $: visibleGroups = filteredGroups.slice(0, visibleBatchCount);
+    $: hasMoreBatches = (() => {
+        if (batchDisplayMode === 'latest-only') {
+            return false; // Never show "Load More" in latest-only mode
+        } else {
+            return visibleBatchCount < filteredGroups.length || hasMoreToLoad;
+        }
+    })();
     
     // Add a timer that periodically checks for batch name updates
     let batchUpdateInterval: number;

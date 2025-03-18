@@ -21,7 +21,15 @@
                 type={["generated"]} 
                 workflow_names={["deforum-limn"]} 
                 defaultImagesPerRow={8}
-            />       
+                batchDisplayMode="latest-only"
+            />   
+
+            <GalleryDeforum 
+                type={["generated"]} 
+                workflow_names={["deforum-limn"]} 
+                defaultImagesPerRow={8}
+                batchDisplayMode="exclude-latest"
+            />   
         </div>
     </div>
 </div>
