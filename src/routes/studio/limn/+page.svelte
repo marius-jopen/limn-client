@@ -3,7 +3,6 @@
     import GalleryDeforum from '$lib/supabase/media/GalleryDeforum.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
-    import Cancel from '$lib/runpod/api/Cancel.svelte';
 </script>
 
 <div class="p-4">
@@ -15,7 +14,6 @@
                 workflow={WORKFLOW}
                 inputLayout="controller"
             />
-            <Cancel />
         </div>
         
         <div class="md:w-1/2">

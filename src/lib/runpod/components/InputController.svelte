@@ -1,6 +1,8 @@
 <script lang="ts">
+    import Cancel from '$lib/runpod/api/Cancel.svelte';
     import { onMount } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
+    import Button from '$lib/atoms/Button.svelte';
     import Textarea from '$lib/runpod/inputs/TextareaUi.svelte';
     import Number from '$lib/runpod/inputs/NumberUi.svelte';
     import Dropdown from '$lib/runpod/inputs/DropdownUi.svelte';
@@ -29,6 +31,10 @@
     // Props: UI config and values binding
     export let UI: Field[] = [];
     export let values: Record<string, any> = {};
+    // Add props for the Generate button
+    export let onGenerate: () => void = () => {}; // Default to empty function
+    export let isGenerating: boolean = false;
+    export let includeButton: boolean = true; // Allow toggling the button
 
     // Initialize values from UI config on mount
     onMount(() => {
@@ -83,17 +89,40 @@
                 />
             </div>
         {/if}
+        
+        {#if getField('steps')}
+            <div>
+                <Number
+                    id="steps"
+                    label={getField('steps')?.label || 'Steps'}
+                    bind:value={values['steps']}
+                />
+            </div>
+        {/if}
     </div>
 
-    {#if getField('max_frames')}
-        <div>
-            <Number
-                id="max_frames"
-                label={getField('max_frames')?.label || 'Max Frames'}
-                bind:value={values['max_frames']}
-            />
-        </div>
-    {/if}
+    <!-- Max Frames and Diffusion Cadence in a single row -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        {#if getField('max_frames')}
+            <div>
+                <Number
+                    id="max_frames"
+                    label={getField('max_frames')?.label || 'Max Frames'}
+                    bind:value={values['max_frames']}
+                />
+            </div>
+        {/if}
+        
+        {#if getField('diffusion_cadence')}
+            <div>
+                <Number
+                    id="diffusion_cadence"
+                    label={getField('diffusion_cadence')?.label || 'Diffusion Cadence'}
+                    bind:value={values['diffusion_cadence']}
+                />
+            </div>
+        {/if}
+    </div>
 
     <!-- Init Image (full width) -->
     {#if getField('init_image')}
@@ -117,6 +146,20 @@
             />
         </div>
     {/if}
+
+    <!-- Generate Button (inside the controller) -->
+    {#if includeButton}
+        <div class="mt-6">
+            <Button 
+                onClick={onGenerate} 
+                label="Generate" 
+                disabled={isGenerating}
+            />
+        </div>
+    {/if}
+
+    <Cancel />
+
 
     <!-- Uncomment for debugging -->
     <!-- <details class="mt-4 p-2 bg-gray-50 border rounded">

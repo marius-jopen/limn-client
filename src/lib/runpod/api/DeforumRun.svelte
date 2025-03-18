@@ -571,16 +571,23 @@
 
 <div>
     {#if inputLayout === 'controller'}
-        <InputController UI={castUIConfig(ui_config)} bind:values />
+        <InputController 
+            UI={castUIConfig(ui_config)} 
+            bind:values 
+            onGenerate={runWorkflow}
+            isGenerating={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
+            includeButton={true}
+        />
     {:else if inputLayout === 'future-layout'}
         <!-- Placeholder for future layout component -->
         <div class="p-4 bg-yellow-100 rounded mb-4">
             <p class="text-sm">Future layout not yet implemented - falling back to repeater</p>
             <InputRepeater UI={castUIConfig(ui_config)} bind:values />
         </div>
+        <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
     {:else}
         <!-- Default to repeater -->
         <InputRepeater UI={castUIConfig(ui_config)} bind:values />
+        <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
     {/if}
-    <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
 </div>
