@@ -110,9 +110,11 @@
     // - workflow_name: Name of the workflow being executed. E.g. "deforum-basic"
     // - workflow: The workflow configuration object (default: empty object). The actual Deforum workflow
     // - ui_config: Array of input field definitions to display to the user (default: empty array)
+    // - inputLayout: Control which input component to use (default: 'repeater')
     export let workflow_name: string;
     export let workflow = {};
     export let ui_config: UIConfigField[] = [];
+    export let inputLayout: 'repeater' | 'controller' | 'future-layout' = 'repeater'; // Default is repeater
     
     // Create an object to store the current values of all input fields
     // Initializes each field with its default value from the ui_config
@@ -568,7 +570,17 @@
 </script>
 
 <div>
-    <InputController UI={castUIConfig(ui_config)} bind:values />
-    <!-- <InputRepeater UI={castUIConfig(ui_config)} bind:values /> -->
+    {#if inputLayout === 'controller'}
+        <InputController UI={castUIConfig(ui_config)} bind:values />
+    {:else if inputLayout === 'future-layout'}
+        <!-- Placeholder for future layout component -->
+        <div class="p-4 bg-yellow-100 rounded mb-4">
+            <p class="text-sm">Future layout not yet implemented - falling back to repeater</p>
+            <InputRepeater UI={castUIConfig(ui_config)} bind:values />
+        </div>
+    {:else}
+        <!-- Default to repeater -->
+        <InputRepeater UI={castUIConfig(ui_config)} bind:values />
+    {/if}
     <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
 </div>

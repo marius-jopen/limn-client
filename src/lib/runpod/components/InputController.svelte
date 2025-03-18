@@ -83,40 +83,17 @@
                 />
             </div>
         {/if}
-        
-        {#if getField('steps')}
-            <div>
-                <Number
-                    id="steps"
-                    label={getField('steps')?.label || 'Steps'}
-                    bind:value={values['steps']}
-                />
-            </div>
-        {/if}
     </div>
 
-    <!-- Max Frames and Diffusion Cadence in a single row -->
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        {#if getField('max_frames')}
-            <div>
-                <Number
-                    id="max_frames"
-                    label={getField('max_frames')?.label || 'Max Frames'}
-                    bind:value={values['max_frames']}
-                />
-            </div>
-        {/if}
-        
-        {#if getField('diffusion_cadence')}
-            <div>
-                <Number
-                    id="diffusion_cadence"
-                    label={getField('diffusion_cadence')?.label || 'Diffusion Cadence'}
-                    bind:value={values['diffusion_cadence']}
-                />
-            </div>
-        {/if}
-    </div>
+    {#if getField('max_frames')}
+        <div>
+            <Number
+                id="max_frames"
+                label={getField('max_frames')?.label || 'Max Frames'}
+                bind:value={values['max_frames']}
+            />
+        </div>
+    {/if}
 
     <!-- Init Image (full width) -->
     {#if getField('init_image')}
