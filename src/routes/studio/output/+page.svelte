@@ -50,7 +50,7 @@
 
     <GalleryDeforum 
         type={["generated"]} 
-        workflow_names={["deforum-limn-init"]} 
+        workflow_names={["deforum-limn"]} 
         defaultImagesPerRow={8}
     />  
 
@@ -58,7 +58,7 @@
 
     <GalleryDeforum 
         type={["generated"]} 
-        workflow_names={["deforum-limn"]} 
+        workflow_names={["deforum-limn-init"]} 
         defaultImagesPerRow={8}
     />  
 </div>

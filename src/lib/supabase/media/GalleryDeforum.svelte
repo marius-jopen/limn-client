@@ -203,15 +203,34 @@
         }
     }
 
+    // Watch for changes to workflow_name or workflow_names props
+    $: {
+        if (workflow_name !== undefined || (workflow_names && workflow_names.length > 0) || typeArray.length > 0) {
+            console.log('Props changed, resetting and fetching');
+            if (initialLoadComplete) {
+                allResources = []; // Clear existing resources
+                visibleBatchCount = INITIAL_BATCH_COUNT;
+                hasMoreToLoad = true;
+                fetchUserImages();
+            }
+        }
+    }
+
     // Helper function to fetch resources from Supabase
     async function fetchResourcesFromSupabase(options) {
         const { 
             offset = 0,
-            // Don't use the IMAGES_PER_PAGE constant here, just fetch a reasonable amount
             limit = 100
         } = options;
         
         try {
+            if (!user_id) {
+                console.log('No user_id available, skipping fetch');
+                return [];
+            }
+            
+            console.log('Fetching with filters:', { workflowsToFetch, typeArray });
+            
             let query = supabase
                 .from('resource')
                 .select('*')
@@ -482,7 +501,10 @@
                 return;
             }
             
-            console.log('Fetching user images');
+            console.log('Fetching user images with filters:', { 
+                workflows: workflowsToFetch, 
+                types: typeArray 
+            });
             
             // Single query to fetch all resources for the user
             const fetchedResources = await fetchResourcesFromSupabase({});
