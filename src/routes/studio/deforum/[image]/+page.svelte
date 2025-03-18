@@ -1,11 +1,11 @@
 <script lang="ts">
     import type { PageData } from '@sveltejs/kit';
-    import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
+    import DeforumRun from '$lib/runpod/api/DeforumRun.svelte';  
     import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
     import GalleryDeforumVideos from '$lib/supabase/media/GalleryDeforumVideos.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicInitConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
-    import Cancel from '$lib/runpod/Cancel.svelte';
+    import Cancel from '$lib/runpod/api/Cancel.svelte';
     import StatusTable from '$lib/runpod/ui/StatusTable.svelte';
     import LogViewer from '$lib/runpod/ui/LogViewer.svelte';
     import PreviewVideo from '$lib/runpod/ui/PreviewVideo.svelte';

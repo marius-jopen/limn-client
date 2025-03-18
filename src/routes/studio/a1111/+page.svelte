@@ -1,5 +1,5 @@
 <script>
-    import A1111Run from '$lib/runpod/A1111Run.svelte';  
+    import A1111Run from '$lib/runpod/api/A1111Run.svelte';  
     import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
     import UI_CONFIG from '$lib/workflows/a1111/A1111TestConfig.json';
     import WORKFLOW from '$lib/workflows/a1111/A1111Test.json';

@@ -1,5 +1,5 @@
 <script>
-    import ComfyuiRun from '$lib/runpod/ComfyuiRun.svelte';  
+    import ComfyuiRun from '$lib/runpod/api/ComfyuiRun.svelte';  
     import GalleryImages from '$lib/supabase/media/GalleryImages.svelte';
     import UI_CONFIG from '$lib/workflows/comfyui/ComfyuiTestConfig.json';
     import WORKFLOW from '$lib/workflows/comfyui/ComfyuiTest.json';

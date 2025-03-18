@@ -1,9 +1,9 @@
 <script>
-    import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
+    import DeforumRun from '$lib/runpod/api/DeforumRun.svelte';  
     import GalleryDeforumImages from '$lib/supabase/media/GalleryDeforumImages.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
-    import Cancel from '$lib/runpod/Cancel.svelte';
+    import Cancel from '$lib/runpod/api/Cancel.svelte';
 </script>
 
 <div class="p-4">
