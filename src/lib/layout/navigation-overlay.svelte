@@ -43,10 +43,10 @@
       title: 'Deforum',
     },
     {
-      href: '/studio/limn',
+      href: '/studio/latent-shift',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/glass.png',
       imageAlt: 'Glass',
-      title: 'Limn',
+      title: 'Latent Shift',
     },
     {
       href: '/studio/output',
