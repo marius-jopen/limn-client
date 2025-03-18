@@ -1,6 +1,6 @@
 <script>
     import DeforumRun from '$lib/runpod/DeforumRun.svelte';  
-    import LimnGalleryImages from '$lib/supabase/media/GalleryDeforumImages.svelte';
+    import GalleryDeforumImages from '$lib/supabase/media/GalleryDeforumImages.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
     import Cancel from '$lib/runpod/Cancel.svelte';
@@ -18,7 +18,7 @@
         </div>
         
         <div class="md:w-1/2">
-            <LimnGalleryImages 
+            <GalleryDeforumImages 
                 type={["generated"]} 
                 workflow_names={["deforum-limn"]} 
                 defaultImagesPerRow={8}
