@@ -14,6 +14,7 @@
         name?: string;
         visibility?: boolean;
         type?: 'uploaded' | 'generated' | string;
+        batch_name?: string;
     }
 
     // Props - can receive full resource or just the ID
@@ -148,6 +149,40 @@
 
     // Transform the S3 URL to Bunny.net URL
     $: cdnImageUrl = currentResource ? transformToBunnyUrl(currentResource.image_url) : null;
+
+    // Function to delete entire batch
+    async function handleDeleteBatch(): Promise<void> {
+        if (!localResource || !localResource.batch_name) return;
+        
+        try {
+            console.log(`Attempting to delete batch: ${localResource.batch_name}`);
+            
+            // Call the API endpoint to delete the batch
+            const url = `http://localhost:4000/api/batch/delete`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ batch: localResource.batch_name })
+            });
+            
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Failed to delete batch');
+            }
+            
+            // Notify parent that batch was deleted
+            dispatch('batchDeleted', {
+                batchName: localResource.batch_name
+            });
+            
+        } catch (e) {
+            error = e.message;
+            console.error('Error deleting batch:', e);
+            alert('Failed to delete batch: ' + e.message);
+        }
+    }
 </script>
 
 {#if isLoading}
@@ -199,12 +234,22 @@
                 ☀️
                 </a>
                 <button
-                    class="bg-white text-white rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
                     on:click={handleDelete}
                     title="Delete"
                 >
                     🗑️
                 </button>
+                <!-- Add batch delete button -->
+                {#if localResource?.batch_name}
+                <button
+                    class="bg-red-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-red-600 shadow-md"
+                    on:click={handleDeleteBatch}
+                    title="Delete Batch"
+                >
+                    🗑️🔄
+                </button>
+                {/if}
             </div>
         </div>
     </div>

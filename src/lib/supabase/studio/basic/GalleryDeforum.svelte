@@ -425,6 +425,18 @@
         allResources = allResources.filter(r => r.id !== id);
     }
 
+    // Handle batch deletion
+    function handleBatchDeleted(event) {
+        const { batchName } = event.detail;
+        console.log(`Batch deleted: ${batchName}`);
+        
+        // Remove all resources belonging to this batch
+        allResources = allResources.filter(r => r.batch_name !== batchName);
+        
+        // Refresh the UI
+        fetchUserImages();
+    }
+
     // State variables
     let resources: Resource[] = [];
     let isLoading = false;
@@ -546,6 +558,7 @@
                         <GalleryDeforumItem 
                             {resource} 
                             on:imageDeleted={handleImageDeleted}
+                            on:batchDeleted={handleBatchDeleted}
                         />
                     {/each}
                 </div>
