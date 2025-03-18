@@ -3,8 +3,8 @@
     import { runState, loadWorkflowState } from '$lib/runpod/helper/StoreRun.js';
     import { prepareWorkflow } from '$lib/runpod/helper/PrepareWorkflow.js';
     import Button from '$lib/atoms/Button.svelte';
-    import InputRepeater from '$lib/runpod/components/InputRepeater.svelte';
-    import InputController from '$lib/runpod/components/InputController.svelte';
+    import InputRepeater from '$lib/runpod/studio/basic/components/InputRepeater.svelte';
+    import InputController from '$lib/runpod/studio/basic/components/InputController.svelte';
     import { onMount } from 'svelte';
 
     // TYPESCRIPT TYPES

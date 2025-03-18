@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { PageData } from '@sveltejs/kit';
     import DeforumRun from '$lib/runpod/api/DeforumRun.svelte';  
-    import GalleryDeforum from '$lib/supabase/media/GalleryDeforum.svelte';
-    import VideosDeforum from '$lib/supabase/media/VideosDeforum.svelte';
+    import GalleryDeforum from '$lib/supabase/studio/basic/GalleryDeforum.svelte';
+    import VideosDeforum from '$lib/supabase/studio/basic/VideosDeforum.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicInitConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
     import Cancel from '$lib/runpod/api/Cancel.svelte';

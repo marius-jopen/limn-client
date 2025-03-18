@@ -1,14 +1,14 @@
 <script>
     import DeforumRun from '$lib/runpod/api/DeforumRun.svelte';  
-    import GalleryDeforum from '$lib/supabase/media/GalleryDeforum.svelte';
-    import VideosDeforum from '$lib/supabase/media/VideosDeforum.svelte';
+    import GalleryDeforum from '$lib/supabase/studio/basic/GalleryDeforum.svelte';
+    import VideosDeforum from '$lib/supabase/studio/basic/VideosDeforum.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
     import Cancel from '$lib/runpod/api/Cancel.svelte';
-    import StatusTable from '$lib/runpod/components/StatusTable.svelte';
-    import LogViewer from '$lib/runpod/components/LogViewer.svelte';
-    import PreviewVideo from '$lib/runpod/components/PreviewVideo.svelte';
-    import PreviewImages from '$lib/runpod/components/PreviewImages.svelte';
+    import StatusTable from '$lib/runpod/studio/basic/components/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/studio/basic/components/LogViewer.svelte';
+    import PreviewVideo from '$lib/runpod/studio/basic/components/PreviewVideo.svelte';
+    import PreviewImages from '$lib/runpod/studio/basic/components/PreviewImages.svelte';
 </script>
 
 <div class="p-4">

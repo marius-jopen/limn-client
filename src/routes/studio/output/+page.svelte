@@ -1,7 +1,7 @@
 <script>
-    import Gallery from '$lib/supabase/media/Gallery.svelte';
-    import GalleryDeforum from '$lib/supabase/media/GalleryDeforum.svelte';
-    import VideosDeforum from '$lib/supabase/media/VideosDeforum.svelte';
+    import Gallery from '$lib/supabase/studio/basic/Gallery.svelte';
+    import GalleryDeforum from '$lib/supabase/studio/basic/GalleryDeforum.svelte';
+    import VideosDeforum from '$lib/supabase/studio/basic/VideosDeforum.svelte';
 </script>
 
 <div class="p-4">

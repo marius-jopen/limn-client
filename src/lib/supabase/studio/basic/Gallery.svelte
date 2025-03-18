@@ -3,7 +3,7 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
-    import GalleryItem from '$lib/supabase/media/GalleryItem.svelte';
+    import GalleryItem from '$lib/supabase/studio/basic/GalleryItem.svelte';
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
     
     // Configuration for pagination

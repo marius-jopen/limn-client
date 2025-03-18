@@ -1,11 +1,11 @@
 <script>
     import A1111Run from '$lib/runpod/api/A1111Run.svelte';  
-    import Gallery from '$lib/supabase/media/Gallery.svelte';
+    import Gallery from '$lib/supabase/studio/basic/Gallery.svelte';
     import UI_CONFIG from '$lib/workflows/a1111/A1111TestConfig.json';
     import WORKFLOW from '$lib/workflows/a1111/A1111Test.json';
-    import StatusTable from '$lib/runpod/components/StatusTable.svelte';
-    import LogViewer from '$lib/runpod/components/LogViewer.svelte';
-    import PreviewImages from '$lib/runpod/components/PreviewImages.svelte';
+    import StatusTable from '$lib/runpod/studio/basic/components/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/studio/basic/components/LogViewer.svelte';
+    import PreviewImages from '$lib/runpod/studio/basic/components/PreviewImages.svelte';
 </script>
 
 <div class="p-4">

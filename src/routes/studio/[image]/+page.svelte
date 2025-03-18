@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { PageData } from '@sveltejs/kit';
-    import FetchImage from '$lib/supabase/media/FetchImage.svelte';
+    import FetchImage from '$lib/supabase/studio/basic/FetchImage.svelte';
     import Back from '$lib/layout/helper/Back.svelte';
     
     export let data: PageData;
