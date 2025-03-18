@@ -9,7 +9,7 @@
 export function prepareWorkflow(workflow, uiConfig, values) {
     // Convert the workflow settings to string for replacement
     let workflowStr = JSON.stringify(workflow);
-    console.log('Initial workflow string:', workflowStr);
+    // console.log('Initial workflow string:', workflowStr);
     console.log('Initial values:', values);
 
     // Track if we have a prompts field that needs special handling
@@ -52,8 +52,8 @@ export function prepareWorkflow(workflow, uiConfig, values) {
         const promptsPlaceholder = promptsField.placeholder;
         const promptsValue = values[promptsField.id];
         
-        console.log(`Handling prompts field, placeholder: ${promptsPlaceholder}, value:`, promptsValue);
-        console.log('Current workflow string before prompts replacement:', workflowStr);
+        // console.log(`Handling prompts field, placeholder: ${promptsPlaceholder}, value:`, promptsValue);
+        // console.log('Current workflow string before prompts replacement:', workflowStr);
         
         // For prompts, we need to replace the "${PROMPTS}" text with the actual JSON object
         if (typeof promptsValue === 'string' && promptsValue) {
@@ -66,7 +66,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
                 // So instead of "prompts": "${PROMPTS}", we get "prompts": {"0": "prompt text", "5": "other prompt"}
                 workflowStr = workflowStr.replace(`"${promptsPlaceholder}"`, promptsValue);
                 
-                console.log('After prompts replacement:', workflowStr);
+                // console.log('After prompts replacement:', workflowStr);
                 
                 // Verify the replacement worked
                 if (workflowStr.includes(`"${promptsPlaceholder}"`)) {
@@ -86,7 +86,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
     }
 
     try {
-        console.log('Final workflow string:', workflowStr);
+        // console.log('Final workflow string:', workflowStr);
         const parsedWorkflow = JSON.parse(workflowStr);
         return parsedWorkflow;
     } catch (error) {
