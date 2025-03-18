@@ -7,7 +7,8 @@
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
     
     // Configuration for pagination
-    const IMAGES_PER_PAGE = 40; // Number of images to load initially and on each "Load More" click
+    const INITIAL_BATCH_COUNT = 3; // Number of batches to load initially
+    const LOAD_MORE_BATCH_COUNT = 2; // Number of batches to load on each "Load More" click
     
     // Define interfaces for our data structures
     interface Resource {
@@ -70,12 +71,13 @@
     
     // Pagination state
     let allResources: Resource[] = []; // All fetched resources
-    let displayedResources: Resource[] = []; // Resources currently displayed
-    let displayCount = IMAGES_PER_PAGE; // Number of resources to display
-    let hasMoreToLoad = true; // Whether there are more resources to load - always default to true
+    let visibleBatchCount = INITIAL_BATCH_COUNT; // Number of batches currently visible
+    let hasMoreToLoad = true; // Whether there are more resources to load
     
     // For batch grouping
-    $: groupedResources = groupResourcesByBatch(displayedResources);
+    $: groupedResources = groupResourcesByBatch(allResources);
+    $: visibleGroups = groupedResources.slice(0, visibleBatchCount);
+    $: hasMoreBatches = visibleBatchCount < groupedResources.length || hasMoreToLoad;
     
     // Function to group resources by batch_name
     function groupResourcesByBatch(resources: Resource[]) {
@@ -180,8 +182,8 @@
 
     // Update displayed resources
     $: {
-        displayedResources = allResources.slice(0, displayCount);
-        console.log(`Displaying ${displayedResources.length} resources`);
+        allResources = allResources.slice(0, visibleBatchCount * 40);
+        console.log(`Displaying ${allResources.length} resources`);
     }
 
     function getImageUrl(img: string | RunStateImage | null): string {
@@ -190,13 +192,13 @@
         return img.url || img.image_url || '';
     }
 
-    // Function to load more images
+    // Function to load more batches
     function loadMore() {
-        console.log(`Loading more images. Current count: ${displayCount}`);
-        displayCount += IMAGES_PER_PAGE;
+        console.log(`Loading more batches. Current count: ${visibleBatchCount}, total: ${groupedResources.length}`);
+        visibleBatchCount += LOAD_MORE_BATCH_COUNT;
         
-        // If we've displayed all the currently fetched resources, fetch more
-        if (displayCount > allResources.length) {
+        // If we've displayed all the currently fetched batches and there might be more, fetch more
+        if (visibleBatchCount >= groupedResources.length && hasMoreToLoad) {
             fetchMoreImages();
         }
     }
@@ -204,8 +206,9 @@
     // Helper function to fetch resources from Supabase
     async function fetchResourcesFromSupabase(options) {
         const { 
-            offset = 0, 
-            limit = IMAGES_PER_PAGE 
+            offset = 0,
+            // Don't use the IMAGES_PER_PAGE constant here, just fetch a reasonable amount
+            limit = 100
         } = options;
         
         try {
@@ -281,6 +284,7 @@
                 }
             } else {
                 console.log('No additional resources found');
+                hasMoreToLoad = false;
             }
             
         } catch (e) {
@@ -427,7 +431,7 @@
                 .select('*')
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false })
-                .range(page * IMAGES_PER_PAGE, (page + 1) * IMAGES_PER_PAGE - 1);
+                .range(page * INITIAL_BATCH_COUNT * 40, (page + 1) * INITIAL_BATCH_COUNT * 40 - 1);
             
             // Add workflow filter if specified
             if (selectedWorkflow) {
@@ -458,7 +462,7 @@
             // Update state
             resources = [...resources, ...transformedData];
             page += 1;
-            hasMore = (data?.length || 0) === IMAGES_PER_PAGE;
+            hasMore = (data?.length || 0) === INITIAL_BATCH_COUNT * 40;
             
             console.log(`Fetched ${data?.length} images, total now: ${resources.length}`);
             
@@ -495,8 +499,8 @@
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
-    {#if displayedResources.length > 0}
-        {#each groupedResources as group}
+    {#if visibleGroups.length > 0}
+        {#each visibleGroups as group}
             <div class="mb-8">
                 <h3 class="text-lg font-medium mb-2 text-gray-800">{group.batchName}</h3>
                 <div class="grid gap-1 {gridClass}">
@@ -520,8 +524,8 @@
         </div>
     {/if}
     
-    <!-- Always show Load More button if there are images -->
-    {#if displayedResources.length > 0}
+    <!-- Show Load More button if there are more batches to display -->
+    {#if hasMoreBatches}
         <div class="mt-4 flex justify-center">
             <button 
                 class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md"
