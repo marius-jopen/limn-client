@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PageData } from '@sveltejs/kit';
     import DeforumRun from '$lib/runpod/api/DeforumRun.svelte';  
-    import Gallery from '$lib/supabase/media/Gallery.svelte';
+    import GalleryDeforum from '$lib/supabase/media/GalleryDeforum.svelte';
     import VideosDeforum from '$lib/supabase/media/VideosDeforum.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicInitConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
@@ -45,11 +45,11 @@
             <PreviewVideo />
             <PreviewImages />
             <VideosDeforum workflow_names={["deforum-init", "deforum-basic"]} />
-            <Gallery 
-                type={["uploaded", "generated"]} 
+            <GalleryDeforum 
+                type={["generated"]} 
                 workflow_names={["deforum-init", "deforum-basic"]} 
                 defaultImagesPerRow={8}
-            />        
+            />         
         </div>
     </div>
 </div>

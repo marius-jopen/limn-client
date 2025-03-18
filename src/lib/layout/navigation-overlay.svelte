@@ -47,6 +47,12 @@
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/glass.png',
       imageAlt: 'Glass',
       title: 'Limn',
+    },
+    {
+      href: '/studio/output',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/nz.png',
+      imageAlt: 'Nz',
+      title: 'Output',
     }
   ];
   
