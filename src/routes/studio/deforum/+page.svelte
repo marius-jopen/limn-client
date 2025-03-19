@@ -11,7 +11,7 @@
     import PreviewImages from '$lib/runpod/studio/basic/components/PreviewImages.svelte';
 </script>
 
-<div class="p-4">
+<div class="px-4 pt-16">
     <h1>
         Deforum Init
     </h1>

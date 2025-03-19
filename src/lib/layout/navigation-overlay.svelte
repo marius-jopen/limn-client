@@ -111,7 +111,7 @@
         </div>
     </div>
 
-    <div class="absolute top-3 left-3">
+    <div class="absolute top-3 left-4">
         <Logout on:logout={handleLogout} />
     </div>
   </div>

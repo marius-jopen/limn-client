@@ -19,9 +19,9 @@
     }
 </script>
 
-<div class="p-4">
+<div class="px-4 pt-16">
     <h1>
-        Deforum Init
+        Deforum from Image {data.imageId}
     </h1>
 
     <div class="flex gap-4 flex-col md:flex-row">

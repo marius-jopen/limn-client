@@ -4,7 +4,7 @@
     import VideosDeforum from '$lib/supabase/studio/basic/VideosDeforum.svelte';
 </script>
 
-<div class="p-4">
+<div class="px-4 pt-16">
     <h1>Output</h1>
 
     <Gallery 

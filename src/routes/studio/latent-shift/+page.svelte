@@ -5,7 +5,7 @@
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
 </script>
 
-<div class="p-4">
+<div class="px-4 pt-16">
     <div class="flex gap-4 flex-col md:flex-row">
         <div class="md:w-1/2">
             <DeforumRun 
