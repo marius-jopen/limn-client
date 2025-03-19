@@ -11,6 +11,7 @@
     import InitImageFromID from '$lib/runpod/studio/basic/inputs/InitImageFromID.svelte';
     import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImageFromID.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
+    import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
 
     // Define types similar to InputRepeater
     type BaseField = {
@@ -18,6 +19,7 @@
         label: string;
         hidden?: boolean;
         default?: any;
+        placeholder?: string;
     };
 
     type Field = BaseField & {
@@ -54,29 +56,22 @@
 </script>
 
 <div class="input-controller">
-    <!-- Width and Height in a single row -->
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        {#if getField('w')}
-            <div>
-                <Number 
-                    id="w"
-                    label={getField('w')?.label || 'Width'}
-                    bind:value={values['w']}
-                />
-            </div>
-        {/if}
-        
-        {#if getField('h')}
-            <div>
-                <Number
-                    id="h"
-                    label={getField('h')?.label || 'Height'}
-                    bind:value={values['h']}
-                />
-            </div>
-        {/if}
-    </div>
-
+    <!-- Format (Width and Height) field if available -->
+    {#if getField('format')}
+        <div class="mb-4">
+            <FormatUi
+                id="format"
+                label={getField('format')?.label || 'Width, Height'}
+                bind:value={values['format']}
+                placeholder={getField('format')?.placeholder || '${W}, ${H}'}
+                on:change={(e) => {
+                    values['format'] = e.detail.value;
+                    console.log(`InputController: Format field changed to ${values['format']}`);
+                }}
+            />
+        </div>
+    {/if}
+  
     <!-- Seed and Steps in a single row -->
     <div class="grid grid-cols-2 gap-4 mb-4">
         {#if getField('seed')}
