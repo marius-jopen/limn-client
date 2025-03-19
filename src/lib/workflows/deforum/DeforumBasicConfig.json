@@ -8,7 +8,7 @@
     },
     {
         "id": "format",
-        "type": "format",
+        "type": "format-select",
         "placeholder": "${W}, ${H}",
         "label": "Width, Height",
         "default": "1024, 1024"

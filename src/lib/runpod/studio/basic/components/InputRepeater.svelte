@@ -10,6 +10,7 @@
     import PromptsUi from '$lib/runpod/studio/basic/inputs/PromptsUi.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
     import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
+    import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
 
     type BaseField = {
         id: string;
@@ -52,7 +53,11 @@
         type: 'format';
     };
 
-    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField;
+    type FormatSelectField = BaseField & {
+        type: 'format-select';
+    };
+
+    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField;
 
     export let UI: UIField[] = [];
     export let values: Record<string, string | number | boolean> = {};
@@ -124,6 +129,17 @@
                 />
             {:else if field.type === 'format'}
                 <FormatUi
+                    id={field.id}
+                    label={field.label}
+                    bind:value={values[field.id]}
+                    placeholder={field.placeholder}
+                    on:change={(e) => {
+                        values[field.id] = e.detail.value;
+                        console.log(`InputRepeater: Format field ${field.id} changed to ${values[field.id]}`);
+                    }}
+                />
+            {:else if field.type === 'format-select'}
+                <FormatSelectUi
                     id={field.id}
                     label={field.label}
                     bind:value={values[field.id]}

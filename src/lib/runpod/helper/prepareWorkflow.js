@@ -17,7 +17,9 @@ export function prepareWorkflow(workflow, uiConfig, values) {
     console.log('Initial workflow:', workflowStr);
     
     // Process format fields first to handle W/H separately
-    const formatFields = uiConfig.filter(field => field.type === 'format');
+    const formatFields = uiConfig.filter(field => 
+        field.type === 'format' || field.type === 'format-select'
+    );
     formatFields.forEach(field => {
         const formatValue = values[field.id] || field.default || '1024, 1024';
         console.log(`Format field ${field.id}: ${formatValue}`);
@@ -51,7 +53,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
         const placeholder = field.placeholder;
         
         // Skip format fields (already handled above)
-        if (field.type === 'format') {
+        if (field.type === 'format' || field.type === 'format-select') {
             return;
         }
         
