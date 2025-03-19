@@ -50,7 +50,7 @@
     },
     {
         "id": "init_image",
-        "type": "upload-image",
+        "type": "init-image",
         "placeholder": "${INIT_IMAGE}",
         "label": "Init Image",
         "default": ""

@@ -194,7 +194,8 @@
         
         // Notify parent component
         dispatch('imageSelected', {
-            id: currentResource.id
+            id: currentResource.id,
+            imageUrl: currentResource.image_url
         });
     }
 </script>
