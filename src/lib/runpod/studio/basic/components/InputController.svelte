@@ -8,7 +8,7 @@
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
     import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
-    
+    import PromptsUi from '$lib/runpod/studio/basic/inputs/PromptsUi.svelte';
     // Define types similar to InputRepeater
     type BaseField = {
         id: string;
@@ -130,7 +130,13 @@
     <!-- Animation Prompts (full width) -->
     {#if getField('prompts')}
         <div class="mb-4">
-            <PromptsSimpleUi
+            <!-- <PromptsSimpleUi
+                id="prompts"
+                label={getField('prompts')?.label || 'Animation Prompts'}
+                bind:value={values['prompts']}
+            /> -->
+
+            <PromptsUi
                 id="prompts"
                 label={getField('prompts')?.label || 'Animation Prompts'}
                 bind:value={values['prompts']}

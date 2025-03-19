@@ -62,9 +62,19 @@
     function updateValue() {
         prompts = {};
         entries.sort((a, b) => (parseInt(a.frame) || 0) - (parseInt(b.frame) || 0))
-              .forEach(entry => {
-                  if (entry.frame && (entry.prompt || entry.negativePrompt)) {
-                      prompts[entry.frame] = `${entry.prompt} --neg ${entry.negativePrompt}`;
+              .forEach((entry, index) => {
+                  if (entry.frame) {
+                      // For the first item, include it even if both prompts are empty
+                      // and ensure it's at frame 0 if not specified
+                      if (index === 0) {
+                          const frameNum = parseInt(entry.frame) || 0;
+                          const frameKey = frameNum.toString();
+                          prompts[frameKey] = `${entry.prompt || ''} --neg ${entry.negativePrompt || ''}`;
+                      } 
+                      // For other items, only include if there's content in either prompt
+                      else if (entry.prompt || entry.negativePrompt) {
+                          prompts[entry.frame] = `${entry.prompt || ''} --neg ${entry.negativePrompt || ''}`;
+                      }
                   }
               });
         value = JSON.stringify(prompts);
