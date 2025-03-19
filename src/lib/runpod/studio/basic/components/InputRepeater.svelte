@@ -5,7 +5,6 @@
     import Dropdown from '$lib/runpod/studio/basic/inputs/DropdownUi.svelte';
     import SliderUi from '$lib/runpod/studio/basic/inputs/SliderUi.svelte';
     import BooleanUi from '$lib/runpod/studio/basic/inputs/BooleanUi.svelte';
-    // import UploadImageUi from '$lib/runpod/studio/basic/inputs/UploadImageUi.svelte';
     import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImage.svelte';
     import PromptsUi from '$lib/runpod/studio/basic/inputs/PromptsUi.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
@@ -40,10 +39,6 @@
 
     type BooleanField = BaseField & {
         type: 'boolean';
-    };
-
-    type UploadImageField = BaseField & {
-        type: 'upload-image';
     };
 
     type PromptsField = BaseField & {
@@ -111,14 +106,6 @@
                 bind:value={values[field.id]}
                 hidden={field.hidden}
             />
-        <!-- {:else if field.type === 'upload-image'}
-            <UploadImageUi
-                id={field.id}
-                label={field.label}
-                bind:value={values[field.id]}
-                userId={user_id}
-                hidden={field.hidden}
-            /> -->
         {:else if field.type === 'init-image'}
             <InitImageUi
                 id={field.id}
