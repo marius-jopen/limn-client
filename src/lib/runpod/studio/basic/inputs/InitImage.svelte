@@ -10,6 +10,7 @@
     export let id: string = "";
     export let imageId: string = ""; // Allow direct prop for image ID
     export let userId: string = ""; // Add userId for uploads
+    export let hidden: boolean = false;
     
     interface Resource {
         id: string;
@@ -203,7 +204,7 @@
     });
 </script>
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2 {hidden ? 'hidden' : ''}">
     <Label for_id={id} {label} />
     
     {#if error}

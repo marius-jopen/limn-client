@@ -10,9 +10,10 @@
     export let value: string = "";
     export let options: DropdownOption[] = [];
     export let label: string = "";
+    export let hidden: boolean = false;
 </script>
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2 {hidden ? 'hidden' : ''}">
     <Label for_id={id} {label} />
 
     <select

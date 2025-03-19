@@ -3,17 +3,12 @@
     import { onMount } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import Button from '$lib/atoms/Button.svelte';
-    import Textarea from '$lib/runpod/studio/basic/inputs/TextareaUi.svelte';
     import Number from '$lib/runpod/studio/basic/inputs/NumberUi.svelte';
-    import Dropdown from '$lib/runpod/studio/basic/inputs/DropdownUi.svelte';
-    import SliderUi from '$lib/runpod/studio/basic/inputs/SliderUi.svelte';
-    import BooleanUi from '$lib/runpod/studio/basic/inputs/BooleanUi.svelte';
     import InitImageFromID from '$lib/runpod/studio/basic/inputs/InitImage.svelte';
-    import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImage.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
-    import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
     import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
+    
     // Define types similar to InputRepeater
     type BaseField = {
         id: string;
@@ -81,6 +76,7 @@
                     id="random-number"
                     label={getField('random-number')?.label || 'Seed'}
                     bind:value={values['random-number']}
+                    hidden={getField('random-number')?.hidden}
                 />
             </div>
         {/if}

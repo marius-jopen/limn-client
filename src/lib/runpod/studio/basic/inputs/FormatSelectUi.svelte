@@ -7,7 +7,7 @@
     export let value: string = '';
     export let placeholder: string = '';
     export let disabled: boolean = false;
-    
+    export let hidden: boolean = false;
     // Predefined aspect ratios
     const aspectRatios = [
         { label: '16:9', value: '16:9' },
@@ -73,7 +73,7 @@
     });
 </script>
 
-<div class="flex flex-col gap-1">
+<div class="flex flex-col gap-1 {hidden ? 'hidden' : ''}">
     <Label for_id={id} {label} />
     <div class="flex flex-col gap-2">
         <select

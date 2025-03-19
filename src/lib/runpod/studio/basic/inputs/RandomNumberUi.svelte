@@ -7,6 +7,7 @@
     export let value: number | string = '';
     export let placeholder: string = '';
     export let disabled: boolean = false;
+    export let hidden: boolean = false;
     
     // Use a local variable to store the random number
     let randomNumber: number;
@@ -28,7 +29,7 @@
     });
 </script>
 
-<div class="flex flex-col gap-1">
+<div class="flex flex-col gap-1 {hidden ? 'hidden' : ''}">
     <Label for_id={id} {label} />
     <div class="p-2 border rounded bg-gray-50" id={id}>
         <!-- Display our local random number directly -->

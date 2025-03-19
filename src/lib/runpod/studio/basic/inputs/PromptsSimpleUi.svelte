@@ -10,6 +10,7 @@
     export let id: string;
     export let label: string;
     export let value: string = '{}';
+    export let hidden: boolean = false;
 
     const dispatch = createEventDispatcher();
 
@@ -48,7 +49,7 @@
     }
 </script>
 
-<div class="mb-6 w-full">    
+<div class="mb-6 w-full {hidden ? 'hidden' : ''}">    
     <div class="flex flex-col gap-4 mb-4">
         <div class="flex flex-col">
             <Label 

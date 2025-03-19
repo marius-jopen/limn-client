@@ -60,6 +60,7 @@
 
     type RandomNumberField = BaseField & {
         type: 'random-number';
+        hidden?: boolean;
     };
 
     type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField | RandomNumberField;
@@ -72,95 +73,105 @@
 
 <div>    
     {#each UI as field}
-        {#if !field.hidden}
-            {#if field.type === 'string'}
-                <Textarea
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                />
-            {:else if field.type === 'int'}
-                <Number
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                />
-            {:else if field.type === 'select'}
-                <Dropdown
-                    id={field.id}
-                    label={field.label}
-                    options={field.options}
-                    bind:value={values[field.id]}
-                />
-            {:else if field.type === 'slider'}
-                <SliderUi
-                    id={field.id}
-                    label={field.label}
-                    min={field.min}
-                    max={field.max}
-                    bind:value={values[field.id]}
-                />
-            {:else if field.type === 'boolean'}
-                <BooleanUi
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                />
-            {:else if field.type === 'upload-image'}
-                <UploadImageUi
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                    userId={user_id}
-                />
-            {:else if field.type === 'init-image'}
-                <InitImageUi
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                    userId={user_id}
-                />
-            {:else if field.type === 'prompts'}
-                <PromptsUi
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                />
-            {:else if field.type === 'prompts-simple'}
-                <PromptsSimpleUi
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                />
-            {:else if field.type === 'random-number'}
-                <RandomNumberUi
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                />
-            {:else if field.type === 'format'}
-                <FormatUi
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                    placeholder={field.placeholder}
-                    on:change={(e) => {
-                        values[field.id] = e.detail.value;
-                        console.log(`InputRepeater: Format field ${field.id} changed to ${values[field.id]}`);
-                    }}
-                />
-            {:else if field.type === 'format-select'}
-                <FormatSelectUi
-                    id={field.id}
-                    label={field.label}
-                    bind:value={values[field.id]}
-                    placeholder={field.placeholder}
-                    on:change={(e) => {
-                        values[field.id] = e.detail.value;
-                        console.log(`InputRepeater: Format field ${field.id} changed to ${values[field.id]}`);
-                    }}
-                />
-            {/if}
+        {#if field.type === 'string'}
+            <Textarea
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'int'}
+            <Number
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'select'}
+            <Dropdown
+                id={field.id}
+                label={field.label}
+                options={field.options}
+                bind:value={values[field.id]}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'slider'}
+            <SliderUi
+                id={field.id}
+                label={field.label}
+                min={field.min}
+                max={field.max}
+                bind:value={values[field.id]}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'boolean'}
+            <BooleanUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'upload-image'}
+            <UploadImageUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                userId={user_id}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'init-image'}
+            <InitImageUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                userId={user_id}
+                hidden={field.hidden}   
+            />
+        {:else if field.type === 'prompts'}
+            <PromptsUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                hidden={field.hidden}   
+            />
+        {:else if field.type === 'prompts-simple'}
+            <PromptsSimpleUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                hidden={field.hidden}   
+            />
+        {:else if field.type === 'random-number'}
+            <RandomNumberUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'format'}
+            <FormatUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                placeholder={field.placeholder}
+                on:change={(e) => {
+                    values[field.id] = e.detail.value;
+                    console.log(`InputRepeater: Format field ${field.id} changed to ${values[field.id]}`);
+                }}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'format-select'}
+            <FormatSelectUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
+                placeholder={field.placeholder}
+                on:change={(e) => {
+                    values[field.id] = e.detail.value;
+                    console.log(`InputRepeater: Format field ${field.id} changed to ${values[field.id]}`);
+                }}
+                hidden={field.hidden}
+            />
         {/if}
     {/each}
 </div>

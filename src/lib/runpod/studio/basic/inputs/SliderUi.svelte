@@ -10,9 +10,10 @@
     export let disabled: boolean = false;
     export let min: number = 0;
     export let max: number = 100;
+    export let hidden: boolean = false;
 </script>
 
-<div class="flex flex-col gap-1">
+<div class="flex flex-col gap-1 {hidden ? 'hidden' : ''}">
     <Label for_id={id} {label} />
     <div class="flex gap-2">
         <Slider {id} bind:value {min} {max} {disabled} />

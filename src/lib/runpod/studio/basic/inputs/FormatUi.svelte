@@ -7,7 +7,7 @@
     export let value: string = '';
     export let placeholder: string = '';
     export let disabled: boolean = false;
-    
+    export let hidden: boolean = false;
     // Local state for width and height
     let widthValue = '';
     let heightValue = '';
@@ -40,7 +40,7 @@
     }
 </script>
 
-<div class="flex flex-col gap-1">
+<div class="flex flex-col gap-1 {hidden ? 'hidden' : ''}">
     <Label for_id={id} {label} />
     <div class="flex gap-2">
         <div class="flex-1">

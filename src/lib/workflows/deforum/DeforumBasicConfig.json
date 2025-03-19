@@ -4,7 +4,8 @@
         "type": "random-number",
         "placeholder": "${SEED}",
         "label": "Seed (-1 for random)",
-        "default": 1
+        "default": 1,
+        "hidden": true
     },
     {
         "id": "format",
