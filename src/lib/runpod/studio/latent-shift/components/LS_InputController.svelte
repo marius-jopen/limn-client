@@ -8,10 +8,11 @@
     import Dropdown from '$lib/runpod/studio/basic/inputs/DropdownUi.svelte';
     import SliderUi from '$lib/runpod/studio/basic/inputs/SliderUi.svelte';
     import BooleanUi from '$lib/runpod/studio/basic/inputs/BooleanUi.svelte';
-    import InitImageFromID from '$lib/runpod/studio/basic/inputs/InitImage.svelte';
+    import UploadImageUi from '$lib/runpod/studio/basic/inputs/UploadImageUi.svelte';
     import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImage.svelte';
+    import PromptsUi from '$lib/runpod/studio/basic/inputs/PromptsUi.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
-    import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
+    import LS_InitImage from '$lib/runpod/studio/latent-shift/inputs/LS_InitImage.svelte';
 
     // Define types similar to InputRepeater
     type BaseField = {
@@ -19,7 +20,6 @@
         label: string;
         hidden?: boolean;
         default?: any;
-        placeholder?: string;
     };
 
     type Field = BaseField & {
@@ -56,22 +56,29 @@
 </script>
 
 <div class="input-controller">
-    <!-- Format (Width and Height) field if available -->
-    {#if getField('format')}
-        <div class="mb-4">
-            <FormatUi
-                id="format"
-                label={getField('format')?.label || 'Width, Height'}
-                bind:value={values['format']}
-                placeholder={getField('format')?.placeholder || '${W}, ${H}'}
-                on:change={(e) => {
-                    values['format'] = e.detail.value;
-                    console.log(`InputController: Format field changed to ${values['format']}`);
-                }}
-            />
-        </div>
-    {/if}
-  
+    <!-- Width and Height in a single row -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        {#if getField('w')}
+            <div>
+                <Number 
+                    id="w"
+                    label={getField('w')?.label || 'Width'}
+                    bind:value={values['w']}
+                />
+            </div>
+        {/if}
+        
+        {#if getField('h')}
+            <div>
+                <Number
+                    id="h"
+                    label={getField('h')?.label || 'Height'}
+                    bind:value={values['h']}
+                />
+            </div>
+        {/if}
+    </div>
+
     <!-- Seed and Steps in a single row -->
     <div class="grid grid-cols-2 gap-4 mb-4">
         {#if getField('seed')}
@@ -121,11 +128,10 @@
     <!-- Init Image (full width) -->
     {#if getField('init_image')}
         <div class="mb-4">
-            <InitImageFromID
+            <LS_InitImage
                 id="init_image"
                 label={getField('init_image')?.label || 'Init Image'}
                 bind:value={values['init_image']}
-                userId={user_id}
             />
         </div>
     {/if}
@@ -133,7 +139,7 @@
     <!-- Animation Prompts (full width) -->
     {#if getField('prompts')}
         <div class="mb-4">
-            <PromptsSimpleUi
+            <PromptsUi
                 id="prompts"
                 label={getField('prompts')?.label || 'Animation Prompts'}
                 bind:value={values['prompts']}

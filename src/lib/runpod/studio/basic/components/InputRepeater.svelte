@@ -6,7 +6,7 @@
     import SliderUi from '$lib/runpod/studio/basic/inputs/SliderUi.svelte';
     import BooleanUi from '$lib/runpod/studio/basic/inputs/BooleanUi.svelte';
     import UploadImageUi from '$lib/runpod/studio/basic/inputs/UploadImageUi.svelte';
-    import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImageFromID.svelte';
+    import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImage.svelte';
     import PromptsUi from '$lib/runpod/studio/basic/inputs/PromptsUi.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
     import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
