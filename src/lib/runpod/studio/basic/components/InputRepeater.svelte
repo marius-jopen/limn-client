@@ -11,6 +11,7 @@
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
     import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
     import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
+    import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
 
     type BaseField = {
         id: string;
@@ -57,7 +58,11 @@
         type: 'format-select';
     };
 
-    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField;
+    type RandomNumberField = BaseField & {
+        type: 'random-number';
+    };
+
+    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField | RandomNumberField;
 
     export let UI: UIField[] = [];
     export let values: Record<string, string | number | boolean> = {};
@@ -123,6 +128,12 @@
                 />
             {:else if field.type === 'prompts-simple'}
                 <PromptsSimpleUi
+                    id={field.id}
+                    label={field.label}
+                    bind:value={values[field.id]}
+                />
+            {:else if field.type === 'random-number'}
+                <RandomNumberUi
                     id={field.id}
                     label={field.label}
                     bind:value={values[field.id]}

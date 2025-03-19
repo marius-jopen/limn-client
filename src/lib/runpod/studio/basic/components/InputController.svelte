@@ -12,7 +12,8 @@
     import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImage.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
     import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
-
+    import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
+    import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
     // Define types similar to InputRepeater
     type BaseField = {
         id: string;
@@ -59,7 +60,7 @@
     <!-- Format (Width and Height) field if available -->
     {#if getField('format')}
         <div class="mb-4">
-            <FormatUi
+            <FormatSelectUi
                 id="format"
                 label={getField('format')?.label || 'Width, Height'}
                 bind:value={values['format']}
@@ -74,12 +75,12 @@
   
     <!-- Seed and Steps in a single row -->
     <div class="grid grid-cols-2 gap-4 mb-4">
-        {#if getField('seed')}
+        {#if getField('random-number')}
             <div>
-                <Number
-                    id="seed"
-                    label={getField('seed')?.label || 'Seed'}
-                    bind:value={values['seed']}
+                <RandomNumberUi
+                    id="random-number"
+                    label={getField('random-number')?.label || 'Seed'}
+                    bind:value={values['random-number']}
                 />
             </div>
         {/if}
