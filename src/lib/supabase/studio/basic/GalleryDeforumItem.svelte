@@ -226,14 +226,7 @@
                 >
                     🔍
                 </button>
-                <a
-                    href={`/studio/${currentResource.id}`}
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
-                    title="Details"
-                >
-                    ℹ️
-                </a>
-    
+
                 <button
                     class="bg-green-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-green-600 shadow-md"
                     on:click={selectImage}
