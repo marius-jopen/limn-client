@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from 'svelte';
-    import { user } from '$lib/supabase/helper/StoreSupabase';
+    import { user, selectedImageId } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
 
@@ -183,6 +183,20 @@
             alert('Failed to delete batch: ' + e.message);
         }
     }
+
+    // Function to select this image and store its ID
+    function selectImage(): void {
+        if (!currentResource) return;
+        
+        // Store the image ID in the store
+        selectedImageId.set(currentResource.id);
+        console.log(`Selected image with ID: ${currentResource.id}`);
+        
+        // Notify parent component
+        dispatch('imageSelected', {
+            id: currentResource.id
+        });
+    }
 </script>
 
 {#if isLoading}
@@ -219,20 +233,15 @@
                 >
                     ℹ️
                 </a>
-                <a
-                    href={`/studio/deforum/${currentResource.id}`}
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
-                    title="Deforum"
+    
+                <button
+                    class="bg-green-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-green-600 shadow-md"
+                    on:click={selectImage}
+                    title="Select Image"
                 >
-                    🎞️
-                </a>
-                <a
-                    href={`/studio/deforum-limn/${currentResource.id}`}
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
-                    title="Deforum Limn"
-                >
-                ☀️
-                </a>
+                    ✅
+                </button>
+                
                 <button
                     class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
                     on:click={handleDelete}

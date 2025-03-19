@@ -8,7 +8,7 @@
     import Dropdown from '$lib/runpod/studio/basic/inputs/DropdownUi.svelte';
     import SliderUi from '$lib/runpod/studio/basic/inputs/SliderUi.svelte';
     import BooleanUi from '$lib/runpod/studio/basic/inputs/BooleanUi.svelte';
-    import UploadImageUi from '$lib/runpod/studio/basic/inputs/UploadImageUi.svelte';
+    import InitImageFromID from '$lib/runpod/studio/basic/inputs/InitImageFromID.svelte';
     import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImageFromID.svelte';
     import PromptsUi from '$lib/runpod/studio/basic/inputs/PromptsUi.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
@@ -127,7 +127,7 @@
     <!-- Init Image (full width) -->
     {#if getField('init_image')}
         <div class="mb-4">
-            <UploadImageUi
+            <InitImageFromID
                 id="init_image"
                 label={getField('init_image')?.label || 'Init Image'}
                 bind:value={values['init_image']}

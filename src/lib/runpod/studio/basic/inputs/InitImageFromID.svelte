@@ -1,11 +1,13 @@
 <script lang="ts">
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import { selectedImageId } from '$lib/supabase/helper/StoreSupabase';
     import Label from "$lib/atoms/Label.svelte";
 
     export let label: string = "";
     export let value: string = "";
     export let id: string = "";
+    export let imageId: string = ""; // Allow direct prop for image ID
     
     interface Resource {
         id: string;
@@ -15,12 +17,14 @@
     let resource: Resource | null = null;
     let error: string | null = null;
     
-    async function fetchImage() {
+    async function fetchImage(idToFetch: string) {
+        if (!idToFetch) return;
+        
         try {
             const { data: imageData, error: supabaseError } = await supabase
                 .from('resource')
                 .select('id, image_url')
-                .eq('id', $runState.imageId)
+                .eq('id', idToFetch)
                 .single();
                 
             if (supabaseError) throw supabaseError;
@@ -32,9 +36,10 @@
         }
     }
     
-    // Fetch image when the store's imageId changes
-    $: if ($runState?.imageId) {
-        fetchImage();
+    // Fetch image when the store's imageId or runState imageId changes
+    $: effectiveId = imageId || $selectedImageId || $runState?.imageId;
+    $: if (effectiveId) {
+        fetchImage(effectiveId);
     }
 </script>
 
@@ -54,7 +59,9 @@
         <div class="text-sm text-gray-500 break-all">
             Image URL: {value}
         </div>
+    {:else if effectiveId}
+        <p>Loading image...</p>
     {:else}
-        <p>Loading...</p>
+        <p>No image selected</p>
     {/if}
 </div> 
