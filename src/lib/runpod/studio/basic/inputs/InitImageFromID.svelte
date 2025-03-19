@@ -36,6 +36,22 @@
         }
     }
     
+    // Function to clear the selected image
+    function clearImage() {
+        resource = null;
+        value = "";
+        
+        // If we're using the selectedImageId store, clear it
+        if ($selectedImageId) {
+            selectedImageId.set(null);
+        }
+        
+        // If runState has an imageId, we can't directly modify it
+        // but we can at least clear our local state
+        
+        console.log("Image selection cleared");
+    }
+    
     // Fetch image when the store's imageId or runState imageId changes
     $: effectiveId = imageId || $selectedImageId || $runState?.imageId;
     $: if (effectiveId) {
@@ -55,6 +71,16 @@
                 alt="Selected image" 
                 class="rounded-md shadow-sm max-h-48 object-contain"
             />
+            
+            <!-- Add clear button -->
+            <button 
+                class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm shadow-md hover:bg-red-600"
+                on:click={clearImage}
+                title="Remove image"
+                type="button"
+            >
+                ✕
+            </button>
         </div>
         <div class="text-sm text-gray-500 break-all">
             Image URL: {value}

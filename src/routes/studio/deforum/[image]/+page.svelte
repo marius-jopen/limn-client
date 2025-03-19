@@ -6,10 +6,10 @@
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicInitConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
     import Cancel from '$lib/runpod/api/Cancel.svelte';
-    import StatusTable from '$lib/runpod/components/StatusTable.svelte';
-    import LogViewer from '$lib/runpod/components/LogViewer.svelte';
-    import PreviewVideo from '$lib/runpod/components/PreviewVideo.svelte';
-    import PreviewImages from '$lib/runpod/components/PreviewImages.svelte';
+    import StatusTable from '$lib/runpod/studio/basic/components/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/studio/basic/components/LogViewer.svelte';
+    import PreviewVideo from '$lib/runpod/studio/basic/components/PreviewVideo.svelte';
+    import PreviewImages from '$lib/runpod/studio/basic/components/PreviewImages.svelte';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
 
     export let data: PageData;

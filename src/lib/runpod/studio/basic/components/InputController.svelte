@@ -10,7 +10,6 @@
     import BooleanUi from '$lib/runpod/studio/basic/inputs/BooleanUi.svelte';
     import InitImageFromID from '$lib/runpod/studio/basic/inputs/InitImageFromID.svelte';
     import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImageFromID.svelte';
-    import PromptsUi from '$lib/runpod/studio/basic/inputs/PromptsUi.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
 
     // Define types similar to InputRepeater
@@ -139,7 +138,7 @@
     <!-- Animation Prompts (full width) -->
     {#if getField('prompts')}
         <div class="mb-4">
-            <PromptsUi
+            <PromptsSimpleUi
                 id="prompts"
                 label={getField('prompts')?.label || 'Animation Prompts'}
                 bind:value={values['prompts']}
