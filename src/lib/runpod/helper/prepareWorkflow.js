@@ -7,16 +7,53 @@
  */
 
 export function prepareWorkflow(workflow, uiConfig, values) {
+    console.log('Running prepareWorkflow with values:', values);
+    
+    // Log all values for debugging
+    console.log('All UI values:', values);
+    
     // Convert the workflow settings to string for replacement
     let workflowStr = JSON.stringify(workflow);
-    // console.log('Initial workflow string:', workflowStr);
-    console.log('Initial values:', values);
+    console.log('Initial workflow:', workflowStr);
+    
+    // Process format fields first to handle W/H separately
+    const formatFields = uiConfig.filter(field => field.type === 'format');
+    formatFields.forEach(field => {
+        const formatValue = values[field.id] || field.default || '1024, 1024';
+        console.log(`Format field ${field.id}: ${formatValue}`);
+        
+        // Parse width and height from format string
+        const [widthStr, heightStr] = formatValue.split(',').map(v => v.trim());
+        const width = parseInt(widthStr, 10) || 1024;
+        const height = parseInt(heightStr, 10) || 1024;
+        
+        console.log(`Parsed W=${width}, H=${height}`);
+        
+        // Replace W and H as separate numeric properties
+        // First, handle the case where they're in the JSON as strings with placeholders
+        workflowStr = workflowStr.replace(/"W"\s*:\s*"\${W}"/g, `"W": ${width}`);
+        workflowStr = workflowStr.replace(/"H"\s*:\s*"\${H}"/g, `"H": ${height}`);
+        
+        // Then handle the specific pattern from the example
+        workflowStr = workflowStr.replace(/W='\${W}'/g, `W=${width}`);
+        workflowStr = workflowStr.replace(/H='\${H}'/g, `H=${height}`);
+        
+        // Finally replace any remaining placeholders
+        workflowStr = workflowStr.replace(/\${W}/g, width);
+        workflowStr = workflowStr.replace(/\${H}/g, height);
+    });
 
     // Track if we have a prompts field that needs special handling
     let promptsField = null;
 
+    // Now handle all other fields normally
     uiConfig.forEach(field => {
         const placeholder = field.placeholder;
+        
+        // Skip format fields (already handled above)
+        if (field.type === 'format') {
+            return;
+        }
         
         // Skip prompts field for now - we'll handle it specially after initial parsing
         if (field.type === 'prompts') {
@@ -86,9 +123,20 @@ export function prepareWorkflow(workflow, uiConfig, values) {
     }
 
     try {
-        // console.log('Final workflow string:', workflowStr);
-        const parsedWorkflow = JSON.parse(workflowStr);
-        return parsedWorkflow;
+        // Final check: ensure W and H are numbers in the result
+        const result = JSON.parse(workflowStr);
+        
+        // If the result has deforum_settings with W and H as strings, convert them to numbers
+        if (result.deforum_settings) {
+            if (typeof result.deforum_settings.W === 'string') {
+                result.deforum_settings.W = parseInt(result.deforum_settings.W, 10);
+            }
+            if (typeof result.deforum_settings.H === 'string') {
+                result.deforum_settings.H = parseInt(result.deforum_settings.H, 10);
+            }
+        }
+        
+        return result;
     } catch (error) {
         console.error('JSON parsing error:', error);
         console.error('Generated workflow string:', workflowStr);

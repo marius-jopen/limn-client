@@ -7,18 +7,11 @@
         "default": 1
     },
     {
-        "id": "w",
-        "type": "int",
-        "placeholder": "${W}",
-        "label": "Width",
-        "default": 1024
-    },
-    {
-        "id": "h",
-        "type": "int",
-        "placeholder": "${H}",
-        "label": "Height",
-        "default": 1024
+        "id": "format",
+        "type": "format",
+        "placeholder": "${W}, ${H}",
+        "label": "Width, Height",
+        "default": "1024, 1024"
     },
     {
         "id": "max_frames",
