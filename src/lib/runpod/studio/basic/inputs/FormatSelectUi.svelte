@@ -8,64 +8,91 @@
     export let placeholder: string = '';
     export let disabled: boolean = false;
     
-    // Local state for width and height
-    let widthValue = '';
-    let heightValue = '';
+    // Predefined aspect ratios
+    const aspectRatios = [
+        { label: '16:9', value: '16:9' },
+        { label: '3:2', value: '3:2' },
+        { label: '1:1', value: '1:1' },
+        { label: '2:3', value: '2:3' },
+        { label: '9:16', value: '9:16' }
+    ];
     
-    // Initialize from parent value
-    $: {
-        if (value) {
-            const parts = value.split(',').map(v => v.trim());
-            if (parts[0] !== widthValue) widthValue = parts[0];
-            if (parts.length > 1 && parts[1] !== heightValue) heightValue = parts[1];
+    let selectedRatio = '1:1';
+    
+    function calculateDimensions(ratio: string): { width: number, height: number } {
+        const [w, h] = ratio.split(':').map(Number);
+        
+        if (w >= h) {
+            // Landscape or square: width is 1024
+            return {
+                width: 1024,
+                height: Math.round(1024 * (h / w))
+            };
+        } else {
+            // Portrait: height is 1024
+            return {
+                width: Math.round(1024 * (w / h)),
+                height: 1024
+            };
         }
     }
     
-    // Update parent value when width changes
-    function handleWidthChange(e) {
-        widthValue = e.target.value;
+    function handleRatioChange(e) {
+        selectedRatio = e.target.value;
         updateParentValue();
     }
     
-    // Update parent value when height changes
-    function handleHeightChange(e) {
-        heightValue = e.target.value;
-        updateParentValue();
-    }
-    
-    // Update the parent value
     function updateParentValue() {
-        value = `${widthValue}, ${heightValue}`;
-        console.log(`FormatUi updated: W=${widthValue}, H=${heightValue}, value="${value}"`);
+        const { width, height } = calculateDimensions(selectedRatio);
+        value = `${width}, ${height}`;
+        console.log(`FormatSelectUi updated: ratio=${selectedRatio}, W=${width}, H=${height}, value="${value}"`);
     }
+    
+    // Try to determine the initial ratio from the incoming value
+    onMount(() => {
+        if (value) {
+            const [w, h] = value.split(',').map(v => parseInt(v.trim(), 10));
+            
+            // Check if it matches one of our predefined ratios
+            for (const option of aspectRatios) {
+                const [rw, rh] = option.value.split(':').map(Number);
+                
+                // Allow for some rounding error
+                if (Math.abs((w / h) - (rw / rh)) < 0.01) {
+                    selectedRatio = option.value;
+                    break;
+                }
+            }
+            
+            // If we didn't find a match, just update with current ratio
+            updateParentValue();
+        } else {
+            // Initialize with default ratio if no value provided
+            updateParentValue();
+        }
+    });
 </script>
 
 <div class="flex flex-col gap-1">
     <Label for_id={id} {label} />
-    <div class="flex gap-2">
-        <div class="flex-1">
-            <Label for_id={`${id}-width`} label="Width" />
-            <input 
-                id={`${id}-width`} 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="number"
-                value={widthValue}
-                placeholder="Width" 
-                {disabled}
-                on:input={handleWidthChange}
-            />
-        </div>
-        <div class="flex-1">
-            <Label for_id={`${id}-height`} label="Height" />
-            <input 
-                id={`${id}-height`} 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="number"
-                value={heightValue}
-                placeholder="Height" 
-                {disabled}
-                on:input={handleHeightChange}
-            />
+    <div class="flex flex-col gap-2">
+        <select
+            id={id}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            bind:value={selectedRatio}
+            {disabled}
+            on:change={handleRatioChange}
+        >
+            {#each aspectRatios as option}
+                <option value={option.value}>{option.label}</option>
+            {/each}
+        </select>
+        
+        <div class="text-sm text-gray-500">
+            {#if selectedRatio}
+                {@const dims = calculateDimensions(selectedRatio)}
+                Output dimensions: {dims.width}×{dims.height}px
+            {/if}
         </div>
     </div>
 </div>
