@@ -3,6 +3,8 @@
     import { user, selectedImageId } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
+    import Button from '$lib/atoms/Button.svelte';
+    import Dropdown from '$lib/atoms/Dropdown.svelte'; // Import the Dropdown component
 
     // Define the Resource interface
     interface Resource {
@@ -207,7 +209,7 @@
         <div class="text-gray-500">Loading...</div>
     </div>
 {:else if currentResource}
-    <!-- Image container with buttons below - remove any horizontal margin/padding -->
+    <!-- Image container with buttons below -->
     <div class="flex flex-col w-auto">
         <!-- Image tile -->
         <div class="h-[500px] overflow-hidden relative">
@@ -220,36 +222,44 @@
             />
         </div>
         
-        <!-- Control buttons always visible - match width to image -->
-        <div class="bg-gray-100 p-1 mt-1 rounded w-full">
-            <div class="grid grid-cols-3 gap-1">
-                <button
-                    class="bg-green-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-green-600 shadow-md p-1"
-                    on:click={selectImage}
-                    title="Select Image"
-                >
-                    ✅
-                </button>
-                <button
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md p-1"
-                    on:click={handleDelete}
-                    title="Delete"
-                >
-                    🗑️
-                </button>
-                <!-- Batch delete button -->
-                {#if localResource?.batch_name}
-                <button
-                    class="bg-red-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-red-600 shadow-md p-1"
-                    title="Delete Batch"
-                    on:click={handleDeleteBatch}
-                >
-                    🗑️🔄
-                </button>
-                {:else}
-                <!-- Empty placeholder to maintain grid alignment -->
-                <div></div>
-                {/if}
+        <!-- Button row with dropdown -->
+        <div class="p-2 mt-4 w-full">
+            <div class="flex justify-center gap-2">
+                <Button
+                    label="Explore"
+                    variant="secondary"
+                    size="sm"
+                    onClick={selectImage}
+                />
+                
+                <!-- Use the new slot-based Dropdown component -->
+                <Dropdown position="top" width="min-w-[150px]">
+                    <svelte:fragment slot="trigger">
+                        <Button
+                            label="..."
+                            variant="secondary"
+                            size="sm"
+                        />
+                    </svelte:fragment>
+                    
+                    <svelte:fragment slot="content">
+                        <button 
+                            class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100"
+                            on:click={handleDelete}
+                        >
+                            Delete Image
+                        </button>
+                        
+                        {#if localResource?.batch_name}
+                            <button 
+                                class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100"
+                                on:click={handleDeleteBatch}
+                            >
+                                Delete Batch
+                            </button>
+                        {/if}
+                    </svelte:fragment>
+                </Dropdown>
             </div>
         </div>
     </div>

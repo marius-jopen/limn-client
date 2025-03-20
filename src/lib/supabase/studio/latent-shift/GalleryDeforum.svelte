@@ -5,6 +5,7 @@
     import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
     import GalleryDeforumItem from '$lib/supabase/studio/latent-shift/GalleryDeforumItem.svelte';
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
+    import Button from '$lib/atoms/Button.svelte'; // Import the Button component
     
     // Configuration for pagination
     const INITIAL_BATCH_COUNT = 3; // Number of batches to load initially
@@ -41,6 +42,14 @@
     let allResources: Resource[] = []; // All fetched resources
     let visibleBatchCount = INITIAL_BATCH_COUNT; // Number of batches currently visible
     let hasMoreToLoad = true; // Whether there are more resources to load
+    
+    // Add a state variable for tracking image order
+    let imagesReversed = false;
+    
+    // Function to toggle image order
+    function toggleImageOrder() {
+        imagesReversed = !imagesReversed;
+    }
     
     // Function to group resources by batch_name
     function groupResourcesByBatch(resources: Resource[]) {
@@ -516,12 +525,12 @@
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
+
     {#if visibleGroups.length > 0}
         {#each visibleGroups as group}
             <div class="mb-8">
-                <h3 class="text-lg font-medium mb-2 text-gray-800">{group.batchName}</h3>
-                <div class="flex overflow-x-auto pb-4 space-x-2 hide-scrollbar">
-                    {#each [...group.resources].reverse() as resource (resource.id)}
+                <div class="px-4 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
+                    {#each imagesReversed ? [...group.resources].reverse() : group.resources as resource (resource.id)}
                         <div class="flex-shrink-0">
                             <GalleryDeforumItem 
                                 {resource} 
