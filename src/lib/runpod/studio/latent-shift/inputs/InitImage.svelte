@@ -3,6 +3,7 @@
     import { runState } from '$lib/runpod/helper/StoreRun.js';
     import { selectedImageId } from '$lib/supabase/helper/StoreSupabase';
     import Label from "$lib/atoms/Label.svelte";
+    import Button from "$lib/atoms/Button.svelte";
     import { onMount, onDestroy, afterUpdate } from 'svelte';
 
     export let label: string = "";
@@ -308,62 +309,53 @@
     {#if error}
         <p class="text-red-400">{error}</p>
     {:else if resource}
-        <div class="relative w-full h-[500px] mt-2 group flex justify-center">
-            <div class="relative inline-block">
+        <div class="relative w-full h-[500px] mt-2 flex justify-center">
+            <div class="relative inline-block animate-fade-in group">
                 <img 
                     src={resource.image_url} 
                     alt="Selected image" 
-                    class="rounded-md shadow-sm max-h-[500px] object-contain"
+                    class="rounded-md shadow-sm max-h-[500px] object-contain opacity-0 animate-fade-in hover:cursor-pointer"
                 />
                 
-                <!-- Close button positioned on the image itself -->
-                <button 
-                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-md hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
-                    on:click={clearImage}
-                    title="Remove image"
-                    type="button"
-                >
-                    ✕
-                </button>
+                <div class="absolute inset-x-0 bottom-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                    <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={clearImage}
+                        label="Remove"
+                        classes="shadow-lg"
+                    />
+                </div>
             </div>
         </div>
     {:else if preview}
-        <!-- Show the uploaded image preview -->
-        <div class="relative w-[500px] h-[500px] mt-2 group flex justify-center">
-            <div class="relative inline-block">
+        <div class="relative w-[500px] h-[500px] mt-2 flex justify-center">
+            <div class="relative inline-block group">
                 <img 
                     src={preview} 
                     alt="Upload preview" 
-                    class="rounded-md shadow-sm max-h-[500px] object-contain"
+                    class="rounded-md shadow-sm max-h-[500px] object-contain opacity-0 animate-fade-in hover:cursor-pointer"
                 />
-                <button
-                    on:click={() => {
-                        preview = null;
-                        value = '';
-                        status = 'Ready';
-                    }}
-                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm shadow-md hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
-                    type="button"
-                >
-                    ✕
-                </button>
+                <div class="absolute inset-x-0 bottom-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                    <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={() => {
+                            preview = null;
+                            value = '';
+                            status = 'Ready';
+                        }}
+                        label="Remove"
+                        classes="shadow-lg"
+                    />
+                </div>
             </div>
-        </div>
-        <div class="text-sm text-gray-500 break-all">
-            Uploaded URL: {value}
         </div>
     {:else if effectiveId}
         <p>Loading image...</p>
     {:else}
-        <!-- Replace upload button with a gray drag and drop box -->
-        <div class="text-sm mb-2 self-start">
-            Status: <span class={status === 'Upload successful!' ? 'text-green-500' : 
-                          status === 'Upload failed' ? 'text-red-500' : 
-                          'text-blue-500'}>{status}</span>
-        </div>
-
         <div 
-            class="w-[500px] h-[500px] bg-gray-200 rounded-md flex flex-col items-center justify-center cursor-pointer transition-colors {isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-400'}"
+            class="w-[500px] h-[500px] bg-gray-200 rounded-md flex flex-col items-center justify-center cursor-pointer transition-colors {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'} relative"
             on:dragenter={handleDragEnter}
             on:dragleave={handleDragLeave}
             on:dragover={handleDragOver}
@@ -377,23 +369,53 @@
                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            
-            <p class="text-gray-600 text-center">
-                Drag & drop an image here <br> or click to select
-            </p>
-        </div>
-        
-        {#if uploading}
-            <div class="text-sm text-blue-500 flex items-center mt-2">
-                <svg class="animate-spin h-5 w-5 inline mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {status}
+            <div class="text-4xl mb-4 pointer-events-none">
+                {uploading ? '⏳' : '🚀'}
             </div>
-        {/if}
+            
+            {#if !uploading}
+                <p class="text-gray-700 text-center text-xl font-light pointer-events-none mb-3">
+                    Let's bring your ideas to life!
+                </p>
+                <p class="text-gray-500 text-center pointer-events-none">
+                    Drop an image here or click to upload
+                </p>
+                <p class="text-gray-500 text-center pointer-events-none">
+                    Or explore our gallery for inspiration below
+                </p>
+            {:else}
+                <p class="text-gray-700 text-center text-xl font-light pointer-events-none mb-2">
+                    Just a moment...
+                </p>
+                <div class="bg-white/70 rounded-full px-4 py-2 mt-2 pointer-events-none">
+                    <span class={status === 'Upload successful!' ? 'text-green-500' : 
+                          status === 'Upload failed' ? 'text-red-500' : 
+                          'text-blue-500'}>
+                        {status}
+                    </span>
+                </div>
+            {/if}
+            
+            {#if !uploading && status !== 'Ready'}
+                <div class="absolute bottom-4 text-xs pointer-events-none">
+                    <span class={status === 'Upload successful!' ? 'text-green-500' : 
+                          status === 'Upload failed' ? 'text-red-500' : 
+                          'text-blue-500'}>
+                        {status}
+                    </span>
+                </div>
+            {/if}
+        </div>
     {/if}
-</div> 
+</div>
+
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .animate-fade-in {
+        animation: fade-in 0.5s ease-in-out forwards;
+    }
+</style> 
