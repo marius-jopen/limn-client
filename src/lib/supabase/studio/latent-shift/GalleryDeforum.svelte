@@ -519,8 +519,9 @@
     {#if visibleGroups.length > 0}
         {#each visibleGroups as group}
             <div class="mb-8">
-                <div class="flex gap-3 overflow-x-auto pb-4 space-x-2 hide-scrollbar">
-                    {#each group.resources as resource (resource.id)}
+                <h3 class="text-lg font-medium mb-2 text-gray-800">{group.batchName}</h3>
+                <div class="flex overflow-x-auto pb-4 space-x-2 hide-scrollbar">
+                    {#each [...group.resources].reverse() as resource (resource.id)}
                         <div class="flex-shrink-0">
                             <GalleryDeforumItem 
                                 {resource} 
