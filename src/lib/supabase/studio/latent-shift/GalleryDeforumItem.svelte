@@ -194,6 +194,12 @@
         selectedImageId.set(currentResource.id);
         console.log(`Selected image with ID: ${currentResource.id}`);
         
+        // Scroll to the top of the page
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'  // Adds smooth scrolling animation
+        });
+        
         // Notify parent component
         dispatch('imageSelected', {
             id: currentResource.id,
@@ -222,9 +228,9 @@
             />
         </div>
         
-        <!-- Button row with dropdown - only visible on hover - positioned below image -->
-        <div class="p-2 mt-5 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <div class="flex justify-center gap-2">
+        <!-- Button row with dropdown - simple fade in/out on hover with fly-in animation -->
+        <div class="p-2 mt-5 w-full">
+            <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
                 <Button
                     label="Explore"
                     variant="secondary"
@@ -232,8 +238,12 @@
                     onClick={selectImage}
                 />
                 
-                <!-- Use the slot-based Dropdown component -->
-                <Dropdown position="top" width="min-w-[150px]">
+                <!-- Use the slot-based Dropdown component with animated dropdown -->
+                <Dropdown 
+                    position="top" 
+                    width="min-w-[150px]"
+                    containerClass="dropdown-animate"
+                >
                     <svelte:fragment slot="trigger">
                         <Button
                             label="..."
@@ -243,21 +253,23 @@
                     </svelte:fragment>
                     
                     <svelte:fragment slot="content">
-                        <button 
-                            class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100"
-                            on:click={handleDelete}
-                        >
-                            Delete Image
-                        </button>
-                        
-                        {#if localResource?.batch_name}
+                        <div>
                             <button 
-                                class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100"
-                                on:click={handleDeleteBatch}
+                                class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors duration-150"
+                                on:click={handleDelete}
                             >
-                                Delete Batch
+                                Delete Image
                             </button>
-                        {/if}
+                            
+                            {#if localResource?.batch_name}
+                                <button 
+                                    class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors duration-150"
+                                    on:click={handleDeleteBatch}
+                                >
+                                    Delete Batch
+                                </button>
+                            {/if}
+                        </div>
                     </svelte:fragment>
                 </Dropdown>
             </div>
@@ -267,7 +279,7 @@
     <!-- Preview overlay -->
     {#if isPreviewOpen}
         <div 
-            class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4"
+            class="fixed inset-0 bg-neutral-100/80 backdrop-blur-2xl z-50 flex items-center justify-center p-4 animate-fade-in"
             on:click={closePreview}
         >
             <div class="max-w-4xl max-h-[90vh] relative">
@@ -276,12 +288,16 @@
                     alt={currentResource.name || 'Preview'} 
                     class="max-w-full max-h-[90vh] object-contain rounded-md"
                 />
-                <button 
-                    class="absolute top-4 right-4 bg-white rounded-full w-8 h-8 flex items-center justify-center text-black"
-                    on:click={closePreview}
-                >
-                    ✕
-                </button>
+                
+                <!-- Using Button atom for the close button -->
+                <div class="fixed top-3 right-4">
+                    <Button
+                        label="Close"
+                        variant="secondary"
+                        size="sm"
+                        onClick={closePreview}
+                    />
+                </div>
             </div>
         </div>
     {/if}
@@ -296,3 +312,32 @@
         <div class="text-gray-500">No image</div>
     </div>
 {/if}
+
+<style>
+    /* Animation for preview overlay */
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Animation for dropdown */
+    :global(.dropdown-animate) {
+        animation: dropdownFly 0.25s ease-out;
+        transform-origin: bottom center;
+    }
+    
+    @keyframes dropdownFly {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

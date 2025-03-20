@@ -50,16 +50,23 @@
     }[position];
 </script>
 
-<div class="dropdown-container relative {containerClass}" bind:this={dropdownRef}>
+<div class="dropdown-container relative" bind:this={dropdownRef}>
     <!-- Trigger slot -->
     <div on:click={toggle}>
         <slot name="trigger"></slot>
     </div>
     
-    <!-- Dropdown content -->
+    <!-- Dropdown content with animation -->
     {#if isOpen}
-        <div class="absolute {positionClasses} right-0 bg-white shadow-lg rounded-md z-10 {width} overflow-hidden">
+        <div class="absolute {positionClasses} right-0 bg-white shadow-mdcan  rounded-md z-10 {width} overflow-hidden {containerClass}">
             <slot name="content"></slot>
         </div>
     {/if}
-</div> 
+</div>
+
+<style>
+    /* Base dropdown styles */
+    .dropdown-container {
+        display: inline-block;
+    }
+</style> 
