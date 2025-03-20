@@ -51,8 +51,7 @@
     $: user_id = $user?.id;
 </script>
 
-<div class="input-controller">
-
+<div class="input-controller pt-24">
    <!-- Init Image (full width) -->
    {#if getField('init_image')}
         <div class="mb-4">
@@ -65,110 +64,113 @@
         </div>
     {/if}
 
-
-    <!-- Format (Width and Height) field if available -->
-    {#if getField('format')}
-        <div class="mb-4">
-            <FormatSelectUi
-                id="format"
-                label={getField('format')?.label || 'Width, Height'}
-                bind:value={values['format']}
-                placeholder={getField('format')?.placeholder || '${W}, ${H}'}
-                on:change={(e) => {
-                    values['format'] = e.detail.value;
-                    console.log(`InputController: Format field changed to ${values['format']}`);
-                }}
-            />
+    <div class="bg-gray-200 p-4 rounded-md w-8/12 mx-auto">
+        <!-- Format (Width and Height) field if available -->
+        {#if getField('format')}
+            <div class="mb-4">
+                <FormatSelectUi
+                    id="format"
+                    label={getField('format')?.label || 'Width, Height'}
+                    bind:value={values['format']}
+                    placeholder={getField('format')?.placeholder || '${W}, ${H}'}
+                    on:change={(e) => {
+                        values['format'] = e.detail.value;
+                        console.log(`InputController: Format field changed to ${values['format']}`);
+                    }}
+                />
+            </div>
+        {/if}
+      
+        <!-- Seed and Steps in a single row -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            {#if getField('random-number')}
+                <div>
+                    <RandomNumberUi
+                        id="random-number"
+                        label={getField('random-number')?.label || 'Seed'}
+                        bind:value={values['random-number']}
+                        hidden={getField('random-number')?.hidden}
+                    />
+                </div>
+            {/if}
+            
+            {#if getField('steps')}
+                <div>
+                    <Number
+                        id="steps"
+                        label={getField('steps')?.label || 'Steps'}
+                        bind:value={values['steps']}
+                    />
+                </div>
+            {/if}
         </div>
-    {/if}
-  
-    <!-- Seed and Steps in a single row -->
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        {#if getField('random-number')}
-            <div>
-                <RandomNumberUi
-                    id="random-number"
-                    label={getField('random-number')?.label || 'Seed'}
-                    bind:value={values['random-number']}
-                    hidden={getField('random-number')?.hidden}
+    
+        <!-- Max Frames and Diffusion Cadence in a single row -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            {#if getField('max_frames')}
+                <div>
+                    <Number
+                        id="max_frames"
+                        label={getField('max_frames')?.label || 'Max Frames'}
+                        bind:value={values['max_frames']}
+                    />
+                </div>
+            {/if}
+            
+            {#if getField('diffusion_cadence')}
+                <div>
+                    <Number
+                        id="diffusion_cadence"
+                        label={getField('diffusion_cadence')?.label || 'Diffusion Cadence'}
+                        bind:value={values['diffusion_cadence']}
+                    />
+                </div>
+            {/if}
+        </div>
+    
+     
+    
+        <!-- Animation Prompts (full width) -->
+        {#if getField('prompts')}
+            <div class="mb-4">
+                <!-- <PromptsSimpleUi
+                    id="prompts"
+                    label={getField('prompts')?.label || 'Animation Prompts'}
+                    bind:value={values['prompts']}
+                /> -->
+    
+                <PromptsUi
+                    id="prompts"
+                    label={getField('prompts')?.label || 'Animation Prompts'}
+                    bind:value={values['prompts']}
                 />
             </div>
         {/if}
-        
-        {#if getField('steps')}
-            <div>
-                <Number
-                    id="steps"
-                    label={getField('steps')?.label || 'Steps'}
-                    bind:value={values['steps']}
+    
+        <!-- Generate Button (inside the controller) -->
+        {#if includeButton}
+            <div class="mt-6">
+                <Button 
+                    onClick={onGenerate} 
+                    label="Generate" 
+                    disabled={isGenerating}
                 />
             </div>
         {/if}
+    
+        <Cancel />
+    
+    
+        <!-- Uncomment for debugging -->
+        <!-- <details class="mt-4 p-2 bg-gray-50 border rounded">
+            <summary class="font-semibold">Debug Info</summary>
+            <div class="text-xs mt-2">
+                <pre class="bg-gray-100 p-2 rounded">{JSON.stringify(values, null, 2)}</pre>
+            </div>
+        </details> -->
     </div>
 
-    <!-- Max Frames and Diffusion Cadence in a single row -->
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        {#if getField('max_frames')}
-            <div>
-                <Number
-                    id="max_frames"
-                    label={getField('max_frames')?.label || 'Max Frames'}
-                    bind:value={values['max_frames']}
-                />
-            </div>
-        {/if}
-        
-        {#if getField('diffusion_cadence')}
-            <div>
-                <Number
-                    id="diffusion_cadence"
-                    label={getField('diffusion_cadence')?.label || 'Diffusion Cadence'}
-                    bind:value={values['diffusion_cadence']}
-                />
-            </div>
-        {/if}
-    </div>
 
- 
-
-    <!-- Animation Prompts (full width) -->
-    {#if getField('prompts')}
-        <div class="mb-4">
-            <!-- <PromptsSimpleUi
-                id="prompts"
-                label={getField('prompts')?.label || 'Animation Prompts'}
-                bind:value={values['prompts']}
-            /> -->
-
-            <PromptsUi
-                id="prompts"
-                label={getField('prompts')?.label || 'Animation Prompts'}
-                bind:value={values['prompts']}
-            />
-        </div>
-    {/if}
-
-    <!-- Generate Button (inside the controller) -->
-    {#if includeButton}
-        <div class="mt-6">
-            <Button 
-                onClick={onGenerate} 
-                label="Generate" 
-                disabled={isGenerating}
-            />
-        </div>
-    {/if}
-
-    <Cancel />
-
-
-    <!-- Uncomment for debugging -->
-    <!-- <details class="mt-4 p-2 bg-gray-50 border rounded">
-        <summary class="font-semibold">Debug Info</summary>
-        <div class="text-xs mt-2">
-            <pre class="bg-gray-100 p-2 rounded">{JSON.stringify(values, null, 2)}</pre>
-        </div>
-    </details> -->
 </div>
 
 <style>

@@ -375,7 +375,7 @@
             
             {#if !uploading}
                 <p class="text-gray-700 text-center text-xl font-light pointer-events-none mb-3">
-                    Let's bring your ideas to life!
+                    Start here.
                 </p>
                 <p class="text-gray-500 text-center pointer-events-none">
                     Drop an image here or click to upload

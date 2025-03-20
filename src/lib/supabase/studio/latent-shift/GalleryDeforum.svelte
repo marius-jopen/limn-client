@@ -44,7 +44,7 @@
     let hasMoreToLoad = true; // Whether there are more resources to load
     
     // Add a state variable for tracking image order
-    let imagesReversed = false;
+    let imagesReversed = true;
     
     // Function to toggle image order
     function toggleImageOrder() {

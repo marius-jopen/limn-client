@@ -216,14 +216,14 @@
     </div>
 {:else if currentResource}
     <!-- Image container with hover effect for buttons -->
-    <div class="flex flex-col w-auto group">
+    <div class="flex flex-col w-auto group  hover:scale-[1.03] transition-all duration-300 ease-in-out mt-4">
         <!-- Image tile -->
-        <div class="h-[500px] overflow-hidden">
+        <div class="h-[500px] overflow-hidden ">
             <img 
                 on:click={handlePreview}
                 src={cdnImageUrl}
                 alt={currentResource.name || 'User uploaded image'} 
-                class="h-full w-auto object-contain rounded-md"
+                class="cursor-pointer h-full w-auto object-contain rounded-md"
                 loading="lazy"
             />
         </div>
