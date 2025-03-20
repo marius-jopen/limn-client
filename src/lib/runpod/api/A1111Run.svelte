@@ -6,6 +6,14 @@
     import InputRepeater from '$lib/runpod/studio/basic/components/InputRepeater.svelte';
     import { onMount } from 'svelte';
 
+    // Get the server URL from environment variables - this is required to run the application
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+    // Validate that the environment variable is set - throw an error if it's not available
+    if (!serverUrl) {
+        throw new Error('VITE_SERVER_URL environment variable is not set. This is required to run the application.');
+    }
+
     interface UIConfigField {
         id: string;
         type: string;
@@ -129,7 +137,7 @@
         try {
             const workflowWithPrompt = prepareWorkflow(workflow, ui_config, values);
                         
-            const response = await fetch(`http://localhost:4000/api/${service}-runpod-serverless-run`, {
+            const response = await fetch(`${serverUrl}/${service}-runpod-serverless-run`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -166,7 +174,7 @@
         for (let attempt = 0; attempt < POLL_CONFIG.maxAttempts; attempt++) {
             try {
                 const response = await fetch(
-                    `http://localhost:4000/api/${service}-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`,
+                    `${serverUrl}/${service}-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`,
                     {
                         headers: {
                             'user-id': user_id,

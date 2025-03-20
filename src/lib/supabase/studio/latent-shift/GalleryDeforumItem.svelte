@@ -6,6 +6,8 @@
     import Button from '$lib/atoms/Button.svelte';
     import Dropdown from '$lib/atoms/Dropdown.svelte'; // Import the Dropdown component
 
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
     // Define the Resource interface
     interface Resource {
         id: string;
@@ -94,7 +96,7 @@
             
             // First try API endpoint if available
             try {
-                const url = `http://localhost:4000/api/resources/${localResource.id}/delete`;
+                const url = `${serverUrl}/resources/${localResource.id}/delete`;
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -160,7 +162,7 @@
             console.log(`Attempting to delete batch: ${localResource.batch_name}`);
             
             // Call the API endpoint to delete the batch
-            const url = `http://localhost:4000/api/batch/delete`;
+            const url = `${serverUrl}/batch/delete`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {

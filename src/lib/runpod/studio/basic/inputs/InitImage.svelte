@@ -11,7 +11,8 @@
     export let imageId: string = ""; // Allow direct prop for image ID
     export let userId: string = ""; // Add userId for uploads
     export let hidden: boolean = false;
-    
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
     interface Resource {
         id: string;
         image_url: string;
@@ -101,7 +102,7 @@
 
             status = 'Sending to server...';
             
-            const response = await fetch('http://localhost:4000/api/s3-upload', {
+            const response = await fetch(serverUrl + '/s3-upload', {
                 method: 'POST',
                 body: formData
             });

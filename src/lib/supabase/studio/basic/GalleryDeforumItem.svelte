@@ -21,6 +21,8 @@
     export let resource: Resource | null = null;
     export let resourceId: string | null = null;
     
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
     // Event dispatcher for parent component communication
     const dispatch = createEventDispatcher();
     
@@ -92,7 +94,7 @@
             
             // First try API endpoint if available
             try {
-                const url = `http://localhost:4000/api/resources/${localResource.id}/delete`;
+                const url = `${serverUrl}/resources/${localResource.id}/delete`;
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -158,7 +160,7 @@
             console.log(`Attempting to delete batch: ${localResource.batch_name}`);
             
             // Call the API endpoint to delete the batch
-            const url = `http://localhost:4000/api/batch/delete`;
+            const url = `${serverUrl}/batch/delete`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {

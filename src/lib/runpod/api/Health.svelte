@@ -4,6 +4,7 @@
     import StatusTable from '$lib/runpod/components/StatusTable.svelte';
 
     export let service;
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
 
     let status = 'Loading...';
     let error = null;
@@ -11,7 +12,7 @@
 
     async function checkHealth() {
         try {
-            const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-health');
+            const response = await fetch(serverUrl + '/' + service + '-runpod-serverless-health');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

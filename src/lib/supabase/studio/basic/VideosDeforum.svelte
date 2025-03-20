@@ -5,7 +5,9 @@
     import Button from '$lib/atoms/Button.svelte';
     import VideoLooper from '$lib/layout/ui/VideoLooper.svelte';
     import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
-    
+   
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
     // Configuration for video playback
     const VIDEO_FPS = 15; // Frames per second for video animations
     
@@ -400,7 +402,7 @@
                 throw new Error('No resources found for this batch');
             }
 
-            const url = `http://localhost:4000/api/batch/delete`;
+            const url = `${serverUrl}/batch/delete`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {

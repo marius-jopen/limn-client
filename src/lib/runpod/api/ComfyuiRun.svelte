@@ -6,6 +6,8 @@
     import InputRepeater from '$lib/runpod/studio/basic/components/InputRepeater.svelte';
     import { onMount } from 'svelte';
 
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
     interface UIConfigField {
         id: string;
         type: string;
@@ -133,7 +135,7 @@
         try {
             const workflowWithPrompt = prepareWorkflow(workflow, ui_config, values);
 
-            const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
+            const response = await fetch(serverUrl + '/' + service + '-runpod-serverless-run', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -160,7 +162,7 @@
     async function pollJob(id) {
         for (let attempt = 0; attempt < POLL_CONFIG.maxAttempts; attempt++) {
             try {
-                const response = await fetch(`http://localhost:4000/api/comfyui-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`, {
+                const response = await fetch(`${serverUrl}/comfyui-runpod-serverless-status/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`, {
                     headers: {
                         'user-id': user_id,
                         'service': service,

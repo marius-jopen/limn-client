@@ -8,6 +8,14 @@
     import InputController_LatentShift from '$lib/runpod/studio/latent-shift/components/InputController.svelte';
     import { onMount } from 'svelte';
 
+    // Get the server URL from environment variables - this is required to run the application
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+    // Validate that the environment variable is set - throw an error if it's not available
+    if (!serverUrl) {
+        throw new Error('VITE_SERVER_URL environment variable is not set. This is required to run the application.');
+    }
+
     // TYPESCRIPT TYPES
 
     // Define the types for the UI config fields
@@ -265,7 +273,7 @@
             //   - The complete workflow with all placeholders replaced with user values
             //   - The user ID for tracking and permissions
             // This initiates the job on RunPod and returns a response with the job ID
-            const response = await fetch('http://localhost:4000/api/' + service + '-runpod-serverless-run', {
+            const response = await fetch(`${serverUrl}/${service}-runpod-serverless-run`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -306,7 +314,7 @@
     async function streamJob(id: string): Promise<void> {
         try {
             const eventSource = new EventSource(
-                `http://localhost:4000/api/${service}-runpod-serverless-stream/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`
+                `${serverUrl}/${service}-runpod-serverless-stream/${id}?userId=${user_id}&service=${service}&workflow=${workflow_name}`
             );
 
             return new Promise<void>((resolve, reject) => {

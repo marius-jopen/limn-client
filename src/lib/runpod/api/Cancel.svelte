@@ -2,6 +2,8 @@
     import Button from '$lib/atoms/Button.svelte';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
 
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
     let status = 'Ready to cancel';
     let error = null;
     let data = null;
@@ -19,7 +21,7 @@
     async function cancelJob() {
         try {
             status = 'Cancelling...';
-            const response = await fetch(`http://localhost:4000/api/cancel-runpod-serverless/${currentJobId}`, {
+            const response = await fetch(`${serverUrl}/cancel-runpod-serverless/${currentJobId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
