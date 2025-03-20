@@ -51,10 +51,10 @@
     $: user_id = $user?.id;
 </script>
 
-<div class="input-controller pt-24">
+<div class="input-controller pt-24 pb-28">
    <!-- Init Image (full width) -->
    {#if getField('init_image')}
-        <div class="mb-4">
+        <div class="mb-12">
             <InitImage
                 id="init_image"
                 label={getField('init_image')?.label || 'Init Image'}
