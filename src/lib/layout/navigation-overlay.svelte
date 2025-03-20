@@ -66,14 +66,7 @@
       imageAlt: 'Nz',
       title: 'Output',
       visibleTo: ['admin'] // Only visible to admins
-    },
-    {
-      href: '/admin',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/glass.png',
-      imageAlt: 'Glass',
-      title: 'Admin',
-      visibleTo: ['admin'] // Only visible to admins
-    },
+    }
   ];
   
   // Simplified filter logic that uses the visibleTo property
