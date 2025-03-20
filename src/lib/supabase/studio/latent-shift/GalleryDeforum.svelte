@@ -99,6 +99,37 @@
     // Add a timer that periodically checks for batch name updates
     let batchUpdateInterval: number;
     
+    // Infinite scroll setup
+    let loadingMore = false;
+    let scrollObserver: IntersectionObserver;
+    let observerTarget: HTMLDivElement;
+    
+    // Set up the intersection observer for infinite scrolling
+    function setupInfiniteScroll() {
+        if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
+            scrollObserver = new IntersectionObserver(
+                (entries) => {
+                    const [entry] = entries;
+                    if (entry.isIntersecting && hasMoreBatches && !loadingMore) {
+                        loadMore();
+                    }
+                },
+                { rootMargin: '200px' } // Start loading when within 200px of the observer
+            );
+            
+            if (observerTarget) {
+                scrollObserver.observe(observerTarget);
+            }
+        }
+    }
+    
+    // Clean up observer when component is destroyed
+    function cleanupInfiniteScroll() {
+        if (scrollObserver) {
+            scrollObserver.disconnect();
+        }
+    }
+    
     onMount(() => {
         console.log('GalleryImages component mounted with props:', {
             workflow_name,
@@ -110,6 +141,9 @@
         
         // Set up an interval to refresh batch assignments
         batchUpdateInterval = setInterval(updateBatchAssignments, 5000); // Check every 5 seconds
+        
+        // Set up infinite scrolling
+        setupInfiniteScroll();
     });
     
     onDestroy(() => {
@@ -121,6 +155,9 @@
         if (batchUpdateInterval) {
             clearInterval(batchUpdateInterval);
         }
+        
+        // Clean up infinite scrolling
+        cleanupInfiniteScroll();
     });
     
     // Function to fetch batch name updates without replacing all resources
@@ -184,15 +221,20 @@
         return img.url || img.image_url || '';
     }
 
-    // Function to load more batches
-    function loadMore() {
+    // Modify the loadMore function to handle the loading state
+    async function loadMore() {
+        if (loadingMore || !hasMoreBatches) return;
+        
+        loadingMore = true;
         console.log(`Loading more batches. Current count: ${visibleBatchCount}, total: ${groupedResources.length}`);
         visibleBatchCount += LOAD_MORE_BATCH_COUNT;
         
         // If we've displayed all the currently fetched batches and there might be more, fetch more
         if (visibleBatchCount >= groupedResources.length && hasMoreToLoad) {
-            fetchMoreImages();
+            await fetchMoreImages();
         }
+        
+        loadingMore = false;
     }
 
     // Watch for changes to workflow_name or workflow_names props
@@ -553,15 +595,19 @@
         </div>
     {/if}
     
-    <!-- Show Load More button if there are more batches to display -->
+    <!-- Intersection observer target element - replaces the Load More button -->
     {#if hasMoreBatches}
-        <div class="mt-4 flex justify-center">
-            <button 
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md"
-                on:click={loadMore}
-            >
-                Load More
-            </button>
+        <div 
+            class="py-4 flex justify-center" 
+            bind:this={observerTarget}
+        >
+            {#if loadingMore}
+                <div class="flex items-center justify-center space-x-2">
+                    <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse"></div>
+                    <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse" style="animation-delay: 0.2s"></div>
+                    <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse" style="animation-delay: 0.4s"></div>
+                </div>
+            {/if}
         </div>
     {/if}
 {/if}

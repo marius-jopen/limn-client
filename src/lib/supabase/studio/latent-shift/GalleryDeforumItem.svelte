@@ -277,7 +277,7 @@
                     class="max-w-full max-h-[90vh] object-contain rounded-md"
                 />
                 <button 
-                    class="absolute top-2 right-2 bg-white rounded-full w-8 h-8 flex items-center justify-center text-black"
+                    class="absolute top-4 right-4 bg-white rounded-full w-8 h-8 flex items-center justify-center text-black"
                     on:click={closePreview}
                 >
                     ✕
