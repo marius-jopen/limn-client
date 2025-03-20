@@ -3,9 +3,9 @@
     import Gallery from '$lib/supabase/studio/basic/Gallery.svelte';
     import UI_CONFIG from '$lib/workflows/comfyui/ComfyuiFluxConfig.json';
     import WORKFLOW from '$lib/workflows/comfyui/ComfyuiFlux.json';
-    import StatusTable from '$lib/runpod/components/StatusTable.svelte';
-    import LogViewer from '$lib/runpod/components/LogViewer.svelte';
-    import PreviewImages from '$lib/runpod/components/PreviewImages.svelte';
+    import StatusTable from '$lib/runpod/studio/basic/components/StatusTable.svelte';
+    import LogViewer from '$lib/runpod/studio/basic/components/LogViewer.svelte';
+    import PreviewImages from '$lib/runpod/studio/basic/components/PreviewImages.svelte';
 </script>
 
 <div class="px-4 pt-16">
