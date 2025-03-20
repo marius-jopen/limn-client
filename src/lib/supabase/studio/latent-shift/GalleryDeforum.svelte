@@ -528,7 +528,7 @@
 
     {#if visibleGroups.length > 0}
         {#each visibleGroups as group}
-            <div class="mb-8">
+            <div class="mb-10">
                 <div class="px-4 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
                     {#each imagesReversed ? [...group.resources].reverse() : group.resources as resource (resource.id)}
                         <div class="flex-shrink-0">

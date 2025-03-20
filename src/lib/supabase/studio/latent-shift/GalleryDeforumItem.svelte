@@ -209,10 +209,10 @@
         <div class="text-gray-500">Loading...</div>
     </div>
 {:else if currentResource}
-    <!-- Image container with buttons below -->
-    <div class="flex flex-col w-auto">
+    <!-- Image container with hover effect for buttons -->
+    <div class="flex flex-col w-auto group">
         <!-- Image tile -->
-        <div class="h-[500px] overflow-hidden relative">
+        <div class="h-[500px] overflow-hidden">
             <img 
                 on:click={handlePreview}
                 src={cdnImageUrl}
@@ -222,8 +222,8 @@
             />
         </div>
         
-        <!-- Button row with dropdown -->
-        <div class="p-2 mt-4 w-full">
+        <!-- Button row with dropdown - only visible on hover - positioned below image -->
+        <div class="p-2 mt-5 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <div class="flex justify-center gap-2">
                 <Button
                     label="Explore"
@@ -232,7 +232,7 @@
                     onClick={selectImage}
                 />
                 
-                <!-- Use the new slot-based Dropdown component -->
+                <!-- Use the slot-based Dropdown component -->
                 <Dropdown position="top" width="min-w-[150px]">
                     <svelte:fragment slot="trigger">
                         <Button
