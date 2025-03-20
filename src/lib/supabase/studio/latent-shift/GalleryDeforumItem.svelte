@@ -255,7 +255,7 @@
                     <svelte:fragment slot="content">
                         <div>
                             <button 
-                                class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors duration-150"
+                                class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-300 transition-colors duration-150"
                                 on:click={handleDelete}
                             >
                                 Delete Image
@@ -263,7 +263,7 @@
                             
                             {#if localResource?.batch_name}
                                 <button 
-                                    class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-100 transition-colors duration-150"
+                                    class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-300 transition-colors duration-150"
                                     on:click={handleDeleteBatch}
                                 >
                                     Delete Batch
