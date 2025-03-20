@@ -1,11 +1,11 @@
 <script>
     import DeforumRun from '$lib/runpod/api/DeforumRun.svelte';  
-    import GalleryDeforum from '$lib/supabase/studio/basic/GalleryDeforum.svelte';
+    import GalleryDeforum from '$lib/supabase/studio/latent-shift/GalleryDeforum.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
 </script>
 
-<div class="px-4 pt-16">
+<div class="pt-16">
 
     <DeforumRun 
         workflow_name="deforum-limn"
