@@ -202,63 +202,53 @@
 
 {#if isLoading}
     <div 
-        class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100"
+        class="h-64 overflow-hidden relative flex items-center justify-center bg-gray-100"
     >
         <div class="text-gray-500">Loading...</div>
     </div>
 {:else if currentResource}
-    <!-- Image tile -->
-    <div 
-        class="aspect-square overflow-hidden relative group"
-        role="group"
-    >
-        <img 
-            src={cdnImageUrl}
-            alt={currentResource.name || 'User uploaded image'} 
-            class="w-full h-full object-cover"
-            loading="lazy"
-        />
-        <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity p-1">
-            <div class="w-full h-full grid grid-cols-3 grid-rows-2 gap-1">
+    <!-- Image container with buttons below - remove any horizontal margin/padding -->
+    <div class="flex flex-col w-auto">
+        <!-- Image tile -->
+        <div class="h-[500px] overflow-hidden relative">
+            <img 
+                on:click={handlePreview}
+                src={cdnImageUrl}
+                alt={currentResource.name || 'User uploaded image'} 
+                class="h-full w-auto object-contain rounded-md"
+                loading="lazy"
+            />
+        </div>
+        
+        <!-- Control buttons always visible - match width to image -->
+        <div class="bg-gray-100 p-1 mt-1 rounded w-full">
+            <div class="grid grid-cols-3 gap-1">
                 <button
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
-                    on:click={handlePreview}
-                    title="Preview"
-                >
-                    🔍
-                </button>
-                <a
-                    href={`/studio/deforum/${currentResource.id}`}
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
-                    title="Details"
-                >
-                    ℹ️
-                </a>
-    
-                <button
-                    class="bg-green-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-green-600 shadow-md"
+                    class="bg-green-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-green-600 shadow-md p-1"
                     on:click={selectImage}
                     title="Select Image"
                 >
                     ✅
                 </button>
-                
                 <button
-                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md p-1"
                     on:click={handleDelete}
                     title="Delete"
                 >
                     🗑️
                 </button>
-                <!-- Add batch delete button -->
+                <!-- Batch delete button -->
                 {#if localResource?.batch_name}
                 <button
-                    class="bg-red-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-red-600 shadow-md"
-                    on:click={handleDeleteBatch}
+                    class="bg-red-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-red-600 shadow-md p-1"
                     title="Delete Batch"
+                    on:click={handleDeleteBatch}
                 >
                     🗑️🔄
                 </button>
+                {:else}
+                <!-- Empty placeholder to maintain grid alignment -->
+                <div></div>
                 {/if}
             </div>
         </div>
@@ -274,7 +264,7 @@
                 <img 
                     src={cdnImageUrl} 
                     alt={currentResource.name || 'Preview'} 
-                    class="max-w-full max-h-[90vh] object-contain"
+                    class="max-w-full max-h-[90vh] object-contain rounded-md"
                 />
                 <button 
                     class="absolute top-2 right-2 bg-white rounded-full w-8 h-8 flex items-center justify-center text-black"
@@ -286,13 +276,13 @@
         </div>
     {/if}
 {:else if error}
-    <div class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100">
+    <div class="h-64 overflow-hidden relative flex items-center justify-center bg-gray-100">
         <div class="text-red-500 p-2 text-center text-sm">
             Error: {error}
         </div>
     </div>
 {:else}
-    <div class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100">
+    <div class="h-64 overflow-hidden relative flex items-center justify-center bg-gray-100">
         <div class="text-gray-500">No image</div>
     </div>
 {/if}

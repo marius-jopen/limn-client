@@ -3,7 +3,7 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
-    import GalleryDeforumItem from '$lib/supabase/studio/basic/GalleryDeforumItem.svelte';
+    import GalleryDeforumItem from '$lib/supabase/studio/latent-shift/GalleryDeforumItem.svelte';
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
     
     // Configuration for pagination
@@ -519,10 +519,9 @@
     {#if visibleGroups.length > 0}
         {#each visibleGroups as group}
             <div class="mb-8">
-                <!-- <h3 class="text-lg font-medium mb-2 text-gray-800">{group.batchName}</h3> -->
-                <div class="flex overflow-x-auto pb-4 space-x-2 hide-scrollbar">
+                <div class="flex gap-3 overflow-x-auto pb-4 space-x-2 hide-scrollbar">
                     {#each group.resources as resource (resource.id)}
-                        <div class="flex-shrink-0" style="width: {Math.max(500, 100/defaultImagesPerRow)}px;">
+                        <div class="flex-shrink-0">
                             <GalleryDeforumItem 
                                 {resource} 
                                 on:imageDeleted={handleImageDeleted}
