@@ -3,6 +3,8 @@
   import { fade } from 'svelte/transition';
   import { createEventDispatcher } from 'svelte';
   import Logout from '$lib/supabase/userarea/Logout.svelte';
+  import { supabase } from '$lib/supabase/helper/SupabaseClient';
+  import { onMount } from 'svelte';
   // import Button from '$lib/atoms/Button.svelte';
 
   const dispatch = createEventDispatcher();
@@ -10,51 +12,83 @@
   // You can control when the overlay is shown with this variable
   export let isOpen = false;
   
-  // Navigation items array without delay (we'll calculate it in the loop)
-  const navigationItems = [
+  // Add state to track app source and admin status
+  let appSource = '';
+  let isAdmin = false;
+  
+  // Navigation items array with explicit visibility rules
+  const allNavigationItems = [
     {
       href: '/dashboard',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg',
       imageAlt: 'Dashboard',
       title: 'Dashboard',
+      visibleTo: ['limn', 'admin'] // Visible to limn users and admins
     },
     {
       href: '/studio/comfyui',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/abstract.jpg',
       imageAlt: 'Abstract',
       title: 'ComfyUI',
+      visibleTo: ['admin'] // Only visible to admins
     },
     {
       href: '/studio/comfyui-flux',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/fashion.png',
       imageAlt: 'Fashion',
       title: 'ComfyUI Flux',
+      visibleTo: ['admin'] // Only visible to admins
     },
     {
       href: '/studio/a1111',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/grab.png',
       imageAlt: 'Grab',
       title: 'A1111',
+      visibleTo: ['admin'] // Only visible to admins
     },
     {
       href: '/studio/deforum',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/cat.png',
       imageAlt: 'Cat',
       title: 'Deforum',
+      visibleTo: ['admin'] // Only visible to admins
     },
     {
       href: '/studio/latent-shift',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/glass.png',
       imageAlt: 'Glass',
       title: 'Latent Shift',
+      visibleTo: ['limn', 'admin'] // Visible to limn users and admins
     },
     {
       href: '/studio/output',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/nz.png',
       imageAlt: 'Nz',
       title: 'Output',
-    }
+      visibleTo: ['admin'] // Only visible to admins
+    },
+    {
+      href: '/admin',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/glass.png',
+      imageAlt: 'Glass',
+      title: 'Admin',
+      visibleTo: ['admin'] // Only visible to admins
+    },
   ];
+  
+  // Simplified filter logic that uses the visibleTo property
+  $: navigationItems = allNavigationItems.filter(item => {
+    if (isAdmin) {
+      // Admins see everything marked as visible to admins
+      return item.visibleTo.includes('admin');
+    } else if (appSource === 'limn') {
+      // Limn users see only items marked as visible to limn
+      return item.visibleTo.includes('limn');
+    } else {
+      // Regular users see nothing (or you could add a default set of items)
+      return false; // No items visible to regular users
+    }
+  });
   
   // Base delay and increment values (in milliseconds)
   const baseDelay = 200;
@@ -73,7 +107,7 @@
   }
   
   // Split navigation items into rows
-  const navigationRows = chunkArray(navigationItems, itemsPerRow);
+  $: navigationRows = chunkArray(navigationItems, itemsPerRow);
   
   function handleNavigate(event) {
     console.log("Navigation event received in overlay:", event.detail.href);
@@ -83,6 +117,105 @@
   function handleLogout() {
     console.log("Logout event received in overlay");
     dispatch('navigate', { href: '/' });
+  }
+  
+  // Add debugging helper
+  function debugLog(message, data) {
+    console.log(`%c${message}`, 'background: #333; color: #bada55', data);
+  }
+  
+  // Load user metadata and admin status on mount
+  onMount(async () => {
+    try {
+      debugLog("Navigation overlay mounting", { isOpen });
+      
+      // Get current user
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      debugLog("Auth user data", userData);
+      
+      if (userError) {
+        console.error("Error getting user:", userError);
+        return; // Exit early if there's an error getting the user
+      }
+      
+      if (userData?.user) {
+        debugLog("User ID", userData.user.id);
+        
+        try {
+          // Check if user is admin with better error handling
+          const { data: adminData, error: adminError } = await supabase
+            .from('admins')
+            .select('*')
+            .eq('user_id', userData.user.id);
+          
+          debugLog("Admin check", { data: adminData, error: adminError });
+          
+          // Set admin status (default to false if there's an error)
+          isAdmin = adminData && adminData.length > 0 ? true : false;
+          debugLog("Is admin", isAdmin);
+        } catch (adminError) {
+          console.error("Error checking admin status:", adminError);
+          isAdmin = false; // Default to not admin if there's an error
+        }
+        
+        try {
+          // Get user settings with better error handling
+          const { data: settingsData, error: settingsError } = await supabase
+            .from('user_settings')
+            .select('app_source')
+            .eq('id', userData.user.id);
+          
+          debugLog("User settings", { data: settingsData, error: settingsError });
+          
+          if (settingsData && settingsData.length > 0) {
+            appSource = settingsData[0].app_source || '';
+          } else {
+            // Fallback to user metadata if settings table fails
+            appSource = userData.user.user_metadata?.app_source || '';
+          }
+          
+          debugLog("App source set to", appSource);
+        } catch (settingsError) {
+          console.error("Error fetching user settings:", settingsError);
+          // Fallback to user metadata
+          appSource = userData.user.user_metadata?.app_source || '';
+          debugLog("Fallback app source from metadata", appSource);
+        }
+        
+        // Debug what items should be shown
+        const itemsToShow = allNavigationItems.filter(item => {
+          if (isAdmin) {
+            return item.visibleTo.includes('admin');
+          } else if (appSource === 'limn') {
+            return item.visibleTo.includes('limn');
+          } else {
+            return false;
+          }
+        });
+        
+        debugLog("Items that should be shown", itemsToShow.map(i => i.title));
+      } else {
+        debugLog("No user found in session", null);
+        isAdmin = false;
+        appSource = '';
+      }
+    } catch (error) {
+      console.error('Error in navigation overlay mount:', error);
+      isAdmin = false;
+      appSource = '';
+    }
+  });
+  
+  // Debug changes to reactive values
+  $: {
+    if (isOpen) {
+      debugLog("Reactive update - Navigation state", { 
+        isAdmin, 
+        appSource, 
+        isOpen,
+        itemCount: navigationItems.length 
+      });
+    }
   }
 </script>
 

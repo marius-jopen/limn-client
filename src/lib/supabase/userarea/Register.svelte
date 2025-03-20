@@ -24,11 +24,29 @@
             const { data, error }: AuthResponse = await supabase.auth.signUp({
                 email,
                 password,
+                options: {
+                    data: {
+                        app_source: 'limn'
+                    }
+                }
             });
 
             if (error) throw error;
 
-            if (data) {
+            if (data?.user) {
+                // Explicitly create a user_settings record
+                // This is a backup in case the trigger doesn't work
+                const { error: settingsError } = await supabase
+                    .from('user_settings')
+                    .upsert({
+                        id: data.user.id,
+                        app_source: 'limn'
+                    });
+                
+                if (settingsError) {
+                    console.error('Error creating user settings:', settingsError);
+                }
+                
                 await initializeAuth(supabase);
                 goto('/login');
             }
@@ -67,6 +85,7 @@
                     id="password"
                     bind:value={password}
                     placeholder="Enter your password"
+                    type="password"
                 />
             </div>
 
@@ -75,6 +94,7 @@
                     id="confirm-password"
                     bind:value={confirmPassword}
                     placeholder="Confirm your password"
+                    type="password"
                 />
             </div>
     
