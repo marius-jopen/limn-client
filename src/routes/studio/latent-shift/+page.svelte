@@ -11,7 +11,7 @@
         workflow_name="deforum-limn"
         ui_config={UI_CONFIG}
         workflow={WORKFLOW}
-        inputLayout="controller"
+        inputLayout="controller-latent-shift"
     />
 
     <GalleryDeforum 

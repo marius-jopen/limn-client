@@ -4,7 +4,7 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import Button from '$lib/atoms/Button.svelte';
     import Number from '$lib/runpod/studio/basic/inputs/NumberUi.svelte';
-    import InitImageFromID from '$lib/runpod/studio/basic/inputs/InitImage.svelte';
+    import InitImage from '$lib/runpod/studio/latent-shift/inputs/InitImage.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
     import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
@@ -52,6 +52,20 @@
 </script>
 
 <div class="input-controller">
+
+   <!-- Init Image (full width) -->
+   {#if getField('init_image')}
+        <div class="mb-4">
+            <InitImage
+                id="init_image"
+                label={getField('init_image')?.label || 'Init Image'}
+                bind:value={values['init_image']}
+                userId={user_id}
+            />
+        </div>
+    {/if}
+
+
     <!-- Format (Width and Height) field if available -->
     {#if getField('format')}
         <div class="mb-4">
@@ -115,17 +129,7 @@
         {/if}
     </div>
 
-    <!-- Init Image (full width) -->
-    {#if getField('init_image')}
-        <div class="mb-4">
-            <InitImageFromID
-                id="init_image"
-                label={getField('init_image')?.label || 'Init Image'}
-                bind:value={values['init_image']}
-                userId={user_id}
-            />
-        </div>
-    {/if}
+ 
 
     <!-- Animation Prompts (full width) -->
     {#if getField('prompts')}
