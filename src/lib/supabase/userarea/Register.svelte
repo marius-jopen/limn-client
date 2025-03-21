@@ -33,12 +33,13 @@
                 throw new Error("Passwords don't match");
             }
 
+            // Register with app_source in metadata - this is important for the trigger
             const { data, error }: AuthResponse = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
                     data: {
-                        app_source: 'limn'
+                        app_source: 'limn'  // Put back the metadata to help the trigger
                     }
                 }
             });
@@ -46,8 +47,9 @@
             if (error) throw error;
 
             if (data?.user) {
-                // Explicitly create a user_settings record
-                // This is a backup in case the trigger doesn't work
+                console.log('User registered successfully with ID:', data.user.id);
+                
+                // Now try to explicitly create the user_settings
                 const { error: settingsError } = await supabase
                     .from('user_settings')
                     .upsert({
@@ -56,11 +58,23 @@
                     });
                 
                 if (settingsError) {
-                    console.error('Error creating user settings:', settingsError);
+                    console.log('Error creating user settings from client (this is expected if RLS blocks it):', settingsError);
+                } else {
+                    console.log('Successfully created user_settings with app_source="limn"');
+                }
+                
+                // Let's store the app_source in localStorage as an additional fallback
+                try {
+                    localStorage.setItem('limn_app_source', 'limn');
+                    localStorage.setItem('limn_user_id', data.user.id);
+                } catch (e) {
+                    console.log('Could not store in localStorage:', e);
                 }
                 
                 await initializeAuth(supabase);
-                goto('/login');
+                
+                // Redirect to confirmation page
+                goto('/email-confirmation?email=' + encodeURIComponent(email));
             }
         } catch (error) {
             if (error instanceof Error) {

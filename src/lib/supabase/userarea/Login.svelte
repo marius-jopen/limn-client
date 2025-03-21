@@ -37,6 +37,10 @@
 
             if (data) {
                 await initializeAuth(supabase);
+                
+                // Attempt to fix NULL app_source issue
+                await fixAppSource(data.user.id);
+                
                 goto('/dashboard');
             }
         } catch (error) {
@@ -45,6 +49,39 @@
             }
         } finally {
             loading = false;
+        }
+    }
+    
+    // Function to check and fix NULL app_source values
+    async function fixAppSource(userId) {
+        try {
+            // First, check if app_source is NULL
+            const { data: settings, error: checkError } = await supabase
+                .from('user_settings')
+                .select('app_source')
+                .eq('id', userId)
+                .single();
+                
+            console.log('Checking user settings:', settings);
+            
+            // If it's NULL, attempt to fix it
+            if (!settings?.app_source) {
+                console.log('Found NULL app_source, attempting to fix...');
+                
+                // Try to set it to 'limn'
+                const { error: updateError } = await supabase
+                    .from('user_settings')
+                    .update({ app_source: 'limn' })
+                    .eq('id', userId);
+                    
+                if (updateError) {
+                    console.error('Error fixing app_source:', updateError);
+                } else {
+                    console.log('Successfully fixed app_source to "limn"');
+                }
+            }
+        } catch (error) {
+            console.error('Error in fixAppSource:', error);
         }
     }
 </script>
