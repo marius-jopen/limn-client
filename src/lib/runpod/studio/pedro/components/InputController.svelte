@@ -4,7 +4,7 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import Button from '$lib/atoms/Button.svelte';
     import Number from '$lib/runpod/studio/basic/inputs/NumberUi.svelte';
-    import InitImage from '$lib/runpod/studio/latent-shift/inputs/InitImage.svelte';
+    import InitImage from '$lib/runpod/studio/pedro/inputs/InitImage.svelte';
     import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
     import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
