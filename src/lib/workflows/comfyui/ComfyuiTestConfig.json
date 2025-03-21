@@ -66,5 +66,12 @@
         "placeholder": "${INPUT_NEGATIVEPROMPT}",
         "label": "Negative prompt 1",
         "default": "bad eyes, cgi, airbrushed, plastic, deformed, watermark"
+    },
+    {
+        "id": "sampler",
+        "type": "string",
+        "placeholder": "${SAMPLER}",
+        "label": "Sampler",
+        "default": "KSampler"
     }
 ]

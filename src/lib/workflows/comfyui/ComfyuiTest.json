@@ -12,7 +12,7 @@
         "negative": ["7", 0],
         "latent_image": ["5", 0]
       },
-      "class_type": "KSampler"
+      "class_type": "${SAMPLER}"
     },
     "4": {
       "inputs": {
