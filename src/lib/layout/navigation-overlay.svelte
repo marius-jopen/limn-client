@@ -152,7 +152,7 @@
         }
         
         try {
-          // Get user settings with better error handling
+          // Get user settings - now our primary source of app_source
           const { data: settingsData, error: settingsError } = await supabase
             .from('user_settings')
             .select('app_source')
@@ -160,19 +160,18 @@
           
           debugLog("User settings", { data: settingsData, error: settingsError });
           
-          if (settingsData && settingsData.length > 0) {
-            appSource = settingsData[0].app_source || '';
+          if (settingsData && settingsData.length > 0 && settingsData[0].app_source) {
+            appSource = settingsData[0].app_source;
+            debugLog("App source set from settings table to", appSource);
           } else {
-            // Fallback to user metadata if settings table fails
-            appSource = userData.user.user_metadata?.app_source || '';
+            // If no data in settings or app_source is empty, provide a default
+            appSource = '';
+            debugLog("No app_source found in settings, using default empty value", appSource);
           }
-          
-          debugLog("App source set to", appSource);
         } catch (settingsError) {
           console.error("Error fetching user settings:", settingsError);
-          // Fallback to user metadata
-          appSource = userData.user.user_metadata?.app_source || '';
-          debugLog("Fallback app source from metadata", appSource);
+          appSource = '';
+          debugLog("Error getting app_source, using default empty value", appSource);
         }
         
         // Debug what items should be shown
