@@ -5,11 +5,23 @@
     import { initializeAuth } from '$lib/supabase/helper/StoreSupabase';
     import Button from '$lib/atoms/Button.svelte';
     import InputText from '$lib/atoms/InputText.svelte';
+    import { onMount } from 'svelte';
 
     let email: string = '';
     let password: string = '';
     let loading: boolean = false;
     let errorMsg: string = '';
+
+    // Check if user is already logged in when component mounts
+    onMount(async () => {
+        const { data } = await supabase.auth.getSession();
+        
+        // If session exists, redirect to dashboard
+        if (data.session) {
+            console.log('User already logged in, redirecting to dashboard');
+            goto('/dashboard');
+        }
+    });
 
     async function handleLogin(): Promise<void> {
         try {
