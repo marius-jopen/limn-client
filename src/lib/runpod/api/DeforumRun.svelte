@@ -6,7 +6,6 @@
     import InputRepeater from '$lib/runpod/studio/basic/components/InputRepeater.svelte';
     import InputController from '$lib/runpod/studio/basic/components/InputController.svelte';
     import InputController_LatentShift from '$lib/runpod/studio/latent-shift/components/InputController.svelte';
-    import InputController_Pedro from '$lib/runpod/studio/pedro/components/InputController.svelte';
     import { onMount } from 'svelte';
 
     // Get the server URL from environment variables - this is required to run the application
@@ -590,14 +589,6 @@
         />
     {:else if inputLayout === 'controller-latent-shift'}
         <InputController_LatentShift 
-            UI={castUIConfig(ui_config)} 
-            bind:values 
-            onGenerate={runWorkflow}
-            isGenerating={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
-            includeButton={true}
-        />
-    {:else if inputLayout === 'controller-pedro'}
-        <InputController_Pedro 
             UI={castUIConfig(ui_config)} 
             bind:values 
             onGenerate={runWorkflow}
