@@ -17,6 +17,9 @@
     interface Resource {
         id: string;
         image_url: string;
+        service?: string;        // Added service field
+        batch_name?: string;     // Added batch_name field
+        batches_connected?: Array<{batch_name: string, id: string}>; // Added batches_connected field
     }
     
     let resource: Resource | null = null;
@@ -33,9 +36,10 @@
         console.log(`Fetching image with ID: ${idToFetch}`);
         
         try {
+            // Update the query to fetch additional fields
             const { data: imageData, error: supabaseError } = await supabase
                 .from('resource')
-                .select('id, image_url')
+                .select('id, image_url, service, batch_name, batches_connected')
                 .eq('id', idToFetch)
                 .single();
                 
@@ -44,10 +48,51 @@
             console.log('Image data fetched:', imageData);
             resource = imageData;
             value = imageData.image_url; // Set the output value
+            
+            // Process lineage for Deforum images
+            if (imageData.service === 'deforum') {
+                processImageLineage(imageData);
+            } else {
+                // Clear any lineage data if not a Deforum image
+                runState.update(state => ({
+                    ...state,
+                    connectedBatches: []
+                }));
+            }
         } catch (e) {
             error = e.message;
             console.error('Error fetching image:', e);
         }
+    }
+    
+    // Function to process the image lineage
+    function processImageLineage(imageData: Resource) {
+        if (!imageData.id || !imageData.batch_name) {
+            console.warn('Image is missing ID or batch_name, cannot process lineage');
+            return;
+        }
+        
+        let lineageArray = [];
+        
+        // If the image has existing lineage, use it as the base
+        if (imageData.batches_connected && Array.isArray(imageData.batches_connected) && imageData.batches_connected.length > 0) {
+            lineageArray = [...imageData.batches_connected];
+            console.log('Found existing lineage:', lineageArray);
+        }
+        
+        // Add the current image to the lineage
+        lineageArray.push({
+            batch_name: imageData.batch_name,
+            id: imageData.id
+        });
+        
+        console.log('Final lineage array:', lineageArray);
+        
+        // Update the runState store with the lineage information
+        runState.update(state => ({
+            ...state,
+            connectedBatches: lineageArray
+        }));
     }
     
     // Function to clear the selected image
@@ -61,8 +106,11 @@
             selectedImageId.set(null);
         }
         
-        // If runState has an imageId, we can't directly modify it
-        // but we can at least clear our local state
+        // Clear the lineage data in the store
+        runState.update(state => ({
+            ...state,
+            connectedBatches: []
+        }));
         
         console.log("Image selection cleared");
     }
