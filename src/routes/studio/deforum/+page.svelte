@@ -37,13 +37,13 @@
         <div class="md:w-1/2">
             <PreviewVideo />
             <PreviewImages />
-            <VideosDeforum workflow_names={["deforum-init", "deforum-basic"]} />
-            <ContinuousDeforum workflow_names={["deforum-init", "deforum-basic"]} />
-            <!-- <GalleryDeforum 
+            <VideosDeforum workflow_names={["deforum-basic"]} />
+            <ContinuousDeforum workflow_names={["deforum-basic"]} />
+            <GalleryDeforum 
                 type={["generated"]} 
-                workflow_names={["deforum-init", "deforum-basic"]} 
+                workflow_names={["deforum-basic"]} 
                 defaultImagesPerRow={8}
-            />        -->
+            />       
         </div>
     </div>
 </div>

@@ -298,7 +298,8 @@
                 return [];
             }
             
-            console.log(`Fetched ${data?.length || 0} resources`);
+            console.log(`Fetched ${data?.length || 0} resources with workflow_names:`, 
+                data?.map(r => r.workflow_name).filter((v, i, a) => a.indexOf(v) === i));
             
             // Transform S3 URLs to Bunny.net URLs
             const transformedData = transformResourceUrls(data || []);

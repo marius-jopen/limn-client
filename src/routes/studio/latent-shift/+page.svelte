@@ -8,7 +8,7 @@
 <div class="pt-16">
 
     <DeforumRun 
-        workflow_name="deforum-limn"
+        workflow_name="deforum-latent-shift"
         ui_config={UI_CONFIG}
         workflow={WORKFLOW}
         inputLayout="controller-latent-shift"
@@ -16,14 +16,14 @@
 
     <GalleryDeforum 
         type={["generated"]} 
-        workflow_names={["deforum-limn"]} 
+        workflow_names={["deforum-latent-shift"]} 
         defaultImagesPerRow={8}
         batchDisplayMode="latest-only"
     />   
 
     <GalleryDeforum 
         type={["generated"]} 
-        workflow_names={["deforum-limn"]} 
+        workflow_names={["deforum-latent-shift"]} 
         defaultImagesPerRow={8}
         batchDisplayMode="exclude-latest"
     />  

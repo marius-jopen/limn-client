@@ -91,19 +91,18 @@
     // Function to build continuous lineage paths
     function buildLineagePaths(resources: Resource[]) {
         try {
-            // Filter to only include Deforum resources
-            const deforumResources = resources.filter(r => r.service === 'deforum');
+            // No additional filtering by service here - we should rely on the query filters
+            // which are already handling the workflow_names filter
+            console.log('Building lineage paths from', resources.length, 'resources');
             
-            console.log('Building lineage paths from', deforumResources.length, 'Deforum resources');
-            
-            if (deforumResources.length === 0) return [];
+            if (resources.length === 0) return [];
             
             // Group resources by batch_name for easier access
             const resourcesByBatch = new Map<string, Resource[]>();
             const resourcesById = new Map<string, Resource>();
             
             // Populate the maps
-            deforumResources.forEach(resource => {
+            resources.forEach(resource => {
                 resourcesById.set(resource.id, resource);
                 
                 if (resource.batch_name) {
