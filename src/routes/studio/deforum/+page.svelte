@@ -9,6 +9,7 @@
     import LogViewer from '$lib/runpod/studio/basic/components/LogViewer.svelte';
     import PreviewVideo from '$lib/runpod/studio/basic/components/PreviewVideo.svelte';
     import PreviewImages from '$lib/runpod/studio/basic/components/PreviewImages.svelte';
+    import ContinuousDeforum from '$lib/supabase/studio/basic/ContinuousDeforum.svelte';
 </script>
 
 <div class="px-4 pt-16">
@@ -37,11 +38,12 @@
             <PreviewVideo />
             <PreviewImages />
             <VideosDeforum workflow_names={["deforum-init", "deforum-basic"]} />
-            <GalleryDeforum 
+            <ContinuousDeforum workflow_names={["deforum-init", "deforum-basic"]} />
+            <!-- <GalleryDeforum 
                 type={["generated"]} 
                 workflow_names={["deforum-init", "deforum-basic"]} 
                 defaultImagesPerRow={8}
-            />       
+            />        -->
         </div>
     </div>
 </div>
