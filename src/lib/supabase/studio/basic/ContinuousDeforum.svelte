@@ -34,6 +34,8 @@
     interface LineagePath {
         id: string; // Unique ID for this path
         resources: Resource[]; // All resources in this lineage path, in order
+        batchName: string; // The batch name for this path
+        lastModified: number; // Timestamp of the last modification
     }
 
     export let workflow_name: string | undefined = undefined;
@@ -88,127 +90,137 @@
     
     // Function to build continuous lineage paths
     function buildLineagePaths(resources: Resource[]) {
-        // Filter to only include Deforum resources
-        const deforumResources = resources.filter(r => r.service === 'deforum');
-        
-        console.log('Building lineage paths from', deforumResources.length, 'Deforum resources');
-        
-        // Group resources by batch_name for easier access
-        const resourcesByBatch = new Map<string, Resource[]>();
-        
-        // Populate the batch resources map
-        deforumResources.forEach(resource => {
-            if (resource.batch_name) {
-                if (!resourcesByBatch.has(resource.batch_name)) {
-                    resourcesByBatch.set(resource.batch_name, []);
-                }
-                resourcesByBatch.get(resource.batch_name)?.push(resource);
-            }
-        });
-        
-        // Sort resources within each batch by creation time
-        resourcesByBatch.forEach((resources, batchName) => {
-            resources.sort((a, b) => 
-                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-            );
-        });
-        
-        // Map of batchName to its parent batches (ancestors)
-        const batchAncestry = new Map<string, Array<{batch_name: string, id: string}>>();
-        
-        // Identify the ancestor relationships for each batch
-        deforumResources.forEach(resource => {
-            if (resource.batch_name && resource.batches_connected && 
-                Array.isArray(resource.batches_connected) && resource.batches_connected.length > 0) {
-                batchAncestry.set(resource.batch_name, resource.batches_connected);
-            }
-        });
-        
-        console.log('Batch ancestry map:', batchAncestry);
-        
-        // Find root batches (those without ancestors)
-        const allBatchNames = new Set(resourcesByBatch.keys());
-        const nonRootBatches = new Set<string>();
-        
-        batchAncestry.forEach((ancestors, batchName) => {
-            nonRootBatches.add(batchName); // This batch has ancestors, so it's not a root
-        });
-        
-        // Identify batches with no recorded ancestry (likely roots)
-        const potentialRootBatches = Array.from(allBatchNames).filter(batch => !nonRootBatches.has(batch));
-        
-        console.log('Potential root batches:', potentialRootBatches);
-        
-        // Create lineage paths
-        const paths: LineagePath[] = [];
-        
-        // Process each lineage starting from root batches
-        potentialRootBatches.forEach(rootBatch => {
-            // Track batches already included in this path
-            const processedInPath = new Set<string>();
-            // Batches to process in order (like a queue)
-            const batchQueue = [rootBatch];
-            // Ordered list of batches in this lineage
-            const batchSequence: string[] = [];
-            // All resources in this lineage path
-            const lineageResources: Resource[] = [];
+        try {
+            // Filter to only include Deforum resources
+            const deforumResources = resources.filter(r => r.service === 'deforum');
             
-            // Process batches in order from ancestor to descendant
-            while (batchQueue.length > 0) {
-                const currentBatch = batchQueue.shift()!;
+            console.log('Building lineage paths from', deforumResources.length, 'Deforum resources');
+            
+            if (deforumResources.length === 0) return [];
+            
+            // Group resources by batch_name for easier access
+            const resourcesByBatch = new Map<string, Resource[]>();
+            const resourcesById = new Map<string, Resource>();
+            
+            // Populate the maps
+            deforumResources.forEach(resource => {
+                resourcesById.set(resource.id, resource);
                 
-                // Skip if already processed
-                if (processedInPath.has(currentBatch)) continue;
-                processedInPath.add(currentBatch);
-                
-                // Add to the sequence
-                batchSequence.push(currentBatch);
-                
-                // Add all resources from this batch
-                const batchResources = resourcesByBatch.get(currentBatch) || [];
-                if (batchResources.length > 0) {
-                    lineageResources.push(...batchResources);
+                if (resource.batch_name) {
+                    if (!resourcesByBatch.has(resource.batch_name)) {
+                        resourcesByBatch.set(resource.batch_name, []);
+                    }
+                    resourcesByBatch.get(resource.batch_name)?.push(resource);
                 }
+            });
+            
+            // Sort resources within each batch by creation time
+            resourcesByBatch.forEach((resources, batchName) => {
+                resources.sort((a, b) => 
+                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                );
+            });
+            
+            // Get batch creation timestamps (using the first resource in each batch)
+            const batchTimestamps = new Map<string, number>();
+            resourcesByBatch.forEach((resources, batchName) => {
+                if (resources.length > 0) {
+                    batchTimestamps.set(batchName, new Date(resources[0].created_at).getTime());
+                }
+            });
+            
+            // Sort batch names by creation time, newest first
+            const sortedBatchNames = Array.from(resourcesByBatch.keys()).sort((a, b) => {
+                const timeA = batchTimestamps.get(a) || 0;
+                const timeB = batchTimestamps.get(b) || 0;
+                return timeB - timeA; // Newest first
+            });
+            
+            console.log('Sorted batch names (newest first):', sortedBatchNames);
+            
+            // Create paths array
+            const paths: LineagePath[] = [];
+            
+            // Process each batch to create a lineage path, starting with newest
+            for (const batchName of sortedBatchNames) {
+                const batchResources = resourcesByBatch.get(batchName) || [];
+                if (batchResources.length === 0) continue;
                 
-                // Find any child batches that have this batch as an ancestor
-                deforumResources.forEach(resource => {
-                    if (resource.batch_name && resource.batches_connected && 
-                        Array.isArray(resource.batches_connected) && 
-                        resource.batches_connected.some(conn => conn.batch_name === currentBatch)) {
+                // Get the first resource to determine ancestry
+                const firstResource = batchResources[0];
+                const lineageResources: Resource[] = [];
+                
+                // If this batch has ancestors, include them in the lineage
+                if (firstResource.batches_connected && 
+                    Array.isArray(firstResource.batches_connected) && 
+                    firstResource.batches_connected.length > 0) {
+                    
+                    // Extract the specific source image ID that was used for this batch
+                    let sourceImageId: string | null = null;
+                    
+                    // The source image ID is typically the ID from the last entry in batches_connected
+                    if (firstResource.batches_connected.length > 0) {
+                        const sourceEntry = firstResource.batches_connected[firstResource.batches_connected.length - 1];
+                        sourceImageId = sourceEntry.id;
+                    }
+                    
+                    // Gather all ancestor batches in order
+                    const ancestorBatches: Array<{batch_name: string, id: string}> = [...firstResource.batches_connected];
+                    
+                    // Add resources from each ancestor batch up to the source image
+                    for (let i = 0; i < ancestorBatches.length; i++) {
+                        const ancestorBatch = ancestorBatches[i];
+                        const ancestorResources = resourcesByBatch.get(ancestorBatch.batch_name) || [];
                         
-                        // This batch has currentBatch as an ancestor
-                        if (!processedInPath.has(resource.batch_name)) {
-                            batchQueue.push(resource.batch_name);
+                        // If this is the source batch, only include resources up to the source image
+                        if (i === ancestorBatches.length - 1 && sourceImageId) {
+                            // Find position of source image in the ancestor batch
+                            const sourceIndex = ancestorResources.findIndex(r => r.id === sourceImageId);
+                            
+                            if (sourceIndex >= 0) {
+                                // Add all resources up to and including the source image
+                                lineageResources.push(...ancestorResources.slice(0, sourceIndex + 1));
+                            } else {
+                                // Source image not found, add all resources
+                                lineageResources.push(...ancestorResources);
+                            }
+                        } else {
+                            // For other ancestor batches, add all resources
+                            lineageResources.push(...ancestorResources);
                         }
                     }
-                });
-            }
-            
-            // Only create a path if we found resources
-            if (lineageResources.length > 0) {
-                // Sort by creation time to ensure proper sequence
+                }
+                
+                // Add resources from the current batch
+                lineageResources.push(...batchResources);
+                
+                // Sort all resources by creation time
                 lineageResources.sort((a, b) => 
                     new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                 );
                 
+                // Get the last modification timestamp for this path
+                const lastModified = lineageResources.length > 0 
+                    ? new Date(lineageResources[lineageResources.length - 1].created_at).getTime()
+                    : 0;
+                
+                // Create a new path with these resources
                 paths.push({
                     id: `path-${paths.length}`,
-                    resources: lineageResources
+                    resources: lineageResources,
+                    batchName: batchName,
+                    lastModified: lastModified
                 });
                 
-                console.log(`Created lineage path with ${lineageResources.length} resources spanning ${batchSequence.length} batches:`, batchSequence);
+                console.log(`Created lineage path for ${batchName} with ${lineageResources.length} resources`);
             }
-        });
-        
-        // Sort paths with most recent images first
-        return paths.sort((a, b) => {
-            if (a.resources.length === 0 || b.resources.length === 0) return 0;
             
-            const latestA = new Date(a.resources[a.resources.length - 1].created_at).getTime();
-            const latestB = new Date(b.resources[b.resources.length - 1].created_at).getTime();
-            
-            return latestB - latestA; // Most recent first
-        });
+            // Sort paths with newest first
+            return paths.sort((a, b) => b.lastModified - a.lastModified);
+        } catch (e) {
+            console.error('Error building lineage paths:', e);
+            return []; // Return empty array on error
+        }
     }
     
     // Update lineage paths whenever allResources changes
@@ -259,9 +271,9 @@
         }
     })();
     
-    // Get visible lineage paths
+    // Get visible lineage paths - show multiple paths but keep them separate
     $: visiblePaths = lineagePaths.slice(0, visiblePathCount);
-    
+
     // Check if there are more paths to load
     $: hasMorePaths = visiblePathCount < lineagePaths.length || hasMoreToLoad;
     
@@ -347,10 +359,14 @@
         return img.url || img.image_url || '';
     }
 
-    // Function to load more paths
+    // Add a new state variable to track if user has clicked "Load More"
+    let userClickedLoadMore = false;
+
+    // Modify the loadMore function to set the flag
     function loadMore() {
         console.log(`Loading more paths. Current count: ${visiblePathCount}, total: ${lineagePaths.length}`);
         visiblePathCount += LOAD_MORE_BATCH_COUNT;
+        userClickedLoadMore = true; // User has explicitly requested more paths
         
         // If we've displayed all the currently fetched paths and there might be more, fetch more
         if (visiblePathCount >= lineagePaths.length && hasMoreToLoad) {
@@ -441,29 +457,54 @@
             
             console.log('Fetching more images...');
             
-            // Use a single query to fetch more images
-            const offset = allResources.length;
-            const additionalResources = await fetchResourcesFromSupabase({ offset });
+            // Instead of just adding more resources, we'll refresh everything
+            // but make sure to show more paths
+            visiblePathCount += LOAD_MORE_BATCH_COUNT;
             
-            if (additionalResources.length > 0) {
-                console.log(`Adding ${additionalResources.length} more images to the collection`);
-                
-                // Add new resources to allResources
-                const existingIds = new Set(allResources.map(r => r.id));
-                const uniqueNewResources = additionalResources.filter(img => !existingIds.has(img.id));
-                
-                if (uniqueNewResources.length > 0) {
-                    allResources = [...allResources, ...uniqueNewResources];
-                    console.log(`Total resources now: ${allResources.length}`);
-                }
-            } else {
-                console.log('No additional resources found');
-                hasMoreToLoad = false;
-            }
+            // Do a complete refresh to ensure consistent lineages
+            fetchUserImages(true);
             
         } catch (e) {
             error = e.message;
             console.error('Error fetching more images:', e);
+        }
+    }
+
+    // Simplified fetch function - reset userClickedLoadMore on fresh loads
+    async function fetchUserImages(keepVisibleCount = false) {
+        try {
+            if (!user_id) {
+                console.log('No user_id available, skipping fetch');
+                return;
+            }
+            
+            console.log('Fetching user images with filters:', { 
+                workflows: workflowsToFetch, 
+                types: typeArray 
+            });
+            
+            // Save the current visible count if needed
+            const currentVisibleCount = keepVisibleCount ? visiblePathCount : INITIAL_BATCH_COUNT;
+            const preserveUserChoice = keepVisibleCount && userClickedLoadMore;
+            
+            // Single query to fetch all resources for the user
+            const fetchedResources = await fetchResourcesFromSupabase({ 
+                limit: Math.max(200, currentVisibleCount * 50) // Ensure we fetch enough data
+            });
+            
+            console.log(`Fetched ${fetchedResources.length} resources`);
+            allResources = fetchedResources;
+            
+            // Restore the visible count if needed
+            if (keepVisibleCount) {
+                visiblePathCount = currentVisibleCount;
+            } else {
+                // Reset when doing a fresh load, unless it's a refresh after load more
+                userClickedLoadMore = preserveUserChoice;
+            }
+        } catch (e) {
+            error = e.message;
+            console.error('Error fetching images:', e);
         }
     }
 
@@ -659,30 +700,6 @@
             isLoading = false;
         }
     }
-
-    // Simplified fetch function
-    async function fetchUserImages() {
-        try {
-            if (!user_id) {
-                console.log('No user_id available, skipping fetch');
-                return;
-            }
-            
-            console.log('Fetching user images with filters:', { 
-                workflows: workflowsToFetch, 
-                types: typeArray 
-            });
-            
-            // Single query to fetch all resources for the user
-            const fetchedResources = await fetchResourcesFromSupabase({});
-            
-            console.log(`Fetched ${fetchedResources.length} resources`);
-            allResources = fetchedResources;
-        } catch (e) {
-            error = e.message;
-            console.error('Error fetching images:', e);
-        }
-    }
 </script>
 
 {#if error}
@@ -693,7 +710,7 @@
         {#each visiblePaths as path (path.id)}
             <div class="mb-8">
                 <h3 class="text-lg font-medium mb-2 text-gray-800">
-                    Image Lineage ({path.resources.length} images)
+                    Lineage: {path.batchName} ({path.resources.length} images)
                 </h3>
                 
                 <div class="grid gap-1 {gridClass}">
@@ -716,8 +733,7 @@
             <p class="text-gray-500 text-lg">No lineage paths to display</p>
         </div>
     {/if}
-    
-    <!-- Show Load More button if there are more paths to display -->
+
     {#if hasMorePaths}
         <div class="mt-4 flex justify-center">
             <button 
