@@ -828,25 +828,18 @@
         </div>
     {/if}
 
-    <!-- Intersection observer target element - replaces the Load More button -->
+    <!-- Invisible intersection observer target - no visible button, just a loading indicator when needed -->
     {#if hasMorePaths}
         <div 
-            class="py-4 flex justify-center" 
+            class="py-4 flex justify-center invisible-target" 
             bind:this={observerTarget}
         >
             {#if loadingMore}
-                <div class="flex items-center justify-center space-x-2">
+                <div class="flex items-center justify-center space-x-2 visible">
                     <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse"></div>
                     <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse" style="animation-delay: 0.2s"></div>
                     <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse" style="animation-delay: 0.4s"></div>
                 </div>
-            {:else}
-                <button 
-                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md"
-                    on:click={loadMore}
-                >
-                    Load More
-                </button>
             {/if}
         </div>
     {/if}
@@ -860,5 +853,16 @@
     }
     .hide-scrollbar::-webkit-scrollbar {
         display: none;  /* Chrome, Safari and Opera */
+    }
+    
+    /* Style for the invisible target - makes it take up space but be invisible */
+    .invisible-target {
+        height: 50px; /* Give it some height to trigger the observer */
+        opacity: 0;   /* Make it invisible */
+    }
+    
+    /* Make sure loading indicators are visible */
+    .visible {
+        opacity: 1 !important;
     }
 </style>
