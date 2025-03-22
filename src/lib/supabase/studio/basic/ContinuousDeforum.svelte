@@ -91,8 +91,15 @@
     // Function to build continuous lineage paths
     function buildLineagePaths(resources: Resource[]) {
         try {
-            // No additional filtering by service here - we should rely on the query filters
-            // which are already handling the workflow_names filter
+            // Pre-filter resources to ensure only the correct workflow is included
+            if (workflowsToFetch && workflowsToFetch.length > 0) {
+                const beforeCount = resources.length;
+                resources = resources.filter(r => workflowsToFetch.includes(r.workflow_name));
+                if (beforeCount !== resources.length) {
+                    console.log(`Filtered ${beforeCount - resources.length} resources with non-matching workflow names before building lineage paths`);
+                }
+            }
+            
             console.log('Building lineage paths from', resources.length, 'resources');
             
             if (resources.length === 0) return [];
@@ -316,18 +323,31 @@
             // Create a map of image_url to batch_name from database resources
             const batchMap = new Map();
             fetchedResources.forEach(resource => {
-                if (resource.batch_name) {
-                    batchMap.set(resource.image_url, resource.batch_name);
+                if (resource.batch_name && workflowsToFetch.includes(resource.workflow_name)) {
+                    batchMap.set(resource.image_url, {
+                        batch_name: resource.batch_name,
+                        workflow_name: resource.workflow_name
+                    });
                 }
             });
+            
+            // Filter out resources with incorrect workflow_name
+            if (workflowsToFetch && workflowsToFetch.length > 0) {
+                const beforeCount = allResources.length;
+                allResources = allResources.filter(r => workflowsToFetch.includes(r.workflow_name));
+                if (beforeCount !== allResources.length) {
+                    console.log(`Removed ${beforeCount - allResources.length} resources with non-matching workflow names`);
+                }
+            }
             
             // Update any client-side resources with batch names from the database
             let hasUpdates = false;
             allResources = allResources.map(resource => {
                 if (!resource.batch_name && batchMap.has(resource.image_url)) {
+                    const info = batchMap.get(resource.image_url);
                     hasUpdates = true;
-                    console.log(`Updating batch name for ${resource.image_url} to ${batchMap.get(resource.image_url)}`);
-                    return { ...resource, batch_name: batchMap.get(resource.image_url) };
+                    console.log(`Updating batch name for ${resource.image_url} to ${info.batch_name}`);
+                    return { ...resource, batch_name: info.batch_name, workflow_name: info.workflow_name };
                 }
                 return resource;
             });
@@ -408,10 +428,15 @@
                 .or('visibility.is.null,visibility.eq.true')
                 .order('created_at', { ascending: false });
             
-            // Filter by workflow names if provided
+            // Strengthen workflow filter - ensure we're using valid workflow names
             if (workflowsToFetch && workflowsToFetch.length > 0) {
-                query = query.in('workflow_name', workflowsToFetch);
-                console.log('Filtering by workflows:', workflowsToFetch);
+                const validWorkflows = workflowsToFetch.filter(w => typeof w === 'string' && w.trim() !== '');
+                if (validWorkflows.length > 0) {
+                    query = query.in('workflow_name', validWorkflows);
+                    console.log('Filtering by workflows:', validWorkflows);
+                } else {
+                    console.warn('No valid workflow names found in workflowsToFetch');
+                }
             }
             
             // Filter by type if provided
@@ -436,9 +461,32 @@
             
             console.log(`Fetched ${data?.length || 0} resources`);
             
-            // Transform S3 URLs to Bunny.net URLs
-            const transformedData = transformResourceUrls(data || []);
+            // Add post-query validation to ensure only the correct workflows are included
+            if (workflowsToFetch && workflowsToFetch.length > 0) {
+                const beforeCount = data?.length || 0;
+                const filteredData = (data || []).filter(r => {
+                    const match = workflowsToFetch.includes(r.workflow_name);
+                    if (!match) {
+                        console.error(`Removing resource with ID ${r.id}, workflow "${r.workflow_name}" which doesn't match filter ${workflowsToFetch.join(', ')}`);
+                    }
+                    return match;
+                });
+                
+                if (beforeCount !== filteredData.length) {
+                    console.log(`Post-query workflow filter: ${beforeCount} → ${filteredData.length} resources`);
+                }
+                
+                // Log the workflow names that were actually found
+                console.log('Workflow names after filtering:', 
+                    [...new Set(filteredData.map(r => r.workflow_name))]);
+                
+                // Transform S3 URLs to Bunny.net URLs
+                const transformedData = transformResourceUrls(filteredData);
+                return transformedData;
+            }
             
+            // If no workflow filter, just transform and return
+            const transformedData = transformResourceUrls(data || []);
             return transformedData;
         } catch (e) {
             console.error('Error in fetchResourcesFromSupabase:', e);
@@ -713,7 +761,7 @@
                 </h3>
                 
                 <div class="grid gap-1 {gridClass}">
-                    {#each path.resources as resource (resource.id)}
+                    {#each path.resources.filter(r => workflowsToFetch.includes(r.workflow_name)) as resource (resource.id)}
                         <GalleryDeforumItem 
                             {resource} 
                             on:imageDeleted={handleImageDeleted}

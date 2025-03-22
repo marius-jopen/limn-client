@@ -3,6 +3,7 @@
     import GalleryDeforum from '$lib/supabase/studio/latent-shift/GalleryDeforum.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumLatentShiftConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumLatentShift.json';
+    import ContinuousDeforum from '$lib/supabase/studio/basic/ContinuousDeforum.svelte';
 </script>
 
 <div class="pt-16">
@@ -13,6 +14,8 @@
         workflow={WORKFLOW}
         inputLayout="controller-latent-shift"
     />
+
+    <ContinuousDeforum workflow_names={["deforum-latent-shift"]} />
 
     <GalleryDeforum 
         type={["generated"]} 

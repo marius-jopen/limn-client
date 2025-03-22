@@ -170,21 +170,34 @@
             // Fetch current resources from database
             const fetchedResources = await fetchResourcesFromSupabase({});
             
-            // Create a map of image_url to batch_name from database resources
+            // Create a map of image_url to batch_name and workflow_name from database resources
             const batchMap = new Map();
             fetchedResources.forEach(resource => {
-                if (resource.batch_name) {
-                    batchMap.set(resource.image_url, resource.batch_name);
+                if (resource.batch_name && workflowsToFetch.includes(resource.workflow_name)) {
+                    batchMap.set(resource.image_url, {
+                        batch_name: resource.batch_name,
+                        workflow_name: resource.workflow_name
+                    });
                 }
             });
+            
+            // Filter out resources with incorrect workflow_name
+            if (workflowsToFetch && workflowsToFetch.length > 0) {
+                const beforeCount = allResources.length;
+                allResources = allResources.filter(r => workflowsToFetch.includes(r.workflow_name));
+                if (beforeCount !== allResources.length) {
+                    console.log(`Removed ${beforeCount - allResources.length} resources with non-matching workflow names`);
+                }
+            }
             
             // Update any client-side resources with batch names from the database
             let hasUpdates = false;
             allResources = allResources.map(resource => {
                 if (!resource.batch_name && batchMap.has(resource.image_url)) {
+                    const info = batchMap.get(resource.image_url);
                     hasUpdates = true;
-                    console.log(`Updating batch name for ${resource.image_url} to ${batchMap.get(resource.image_url)}`);
-                    return { ...resource, batch_name: batchMap.get(resource.image_url) };
+                    console.log(`Updating batch name for ${resource.image_url} to ${info.batch_name}`);
+                    return { ...resource, batch_name: info.batch_name, workflow_name: info.workflow_name };
                 }
                 return resource;
             });
@@ -272,10 +285,15 @@
                 .or('visibility.is.null,visibility.eq.true')
                 .order('created_at', { ascending: false });
             
-            // Filter by workflow names if provided
+            // Strengthen workflow filter - ensure we're using valid workflow names
             if (workflowsToFetch && workflowsToFetch.length > 0) {
-                query = query.in('workflow_name', workflowsToFetch);
-                console.log('Filtering by workflows:', workflowsToFetch);
+                const validWorkflows = workflowsToFetch.filter(w => typeof w === 'string' && w.trim() !== '');
+                if (validWorkflows.length > 0) {
+                    query = query.in('workflow_name', validWorkflows);
+                    console.log('Filtering by workflows:', validWorkflows);
+                } else {
+                    console.warn('No valid workflow names found in workflowsToFetch');
+                }
             }
             
             // Filter by type if provided
@@ -298,12 +316,34 @@
                 return [];
             }
             
+            // Add post-query validation to ensure only the correct workflows are included
+            if (workflowsToFetch && workflowsToFetch.length > 0) {
+                const beforeCount = data?.length || 0;
+                const filteredData = (data || []).filter(r => {
+                    const match = workflowsToFetch.includes(r.workflow_name);
+                    if (!match) {
+                        console.error(`Removing resource with ID ${r.id}, workflow "${r.workflow_name}" which doesn't match filter ${workflowsToFetch.join(', ')}`);
+                    }
+                    return match;
+                });
+                
+                if (beforeCount !== filteredData.length) {
+                    console.log(`Post-query workflow filter: ${beforeCount} → ${filteredData.length} resources`);
+                }
+                
+                console.log(`Fetched ${filteredData.length} resources with workflow_names:`, 
+                    [...new Set(filteredData.map(r => r.workflow_name))]);
+                
+                // Transform URLs
+                const transformedData = transformResourceUrls(filteredData);
+                return transformedData;
+            }
+            
             console.log(`Fetched ${data?.length || 0} resources with workflow_names:`, 
-                data?.map(r => r.workflow_name).filter((v, i, a) => a.indexOf(v) === i));
+                [...new Set((data || []).map(r => r.workflow_name))]);
             
             // Transform S3 URLs to Bunny.net URLs
             const transformedData = transformResourceUrls(data || []);
-            
             return transformedData;
         } catch (e) {
             console.error('Error in fetchResourcesFromSupabase:', e);
@@ -557,10 +597,41 @@
             const fetchedResources = await fetchResourcesFromSupabase({});
             
             console.log(`Fetched ${fetchedResources.length} resources`);
-            allResources = fetchedResources;
+            
+            // Double-check the workflow filtering
+            if (workflowsToFetch && workflowsToFetch.length > 0) {
+                const nonMatchingResources = fetchedResources.filter(r => !workflowsToFetch.includes(r.workflow_name));
+                if (nonMatchingResources.length > 0) {
+                    console.error(`Found ${nonMatchingResources.length} resources with non-matching workflows. Filtering them out.`);
+                    allResources = fetchedResources.filter(r => workflowsToFetch.includes(r.workflow_name));
+                } else {
+                    allResources = fetchedResources;
+                }
+            } else {
+                allResources = fetchedResources;
+            }
         } catch (e) {
             error = e.message;
             console.error('Error fetching images:', e);
+        }
+    }
+
+    // Add extra validation reactive statement to ensure we only have the correct workflow resources
+    $: {
+        // Ensure resources always match our workflow filter
+        if (allResources.length > 0 && workflowsToFetch && workflowsToFetch.length > 0) {
+            const nonMatchingWorkflows = allResources
+                .filter(r => !workflowsToFetch.includes(r.workflow_name))
+                .map(r => r.workflow_name);
+            
+            if (nonMatchingWorkflows.length > 0) {
+                console.warn(`Found ${nonMatchingWorkflows.length} resources with non-matching workflows:`, 
+                    [...new Set(nonMatchingWorkflows)]);
+                
+                // Filter them out
+                allResources = allResources.filter(r => workflowsToFetch.includes(r.workflow_name));
+                console.log(`After filtering, ${allResources.length} resources remain`);
+            }
         }
     }
 </script>
@@ -573,7 +644,7 @@
         {#each visibleGroups as group}
             <div class="mb-10">
                 <div class="px-4 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
-                    {#each imagesReversed ? [...group.resources].reverse() : group.resources as resource (resource.id)}
+                    {#each (imagesReversed ? [...group.resources].reverse() : group.resources).filter(r => workflowsToFetch.includes(r.workflow_name)) as resource (resource.id)}
                         <div class="flex-shrink-0">
                             <GalleryDeforumItem 
                                 {resource} 
