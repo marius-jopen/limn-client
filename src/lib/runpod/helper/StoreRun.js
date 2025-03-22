@@ -14,6 +14,7 @@ const BASE_STORAGE_KEY = 'runpod_state';
 // - runpodStatus: Complete RunPod API response data with detailed job information
 // - images: Generated images from the job
 // - values: Store input field values
+// - connectedBatches: Added this field for image lineage tracking
 const defaultState = {
     service: null,
     workflow_name: null,
@@ -22,7 +23,8 @@ const defaultState = {
     status: 'Idle',
     runpodStatus: null,
     images: [],
-    values: {}
+    values: {},
+    connectedBatches: []
 };
 
 // Check if we're running in a browser environment

@@ -125,13 +125,6 @@
     export let ui_config: UIConfigField[] = [];
     export let inputLayout: 'repeater' | 'controller' | 'future-layout' = 'repeater'; // Default is repeater
     
-    // Example connected batches (would come from props or store in actual implementation)
-    // This represents the lineage of parent images that led to this generation
-    const connectedBatches = [
-        {"batch_name": "20250321_120032", "id": "202fd273-4c2a-4349-92c7-a51f4c3d2ea6"},
-        {"batch_name": "20250321_110432", "id": "60572610-18ec-4a7e-a88f-5d42eeed3ae6"}
-    ];
-    
     // Create an object to store the current values of all input fields
     // Initializes each field with its default value from the ui_config
     // This object will be updated when the user changes input values
@@ -159,6 +152,9 @@
     
     // Get the user ID from the user store
     $: user_id = $user?.id;
+
+    // Get the connected batches from the runState store
+    $: connectedBatches = $runState?.connectedBatches || [];
 
     // Define the status fields that are displayed in the UI
     // This reactive statement creates a formatted list of status information
@@ -268,12 +264,8 @@
             //   - Returns the prepared workflow ready to be sent to RunPod
             const workflowWithPrompt = prepareWorkflow(workflowCopy, ui_config, values);
 
-            // Just after defining the connectedBatches array:
-            console.log('Connected batches array initialized:', connectedBatches);
-
             // Inside runWorkflow() just before the fetch:
-            console.log('About to send connected batches in request:', connectedBatches);
-            console.log('JSON stringified:', JSON.stringify(connectedBatches));
+            console.log('Using connected batches from store:', connectedBatches);
 
             // Send the prepared workflow to the RunPod API server
             // Makes a POST request to the service-specific endpoint
