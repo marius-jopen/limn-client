@@ -5,6 +5,7 @@
     import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
     import ContinuousDeforumItem from '$lib/supabase/studio/latent-shift/ContinuousDeforumItem.svelte';
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
+    import Button from '$lib/atoms/Button.svelte';
     
     // Configuration for pagination
     const INITIAL_BATCH_COUNT = 3; // Number of batches to load initially
@@ -828,18 +829,23 @@
         </div>
     {/if}
 
-    <!-- Invisible intersection observer target - no visible button, just a loading indicator when needed -->
-    {#if hasMorePaths}
-        <div 
-            class="py-4 flex justify-center invisible-target" 
-            bind:this={observerTarget}
-        >
+    <!-- Only show the button if there are more paths to load and we haven't reached the end -->
+    {#if hasMorePaths && (visiblePathCount < lineagePaths.length || hasMoreToLoad)}
+        <div class="py-6 flex justify-center">
             {#if loadingMore}
-                <div class="flex items-center justify-center space-x-2 visible">
+                <div class="flex items-center justify-center space-x-2">
                     <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse"></div>
                     <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse" style="animation-delay: 0.2s"></div>
                     <div class="w-4 h-4 rounded-full bg-neutral-100 animate-pulse" style="animation-delay: 0.4s"></div>
                 </div>
+            {:else}
+                <Button 
+                    label="Load More"
+                    variant="secondary"
+                    size="md"
+                    onClick={loadMore}
+                    classes="mt-12 mb-20"
+                />
             {/if}
         </div>
     {/if}
