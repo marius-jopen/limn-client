@@ -3,7 +3,7 @@
     import GalleryDeforum from '$lib/supabase/studio/latent-shift/GalleryDeforum.svelte';
     import UI_CONFIG from '$lib/workflows/deforum/DeforumLatentShiftConfig.json';
     import WORKFLOW from '$lib/workflows/deforum/DeforumLatentShift.json';
-    import ContinuousDeforum from '$lib/supabase/studio/basic/ContinuousDeforum.svelte';
+    import ContinuousDeforum from '$lib/supabase/studio/latent-shift/ContinuousDeforum.svelte';
 </script>
 
 <div class="pt-16">
@@ -17,7 +17,7 @@
 
     <ContinuousDeforum workflow_names={["deforum-latent-shift"]} />
 
-    <GalleryDeforum 
+    <!-- <GalleryDeforum 
         type={["generated"]} 
         workflow_names={["deforum-latent-shift"]} 
         defaultImagesPerRow={8}
@@ -29,6 +29,6 @@
         workflow_names={["deforum-latent-shift"]} 
         defaultImagesPerRow={8}
         batchDisplayMode="exclude-latest"
-    />  
+    />   -->
     
 </div>
