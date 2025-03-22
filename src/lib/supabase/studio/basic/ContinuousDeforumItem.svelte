@@ -3,10 +3,6 @@
     import { user, selectedImageId } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
-    import Button from '$lib/atoms/Button.svelte';
-    import Dropdown from '$lib/atoms/Dropdown.svelte'; // Import the Dropdown component
-
-    const serverUrl = import.meta.env.VITE_SERVER_URL;
 
     // Define the Resource interface
     interface Resource {
@@ -25,6 +21,8 @@
     export let resource: Resource | null = null;
     export let resourceId: string | null = null;
     
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
     // Event dispatcher for parent component communication
     const dispatch = createEventDispatcher();
     
@@ -196,12 +194,6 @@
         selectedImageId.set(currentResource.id);
         console.log(`Selected image with ID: ${currentResource.id}`);
         
-        // Scroll to the top of the page
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'  // Adds smooth scrolling animation
-        });
-        
         // Notify parent component
         dispatch('imageSelected', {
             id: currentResource.id,
@@ -212,68 +204,54 @@
 
 {#if isLoading}
     <div 
-        class="h-64 overflow-hidden relative flex items-center justify-center bg-gray-100"
+        class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100"
     >
         <div class="text-gray-500">Loading...</div>
     </div>
 {:else if currentResource}
-    <!-- Image container with hover effect for buttons -->
-    <div class="flex flex-col w-auto group  hover:scale-[1.03] transition-all duration-300 ease-in-out mt-4">
-        <!-- Image tile -->
-        <div class="h-[500px] overflow-hidden ">
-            <img 
-                on:click={handlePreview}
-                src={cdnImageUrl}
-                alt={currentResource.name || 'User uploaded image'} 
-                class="cursor-pointer h-full w-auto object-contain rounded-md"
-                loading="lazy"
-            />
-        </div>
-        
-        <!-- Button row with dropdown - simple fade in/out on hover with fly-in animation -->
-        <div class="p-2 mt-5 w-full">
-            <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
-                <Button
-                    label="Explore"
-                    variant="secondary"
-                    size="sm"
-                    onClick={selectImage}
-                />
-                
-                <!-- Use the slot-based Dropdown component with animated dropdown -->
-                <Dropdown 
-                    position="top" 
-                    width="min-w-[150px]"
-                    containerClass="dropdown-animate"
+    <!-- Image tile -->
+    <div 
+        class="aspect-square overflow-hidden relative group"
+        role="group"
+    >
+        <img 
+            src={cdnImageUrl}
+            alt={currentResource.name || 'User uploaded image'} 
+            class="w-full h-full object-cover"
+            loading="lazy"
+        />
+        <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity p-1">
+            <div class="w-full h-full grid grid-cols-3 grid-rows-2 gap-1">
+                <button
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    on:click={handlePreview}
+                    title="Preview"
                 >
-                    <svelte:fragment slot="trigger">
-                        <Button
-                            label="..."
-                            variant="secondary"
-                            size="sm"
-                        />
-                    </svelte:fragment>
-                    
-                    <svelte:fragment slot="content">
-                        <div>
-                            <button 
-                                class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-300 transition-colors duration-150"
-                                on:click={handleDelete}
-                            >
-                                Delete Image
-                            </button>
-                            
-                            {#if localResource?.batch_name}
-                                <button 
-                                    class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-300 transition-colors duration-150"
-                                    on:click={handleDeleteBatch}
-                                >
-                                    Delete Batch
-                                </button>
-                            {/if}
-                        </div>
-                    </svelte:fragment>
-                </Dropdown>
+                    🔍
+                </button>
+                <a
+                    href={`/studio/deforum/${currentResource.id}`}
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    title="Details"
+                >
+                    ℹ️
+                </a>
+    
+                <button
+                    class="bg-green-500 text-white rounded-md flex items-center justify-center text-sm hover:bg-green-600 shadow-md"
+                    on:click={selectImage}
+                    title="Select Image"
+                >
+                    ✅
+                </button>
+                
+                <button
+                    class="bg-white text-black rounded-md flex items-center justify-center text-sm hover:bg-gray-200 shadow-md"
+                    on:click={handleDelete}
+                    title="Delete"
+                >
+                    🗑️
+                </button>
             </div>
         </div>
     </div>
@@ -281,65 +259,32 @@
     <!-- Preview overlay -->
     {#if isPreviewOpen}
         <div 
-            class="fixed inset-0 bg-neutral-100/80 backdrop-blur-2xl z-50 flex items-center justify-center p-4 animate-fade-in"
+            class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4"
             on:click={closePreview}
         >
             <div class="max-w-4xl max-h-[90vh] relative">
                 <img 
                     src={cdnImageUrl} 
                     alt={currentResource.name || 'Preview'} 
-                    class="max-w-full max-h-[90vh] object-contain rounded-md"
+                    class="max-w-full max-h-[90vh] object-contain"
                 />
-                
-                <!-- Using Button atom for the close button -->
-                <div class="fixed top-3 right-4">
-                    <Button
-                        label="Close"
-                        variant="secondary"
-                        size="sm"
-                        onClick={closePreview}
-                    />
-                </div>
+                <button 
+                    class="absolute top-2 right-2 bg-white rounded-full w-8 h-8 flex items-center justify-center text-black"
+                    on:click={closePreview}
+                >
+                    ✕
+                </button>
             </div>
         </div>
     {/if}
 {:else if error}
-    <div class="h-64 overflow-hidden relative flex items-center justify-center bg-gray-100">
+    <div class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100">
         <div class="text-red-500 p-2 text-center text-sm">
             Error: {error}
         </div>
     </div>
 {:else}
-    <div class="h-64 overflow-hidden relative flex items-center justify-center bg-gray-100">
+    <div class="aspect-square overflow-hidden relative flex items-center justify-center bg-gray-100">
         <div class="text-gray-500">No image</div>
     </div>
 {/if}
-
-<style>
-    /* Animation for preview overlay */
-    .animate-fade-in {
-        animation: fadeIn 0.3s ease-out;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    /* Animation for dropdown */
-    :global(.dropdown-animate) {
-        animation: dropdownFly 0.25s ease-out;
-        transform-origin: bottom center;
-    }
-    
-    @keyframes dropdownFly {
-        from {
-            opacity: 0;
-            transform: translateY(8px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>

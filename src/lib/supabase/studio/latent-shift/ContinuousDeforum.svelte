@@ -3,7 +3,7 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { runState } from '$lib/runpod/helper/StoreRun.js';  // Import the store
-    import GalleryDeforumItem from '$lib/supabase/studio/latent-shift/GalleryDeforumItem.svelte';
+    import ContinuousDeforumItem from '$lib/supabase/studio/latent-shift/ContinuousDeforumItem.svelte';
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
     
     // Configuration for pagination
@@ -808,7 +808,7 @@
                 <div class="px-4 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
                     {#each path.resources.filter(r => workflowsToFetch.includes(r.workflow_name)) as resource (resource.id)}
                         <div class="flex-shrink-0">
-                            <GalleryDeforumItem 
+                            <ContinuousDeforumItem 
                                 {resource} 
                                 on:imageDeleted={handleImageDeleted}
                                 on:batchDeleted={handleBatchDeleted}
