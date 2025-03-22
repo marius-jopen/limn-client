@@ -125,6 +125,13 @@
     export let ui_config: UIConfigField[] = [];
     export let inputLayout: 'repeater' | 'controller' | 'future-layout' = 'repeater'; // Default is repeater
     
+    // Example connected batches (would come from props or store in actual implementation)
+    // This represents the lineage of parent images that led to this generation
+    const connectedBatches = [
+        {"batch_name": "20250321_120032", "id": "202fd273-4c2a-4349-92c7-a51f4c3d2ea6"},
+        {"batch_name": "20250321_110432", "id": "60572610-18ec-4a7e-a88f-5d42eeed3ae6"}
+    ];
+    
     // Create an object to store the current values of all input fields
     // Initializes each field with its default value from the ui_config
     // This object will be updated when the user changes input values
@@ -136,7 +143,7 @@
     // The service to use for the RunPod job
     // This is hardcoded to "deforum" for now
     let service = "deforum";
-
+    
     // Load saved state for this workflow when the component mounts
     onMount(() => {
         if (workflow_name) {
@@ -261,6 +268,13 @@
             //   - Returns the prepared workflow ready to be sent to RunPod
             const workflowWithPrompt = prepareWorkflow(workflowCopy, ui_config, values);
 
+            // Just after defining the connectedBatches array:
+            console.log('Connected batches array initialized:', connectedBatches);
+
+            // Inside runWorkflow() just before the fetch:
+            console.log('About to send connected batches in request:', connectedBatches);
+            console.log('JSON stringified:', JSON.stringify(connectedBatches));
+
             // Send the prepared workflow to the RunPod API server
             // Makes a POST request to the service-specific endpoint
             // Headers include:
@@ -269,19 +283,24 @@
             //   - service: Which RunPod service to use (e.g., "deforum")
             //   - workflow: The name of the workflow being executed to save it in Supabase
             //   - batch-name: Unique timestamp identifier for this run
+            //   - connected-batches: JSON string of connected batches
             // The request body contains:
             //   - The complete workflow with all placeholders replaced with user values
             //   - The user ID for tracking and permissions
             // This initiates the job on RunPod and returns a response with the job ID
+            const headers = { 
+                'Content-Type': 'application/json',
+                'user-id': user_id,
+                'service': service,
+                'workflow': workflow_name,
+                'batch-name': dateStr,
+                'connected-batches': JSON.stringify(connectedBatches)
+            };
+            console.log('Request headers:', headers);
+
             const response = await fetch(`${serverUrl}/${service}-runpod-serverless-run`, {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'user-id': user_id,
-                    'service': service,
-                    'workflow': workflow_name,
-                    'batch-name': dateStr
-                },
+                headers: headers,
                 body: JSON.stringify({ 
                     input: { 
                         workflow: workflowWithPrompt,
