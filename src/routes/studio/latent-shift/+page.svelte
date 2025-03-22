@@ -1,8 +1,8 @@
 <script>
     import DeforumRun from '$lib/runpod/api/DeforumRun.svelte';  
     import GalleryDeforum from '$lib/supabase/studio/latent-shift/GalleryDeforum.svelte';
-    import UI_CONFIG from '$lib/workflows/deforum/DeforumBasicConfig.json';
-    import WORKFLOW from '$lib/workflows/deforum/DeforumBasic.json';
+    import UI_CONFIG from '$lib/workflows/deforum/DeforumLatentShiftConfig.json';
+    import WORKFLOW from '$lib/workflows/deforum/DeforumLatentShift.json';
 </script>
 
 <div class="pt-16">
