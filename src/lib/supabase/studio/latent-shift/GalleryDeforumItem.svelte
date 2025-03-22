@@ -263,14 +263,14 @@
                                 Delete Image
                             </button>
                             
-                            {#if localResource?.batch_name}
+                            <!-- {#if localResource?.batch_name}
                                 <button 
                                     class="w-full text-left px-4 py-2 text-sm font-semibold hover:bg-gray-300 transition-colors duration-150"
                                     on:click={handleDeleteBatch}
                                 >
                                     Delete Batch
                                 </button>
-                            {/if}
+                            {/if} -->
                         </div>
                     </svelte:fragment>
                 </Dropdown>
