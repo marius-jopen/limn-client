@@ -11,7 +11,8 @@
     import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
     import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
-
+    import SelectCheckpointUi from '$lib/runpod/studio/basic/inputs/SelectCheckpointUi.svelte';
+    
     type BaseField = {
         id: string;
         label: string;
@@ -53,6 +54,10 @@
         type: 'format-select';
     };
 
+    type SelectCheckpointField = BaseField & {
+        type: 'select-checkpoint';
+    };
+
     type RandomNumberField = BaseField & {
         type: 'random-number';
         hidden?: boolean;
@@ -84,6 +89,14 @@
             />
         {:else if field.type === 'select'}
             <Dropdown
+                id={field.id}
+                label={field.label}
+                options={field.options}
+                bind:value={values[field.id]}
+                hidden={field.hidden}
+            />
+        {:else if field.type === 'select-checkpoint'}
+            <SelectCheckpointUi
                 id={field.id}
                 label={field.label}
                 options={field.options}

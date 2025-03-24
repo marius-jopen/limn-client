@@ -45,7 +45,7 @@
 <div class="mt-4">
     <Button 
         onClick={cancelJob}
-        label="Cancel Job" 
+        label="Pause" 
         variant="primary" 
         size="md" 
     />

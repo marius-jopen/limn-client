@@ -249,8 +249,8 @@
         "frame_interpolation_slow_mo_amount": 2,
         "frame_interpolation_keep_imgs": true,
         "frame_interpolation_use_upscaled": false,
-        "sd_model_name": "xl/Jugg_XI_by_RunDiffusion.safetensors",
-        "sd_model_hash": "be9edd61",
+        "sd_model_name": "${SD_MODEL_NAME}",
+        "sd_model_hash": "",
         "deforum_git_commit_id": "d8764419"
       },
     "options_overrides": {}

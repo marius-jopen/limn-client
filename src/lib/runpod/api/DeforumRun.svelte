@@ -289,6 +289,7 @@
                 'connected-batches': JSON.stringify(connectedBatches)
             };
             console.log('Request headers:', headers);
+            console.log('workflowWithPrompt', workflowWithPrompt);
 
             const response = await fetch(`${serverUrl}/${service}-runpod-serverless-run`, {
                 method: 'POST',

@@ -14,7 +14,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
     
     // Convert the workflow settings to string for replacement
     let workflowStr = JSON.stringify(workflow);
-    console.log('Initial workflow:', workflowStr);
+    // console.log('Initial workflow:', workflowStr);
     
     // Process format fields first to handle W/H separately
     const formatFields = uiConfig.filter(field => 
