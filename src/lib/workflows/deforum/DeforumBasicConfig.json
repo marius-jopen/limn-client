@@ -29,11 +29,25 @@
         "default": 20
     },
     {
+        "id": "positive_prompts",
+        "type": "string",
+        "placeholder": "${POSITIVE_PROMPTS}",
+        "label": "Positive Prompts",
+        "default": "masterpiece, 8k, hyperrealistic, photo realistic, 4k"
+    },
+    {
+        "id": "negative_prompts",
+        "type": "string",
+        "placeholder": "${NEGATIVE_PROMPTS}",
+        "label": "Negative Prompts",
+        "default": "bad eyes, cgi, airbrushed, plastic, deformed, watermark"
+    },
+    {
         "id": "prompts",
         "type": "prompts",
         "placeholder": "${PROMPTS}",
         "label": "Animation Prompts",
-        "default": "{\"0\": \"beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover --neg bad eyes, cgi, airbrushed, plastic, deformed, watermark\", \"5\": \"alien --neg bad eyes, cgi, airbrushed, plastic, deformed, watermark\"}"
+        "default": "{\"0\": \"beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover\", \"5\": \"alien\"}"
     },
     {
         "id": "diffusion_cadence",
@@ -57,8 +71,7 @@
         "default": "xl/Jugg_XI_by_RunDiffusion.safetensors",
         "options": [
             { "value": "xl/sd_xl_base_1.0.safetensors", "label": "SDXL Base 1.0" },
-            { "value": "xl/Jugg_XI_by_RunDiffusion.safetensors", "label": "Juggernaut XI" },
-            { "value": "flux/flux1-dev.safetensors", "label": "Flux 1 Dev" }
+            { "value": "xl/Jugg_XI_by_RunDiffusion.safetensors", "label": "Juggernaut XI" }
         ]
     }
 ]
