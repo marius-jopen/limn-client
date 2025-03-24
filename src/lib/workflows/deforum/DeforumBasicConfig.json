@@ -34,11 +34,10 @@
         "placeholder": "${PROMPTS}",
         "label": "Animation Prompts",
         "default": {
-            "globalPositive": "masterpiece, best quality",
-            "globalNegative": "worst quality, bad anatomy",
+            "globalPositive": "",
+            "globalNegative": "",
             "frames": {
-                "0": "beautiful woman --neg blur",
-                "5": "happy woman --neg noise"
+                "0": " --neg "
             }
         },
         "options": [

@@ -99,7 +99,7 @@
 
     <!-- Available LoRA options -->
     <div class="flex flex-wrap gap-2">
-        {#each options as option}
+        {#each options.filter(option => !activeLoras.some(lora => lora.value === option.value)) as option}
             <button
                 class="px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded-full text-sm"
                 on:click={() => handleLoraClick(option)}
@@ -110,7 +110,7 @@
     </div>
 
     <!-- Complete prompt preview -->
-    <div class="mt-4">
+    <!-- <div class="mt-4">
         <Label for_id={`${id}-complete`} label="Complete Prompt (with LoRA tags)" />
         <Textarea
             id={`${id}-complete`}
@@ -118,5 +118,5 @@
             readonly={true}
             class="font-mono text-sm"
         />
-    </div>
+    </div> -->
 </div> 
