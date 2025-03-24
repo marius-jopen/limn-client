@@ -17,11 +17,11 @@
 
     export let label: string = "";
     export let value: string = "";
+    export let userText: string = "";
     export let id: string = "";
     export let hidden: boolean = false;
     export let options: DropdownOption[] = [];
 
-    let userText: string = "";
     let activeLoras: ActiveLora[] = [];
 
     function handleLoraClick(option: DropdownOption) {
@@ -48,12 +48,23 @@
         );
     }
 
-    // Reactive statement to update value when either userText or activeLoras changes
+    // Make the reactive statement more explicit
     $: {
         const loraTags = activeLoras
             .map(lora => `<lora:${lora.value}:${lora.strength}> ${lora.trigger}`)
             .join(" ");
         value = `${userText} ${loraTags}`.trim();
+        console.log('Updated LoRA value:', value);
+    }
+
+    // Add a reactive statement for userText changes
+    $: {
+        if (userText !== value.split('<lora:')[0].trim()) {
+            const loraTags = activeLoras
+                .map(lora => `<lora:${lora.value}:${lora.strength}> ${lora.trigger}`)
+                .join(" ");
+            value = `${userText} ${loraTags}`.trim();
+        }
     }
 </script>
 

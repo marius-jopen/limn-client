@@ -11,7 +11,6 @@
     import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
     import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
-    import LoraUi from '$lib/runpod/studio/basic/inputs/LoraUi.svelte';
     
     type BaseField = {
         id: string;
@@ -58,12 +57,7 @@
         type: 'random-number';
         hidden?: boolean;
     };
-
-    type LoraField = BaseField & {
-        type: 'lora';
-    };
-
-    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField | RandomNumberField | LoraField;
+    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField | RandomNumberField ;
 
     export let UI: UIField[] = [];
     export let values: Record<string, string | number | boolean> = {};
@@ -79,14 +73,6 @@
                 label={field.label}
                 bind:value={values[field.id]}
                 hidden={field.hidden}
-            />
-        {:else if field.type === 'lora'}
-            <LoraUi
-                id={field.id}
-                label={field.label}
-                bind:value={values[field.id]}
-                hidden={field.hidden}
-                options={field.options}
             />
         {:else if field.type === 'int'}
             <Number
@@ -132,7 +118,8 @@
                 id={field.id}
                 label={field.label}
                 bind:value={values[field.id]}
-                hidden={field.hidden}   
+                hidden={field.hidden}  
+                options={field.options}
             />
         {:else if field.type === 'prompts-simple'}
             <PromptsSimpleUi

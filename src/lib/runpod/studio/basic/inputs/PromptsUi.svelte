@@ -3,16 +3,19 @@
     import Button from '$lib/atoms/Button.svelte';
     import Label from '$lib/atoms/Label.svelte';
     import Textarea from '$lib/atoms/InputTextarea.svelte';
+    import PromptsUiLora from './PromptsUiLora.svelte';  // Import the LoRA component
 
     export let id: string;
     export let label: string;
     export let value: string = '{}';
     export let hidden: boolean = false;
+    export let options: DropdownOption[] = [];  // Make sure we receive the options
 
     const dispatch = createEventDispatcher();
 
     // Add all our state variables at the top
-    let globalPositivePrompt: string = '';
+    let globalPositiveText: string = '';
+    let globalPositiveWithLora: string = '';
     let globalNegativePrompt: string = '';
     let hasUserEdits: boolean = false;
     let defaultPrompts: { [frame: string]: string } = {};
@@ -27,15 +30,31 @@
             
             // Set global prompts from defaults
             if (parsed.globalPositive) {
-                globalPositivePrompt = parsed.globalPositive;
+                globalPositiveText = parsed.globalPositive;
+                globalPositiveWithLora = parsed.globalPositive;
+            } else if (parsed.default?.globalPositive) {
+                globalPositiveText = parsed.default.globalPositive;
+                globalPositiveWithLora = parsed.default.globalPositive;
             }
+
             if (parsed.globalNegative) {
                 globalNegativePrompt = parsed.globalNegative;
+            } else if (parsed.default?.globalNegative) {
+                globalNegativePrompt = parsed.default.globalNegative;
             }
 
             // Set frame entries from defaults
             if (parsed.frames) {
                 entries = Object.entries(parsed.frames).map(([frame, promptValue]) => {
+                    const [prompt, negative] = (promptValue as string).split('--neg').map(p => p.trim());
+                    return {
+                        frame,
+                        prompt: prompt || '',
+                        negativePrompt: negative || ''
+                    };
+                });
+            } else if (parsed.default?.frames) {
+                entries = Object.entries(parsed.default.frames).map(([frame, promptValue]) => {
                     const [prompt, negative] = (promptValue as string).split('--neg').map(p => p.trim());
                     return {
                         frame,
@@ -67,23 +86,28 @@
         }
     }
 
+    $: {
+        // This reactive statement will run whenever globalPositiveWithLora changes
+        if (globalPositiveWithLora) {
+            updateValue();
+        }
+    }
+
     function updateValue() {
         console.log('=== updateValue start ===');
-        console.log('Global Positive:', globalPositivePrompt);
+        console.log('Global Positive with LoRA:', globalPositiveWithLora);
         console.log('Global Negative:', globalNegativePrompt);
         console.log('Entries:', entries);
 
-        prompts = {};  // Now this will work
+        prompts = {};
         entries.sort((a, b) => (parseInt(a.frame) || 0) - (parseInt(b.frame) || 0))
               .forEach((entry) => {
                   if (entry.frame) {
-                      // Build positive prompt with global
                       let positivePrompt = '';
-                      if (globalPositivePrompt && entry.prompt) {
-                          positivePrompt = `${globalPositivePrompt} ${entry.prompt}`;
-                          console.log('Combined positive:', positivePrompt);
-                      } else if (globalPositivePrompt) {
-                          positivePrompt = globalPositivePrompt;
+                      if (globalPositiveWithLora && entry.prompt) {
+                          positivePrompt = `${globalPositiveWithLora} ${entry.prompt}`;
+                      } else if (globalPositiveWithLora) {
+                          positivePrompt = globalPositiveWithLora;
                       } else {
                           positivePrompt = entry.prompt;
                       }
@@ -151,13 +175,6 @@
         updateValue();
     }
 
-    // Add handlers for global prompts
-    function handleGlobalPositivePrompt(event: Event) {
-        console.log('Setting global positive:', (event.target as HTMLTextAreaElement).value);
-        globalPositivePrompt = (event.target as HTMLTextAreaElement).value;
-        updateValue();
-    }
-
     function handleGlobalNegativePrompt(event: Event) {
         console.log('Setting global negative:', (event.target as HTMLTextAreaElement).value);
         globalNegativePrompt = (event.target as HTMLTextAreaElement).value;
@@ -168,14 +185,15 @@
 <div class="mb-6 w-full {hidden ? 'hidden' : ''}">
     <label for={id} class="block font-semibold mb-2">{label}</label>
 
-    <!-- Add global prompt fields -->
+    <!-- Global prompt fields -->
     <div class="grid grid-cols-2 gap-4 mb-6 p-4 border border-gray-200 bg-blue-50">
         <div class="flex flex-col">
-            <Label label="Global Positive Prompt" for_id="global-positive" />
-            <Textarea
+            <PromptsUiLora
+                label="Global Positive Prompt"
                 id="global-positive"
-                bind:value={globalPositivePrompt}
-                on:input={handleGlobalPositivePrompt}
+                bind:value={globalPositiveWithLora}
+                userText={globalPositiveText}
+                options={options}
             />
         </div>
         
