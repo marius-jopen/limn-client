@@ -96,7 +96,7 @@
                 const beforeCount = resources.length;
                 resources = resources.filter(r => workflowsToFetch.includes(r.workflow_name));
                 if (beforeCount !== resources.length) {
-                    console.log(`Filtered ${beforeCount - resources.length} resources with non-matching workflow names before building lineage paths`);
+                    // console.log(`Filtered ${beforeCount - resources.length} resources with non-matching workflow names before building lineage paths`);
                 }
             }
             
@@ -557,7 +557,7 @@
 
     // Handle runState images immediately
     $: if ($runState.images?.length) {
-        console.log('Processing runState images with batch:', $runState.batch_name);
+        // console.log('Processing runState images with batch:', $runState.batch_name);
         
         // First show the images immediately for better UX
         const newImages = $runState.images.map(img => ({
@@ -577,7 +577,7 @@
         // Then set up a short delay to fetch from database instead
         // This gives Supabase time to create the records with proper batch names
         setTimeout(() => {
-            console.log('Refreshing images from database after generation');
+            // console.log('Refreshing images from database after generation');
             fetchUserImages();
         }, 2000); // 2 second delay
     }

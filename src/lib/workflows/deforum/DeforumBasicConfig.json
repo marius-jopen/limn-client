@@ -30,10 +30,15 @@
     },
     {
         "id": "positive_prompts",
-        "type": "string",
+        "type": "lora",
         "placeholder": "${POSITIVE_PROMPTS}",
         "label": "Positive Prompts",
-        "default": "masterpiece, 8k, hyperrealistic, photo realistic, 4k"
+        "default": "soft light",
+        "options": [
+            { "value": "Add_Detail_XL", "label": "Detail XL", "trigger": "Detail" },
+            { "value": "SDXL_ChalkBoard_Drawing_LoRA_r8", "label": "Chalkboard Drawing", "trigger": "ChalkBoardDrawing " },
+            { "value": "SDXL_MSPaint_Portrait", "label": "MS Paint Portrait", "trigger": "MS Paint" }
+        ]
     },
     {
         "id": "negative_prompts",
@@ -47,7 +52,12 @@
         "type": "prompts",
         "placeholder": "${PROMPTS}",
         "label": "Animation Prompts",
-        "default": "{\"0\": \"beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover\", \"5\": \"alien\"}"
+        "default": "{\"0\": \"beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover\", \"5\": \"alien\"}",
+        "options": [
+            { "value": "Add_Detail_XL", "label": "Detail XL", "trigger": "Detail" },
+            { "value": "SDXL_ChalkBoard_Drawing_LoRA_r8", "label": "Chalkboard Drawing", "trigger": "ChalkBoardDrawing " },
+            { "value": "SDXL_MSPaint_Portrait", "label": "MS Paint Portrait", "trigger": "MS Paint" }
+        ]
     },
     {
         "id": "diffusion_cadence",
