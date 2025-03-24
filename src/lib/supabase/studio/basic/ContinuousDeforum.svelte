@@ -100,7 +100,7 @@
                 }
             }
             
-            console.log('Building lineage paths from', resources.length, 'resources');
+            // console.log('Building lineage paths from', resources.length, 'resources');
             
             if (resources.length === 0) return [];
             
@@ -142,7 +142,7 @@
                 return timeB - timeA; // Newest first
             });
             
-            console.log('Sorted batch names (newest first):', sortedBatchNames);
+            // console.log('Sorted batch names (newest first):', sortedBatchNames);
             
             // Create paths array
             const paths: LineagePath[] = [];
@@ -218,13 +218,13 @@
                     lastModified: lastModified
                 });
                 
-                console.log(`Created lineage path for ${batchName} with ${lineageResources.length} resources`);
+                // console.log(`Created lineage path for ${batchName} with ${lineageResources.length} resources`);
             }
             
             // Sort paths with newest first
             return paths.sort((a, b) => b.lastModified - a.lastModified);
         } catch (e) {
-            console.error('Error building lineage paths:', e);
+            // console.error('Error building lineage paths:', e);
             return []; // Return empty array on error
         }
     }
@@ -232,9 +232,9 @@
     // Update lineage paths whenever allResources changes
     $: {
         if (allResources.length > 0) {
-            console.log('Building lineage paths from', allResources.length, 'resources');
+            // console.log('Building lineage paths from', allResources.length, 'resources');
             lineagePaths = buildLineagePaths(allResources);
-            console.log('Created', lineagePaths.length, 'lineage paths');
+            // console.log('Created', lineagePaths.length, 'lineage paths');
         } else {
             lineagePaths = [];
         }
@@ -287,13 +287,13 @@
     let batchUpdateInterval: number;
     
     onMount(() => {
-        console.log('GalleryImages component mounted with props:', {
-            workflow_name,
-            workflow_names,
-            type,
-            typeArray,
-            defaultImagesPerRow
-        });
+        // console.log('GalleryImages component mounted with props:', {
+        //     workflow_name,
+        //     workflow_names,
+        //     type,
+        //     typeArray,
+        //     defaultImagesPerRow
+        // });
         
         // Set up an interval to refresh batch assignments
         batchUpdateInterval = setInterval(updateBatchAssignments, 5000); // Check every 5 seconds
@@ -315,7 +315,7 @@
         if (!user_id) return;
         
         try {
-            console.log('Checking for batch name updates...');
+            // console.log('Checking for batch name updates...');
             
             // Fetch current resources from database
             const fetchedResources = await fetchResourcesFromSupabase({});
@@ -365,7 +365,7 @@
         ? [workflow_name] 
         : workflow_names;
         
-    $: console.log('workflowsToFetch updated:', workflowsToFetch);
+    // $: console.log('workflowsToFetch updated:', workflowsToFetch);
     
     let error: string | null = null;
     let subscription: any; // Type will depend on your Supabase client type
@@ -396,7 +396,7 @@
     // Watch for changes to workflow_name or workflow_names props
     $: {
         if (workflow_name !== undefined || (workflow_names && workflow_names.length > 0) || typeArray.length > 0) {
-            console.log('Props changed, resetting and fetching');
+            // console.log('Props changed, resetting and fetching');
             if (initialLoadComplete) {
                 allResources = []; // Clear existing resources
                 visiblePathCount = INITIAL_BATCH_COUNT;
@@ -415,11 +415,11 @@
         
         try {
             if (!user_id) {
-                console.log('No user_id available, skipping fetch');
+                // console.log('No user_id available, skipping fetch');
                 return [];
             }
             
-            console.log('Fetching with filters:', { workflowsToFetch, typeArray });
+            // console.log('Fetching with filters:', { workflowsToFetch, typeArray });
             
             let query = supabase
                 .from('resource')
@@ -433,16 +433,16 @@
                 const validWorkflows = workflowsToFetch.filter(w => typeof w === 'string' && w.trim() !== '');
                 if (validWorkflows.length > 0) {
                     query = query.in('workflow_name', validWorkflows);
-                    console.log('Filtering by workflows:', validWorkflows);
+                    // console.log('Filtering by workflows:', validWorkflows);
                 } else {
-                    console.warn('No valid workflow names found in workflowsToFetch');
+                    // console.warn('No valid workflow names found in workflowsToFetch');
                 }
             }
             
             // Filter by type if provided
             if (typeArray && typeArray.length > 0) {
                 query = query.in('type', typeArray);
-                console.log('Filtering by types:', typeArray);
+                // console.log('Filtering by types:', typeArray);
             }
             
             // Add pagination
@@ -455,11 +455,11 @@
             const { data, error } = await query;
             
             if (error) {
-                console.error(`Error fetching resources:`, error);
+                // console.error(`Error fetching resources:`, error);
                 return [];
             }
             
-            console.log(`Fetched ${data?.length || 0} resources`);
+            // console.log(`Fetched ${data?.length || 0} resources`);
             
             // Add post-query validation to ensure only the correct workflows are included
             if (workflowsToFetch && workflowsToFetch.length > 0) {
@@ -467,18 +467,18 @@
                 const filteredData = (data || []).filter(r => {
                     const match = workflowsToFetch.includes(r.workflow_name);
                     if (!match) {
-                        console.error(`Removing resource with ID ${r.id}, workflow "${r.workflow_name}" which doesn't match filter ${workflowsToFetch.join(', ')}`);
+                        // console.error(`Removing resource with ID ${r.id}, workflow "${r.workflow_name}" which doesn't match filter ${workflowsToFetch.join(', ')}`);
                     }
                     return match;
                 });
                 
                 if (beforeCount !== filteredData.length) {
-                    console.log(`Post-query workflow filter: ${beforeCount} → ${filteredData.length} resources`);
+                    // console.log(`Post-query workflow filter: ${beforeCount} → ${filteredData.length} resources`);
                 }
                 
                 // Log the workflow names that were actually found
-                console.log('Workflow names after filtering:', 
-                    [...new Set(filteredData.map(r => r.workflow_name))]);
+                // console.log('Workflow names after filtering:', 
+                //     [...new Set(filteredData.map(r => r.workflow_name))]);
                 
                 // Transform S3 URLs to Bunny.net URLs
                 const transformedData = transformResourceUrls(filteredData);
@@ -521,14 +521,14 @@
     async function fetchUserImages(keepVisibleCount = false) {
         try {
             if (!user_id) {
-                console.log('No user_id available, skipping fetch');
+                // console.log('No user_id available, skipping fetch');
                 return;
             }
             
-            console.log('Fetching user images with filters:', { 
-                workflows: workflowsToFetch, 
-                types: typeArray 
-            });
+            // console.log('Fetching user images with filters:', { 
+            //     workflows: workflowsToFetch, 
+            //     types: typeArray 
+            // });
             
             // Save the current visible count if needed
             const currentVisibleCount = keepVisibleCount ? visiblePathCount : INITIAL_BATCH_COUNT;
@@ -539,7 +539,7 @@
                 limit: Math.max(200, currentVisibleCount * 50) // Ensure we fetch enough data
             });
             
-            console.log(`Fetched ${fetchedResources.length} resources`);
+            // console.log(`Fetched ${fetchedResources.length} resources`);
             allResources = fetchedResources;
             
             // Restore the visible count if needed
@@ -590,7 +590,7 @@
         }
 
         if (user_id) {
-            console.log('Setting up subscription for resource changes');
+            // console.log('Setting up subscription for resource changes');
             
             subscription = supabase
                 .channel(`resource_changes_${user_id}`)
@@ -637,7 +637,7 @@
     let initialLoadComplete = false;
     $: {
         if (user_id && !initialLoadComplete) {
-            console.log('Initial component setup');
+            // console.log('Initial component setup');
             setupSubscription();
             allResources = []; // Clear existing resources
             fetchUserImages();

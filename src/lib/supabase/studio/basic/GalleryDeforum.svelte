@@ -124,17 +124,17 @@
     let batchUpdateInterval: number;
     
     onMount(() => {
-        console.log('GalleryDeforum component mounted with props:', {
-            workflow_name,
-            workflow_names,
-            type,
-            typeArray,
-            defaultImagesPerRow,
-            workflowsToFetch // The derived value
-        });
+        // console.log('GalleryDeforum component mounted with props:', {
+        //     workflow_name,
+        //     workflow_names,
+        //     type,
+        //     typeArray,
+        //     defaultImagesPerRow,
+        //     workflowsToFetch // The derived value
+        // });
         
         if (!workflow_name && (!workflow_names || workflow_names.length === 0)) {
-            console.warn('No workflow_name or workflow_names provided - component may show all resources');
+            // console.warn('No workflow_name or workflow_names provided - component may show all resources');
         }
         
         // Set up an interval to refresh batch assignments
@@ -157,11 +157,11 @@
         if (!user_id) return;
         
         try {
-            console.log('Checking for batch name updates...');
+            // console.log('Checking for batch name updates...');
             
             // Fetch current resources from database with proper filtering
             const fetchedResources = await fetchResourcesFromSupabase({});
-            console.log(`Fetched ${fetchedResources.length} resources for batch assignment updates`);
+            // console.log(`Fetched ${fetchedResources.length} resources for batch assignment updates`);
             
             // Create a map of image_url to batch_name from database resources
             const batchMap = new Map();
@@ -180,12 +180,12 @@
                 allResources = allResources.filter(r => {
                     const isMatch = workflowsToFetch.includes(r.workflow_name);
                     if (!isMatch) {
-                        console.error(`Removing resource with workflow_name "${r.workflow_name}" from client cache`);
+                        // console.error(`Removing resource with workflow_name "${r.workflow_name}" from client cache`);
                     }
                     return isMatch;
                 });
                 if (beforeCount !== allResources.length) {
-                    console.log(`Removed ${beforeCount - allResources.length} resources with non-matching workflow names`);
+                    // console.log(`Removed ${beforeCount - allResources.length} resources with non-matching workflow names`);
                 }
             }
             
@@ -196,7 +196,7 @@
                     const info = batchMap.get(resource.image_url);
                     if (workflowsToFetch.includes(info.workflow_name)) {
                         hasUpdates = true;
-                        console.log(`Updating batch name for ${resource.image_url} to ${info.batch_name}`);
+                        // console.log(`Updating batch name for ${resource.image_url} to ${info.batch_name}`);
                         return { ...resource, batch_name: info.batch_name };
                     }
                 }
@@ -204,10 +204,10 @@
             });
             
             if (hasUpdates) {
-                console.log('Updated batch assignments for existing resources');
+                // console.log('Updated batch assignments for existing resources');
             }
         } catch (e) {
-            console.error('Error updating batch assignments:', e);
+            // console.error('Error updating batch assignments:', e);
         }
     }
     
@@ -216,7 +216,7 @@
         ? [workflow_name] 
         : workflow_names;
         
-    $: console.log('workflowsToFetch updated:', workflowsToFetch);
+    // $: console.log('workflowsToFetch updated:', workflowsToFetch);
     
     let error: string | null = null;
     let subscription: any; // Type will depend on your Supabase client type
@@ -226,7 +226,7 @@
     // Update displayed resources
     $: {
         allResources = allResources.slice(0, visibleBatchCount * 40);
-        console.log(`Displaying ${allResources.length} resources`);
+        // console.log(`Displaying ${allResources.length} resources`);
     }
 
     function getImageUrl(img: string | RunStateImage | null): string {
@@ -249,7 +249,7 @@
     // Watch for changes to workflow_name or workflow_names props
     $: {
         if (workflow_name !== undefined || (workflow_names && workflow_names.length > 0) || typeArray.length > 0) {
-            console.log('Props changed, resetting and fetching');
+            // console.log('Props changed, resetting and fetching');
             if (initialLoadComplete) {
                 allResources = []; // Clear existing resources
                 visibleBatchCount = INITIAL_BATCH_COUNT;
@@ -268,15 +268,15 @@
         
         try {
             if (!user_id) {
-                console.log('No user_id available, skipping fetch');
+                // console.log('No user_id available, skipping fetch');
                 return [];
             }
             
-            console.log('DEBUG - Intended filters:', { 
-                user_id,
-                workflowsToFetch, 
-                typeArray
-            });
+            // console.log('DEBUG - Intended filters:', { 
+            //     user_id,
+            //     workflowsToFetch, 
+            //     typeArray
+            // });
             
             // Start with a basic query
             let query = supabase
@@ -287,21 +287,21 @@
             
             // Strengthen workflow filter - ensure we're using .in() with array values
             if (workflowsToFetch && workflowsToFetch.length > 0) {
-                console.log('Adding workflow filter:', workflowsToFetch);
+                // console.log('Adding workflow filter:', workflowsToFetch);
                 // Make sure workflowsToFetch is an array with valid strings
                 const validWorkflows = workflowsToFetch.filter(w => typeof w === 'string' && w.trim() !== '');
                 if (validWorkflows.length > 0) {
                     query = query.in('workflow_name', validWorkflows);
                 } else {
-                    console.warn('No valid workflow names provided after filtering');
+                    // console.warn('No valid workflow names provided after filtering');
                 }
             } else {
-                console.warn('No workflow names provided for filtering');
+                // console.warn('No workflow names provided for filtering');
             }
             
             // Add type filter as a separate step
             if (typeArray && typeArray.length > 0) {
-                console.log('Adding type filter:', typeArray);
+                // console.log('Adding type filter:', typeArray);
                 query = query.in('type', typeArray);
             }
             
@@ -315,19 +315,19 @@
             }
             
             // Log the full Supabase query to debug
-            console.log('Final Supabase query:', query);
+            // console.log('Final Supabase query:', query);
             
             const { data, error } = await query;
             
             if (error) {
-                console.error(`Error fetching resources:`, error);
+                // console.error(`Error fetching resources:`, error);
                 return [];
             }
             
             // Debug log of returned data
-            console.log(`Fetched ${data?.length || 0} resources`);
-            console.log('Workflow names in fetched data:', 
-                [...new Set(data?.map(r => r.workflow_name))]);
+            // console.log(`Fetched ${data?.length || 0} resources`);
+            // console.log('Workflow names in fetched data:', 
+            //     [...new Set(data?.map(r => r.workflow_name))]);
             
             // Double-check post-query filter to ensure only matching workflows
             let filteredData = data || [];
@@ -337,28 +337,28 @@
                 filteredData = filteredData.filter(r => {
                     const match = workflowsToFetch.includes(r.workflow_name);
                     if (!match) {
-                        console.error(`Removing resource with ID ${r.id}, workflow "${r.workflow_name}" which doesn't match filter ${workflowsToFetch.join(', ')}`);
+                        // console.error(`Removing resource with ID ${r.id}, workflow "${r.workflow_name}" which doesn't match filter ${workflowsToFetch.join(', ')}`);
                     }
                     return match;
                 });
-                console.log(`Workflow filter: ${beforeCount} → ${filteredData.length} resources`);
+                // console.log(`Workflow filter: ${beforeCount} → ${filteredData.length} resources`);
             }
             
             if (typeArray && typeArray.length > 0) {
                 const beforeCount = filteredData.length;
                 filteredData = filteredData.filter(r => typeArray.includes(r.type));
-                console.log(`Type filter: ${beforeCount} → ${filteredData.length} resources`);
+                // console.log(`Type filter: ${beforeCount} → ${filteredData.length} resources`);
             }
             
             // Final check of workflow names
-            console.log('Workflow names after filtering:', 
-                [...new Set(filteredData.map(r => r.workflow_name))]);
+            // console.log('Workflow names after filtering:', 
+            //     [...new Set(filteredData.map(r => r.workflow_name))]);
             
             // Transform URLs
             const transformedData = transformResourceUrls(filteredData);
             return transformedData;
         } catch (e) {
-            console.error('Error in fetchResourcesFromSupabase:', e);
+            // console.error('Error in fetchResourcesFromSupabase:', e);
             return [];
         }
     }
@@ -367,18 +367,18 @@
     async function fetchMoreImages() {
         try {
             if (!user_id) {
-                console.log('No user_id available, skipping fetch');
+                // console.log('No user_id available, skipping fetch');
                 return;
             }
             
-            console.log('Fetching more images...');
+            // console.log('Fetching more images...');
             
             // Use a single query to fetch more images
             const offset = allResources.length;
             const additionalResources = await fetchResourcesFromSupabase({ offset });
             
             if (additionalResources.length > 0) {
-                console.log(`Adding ${additionalResources.length} more images to the collection`);
+                // console.log(`Adding ${additionalResources.length} more images to the collection`);
                 
                 // Add new resources to allResources
                 const existingIds = new Set(allResources.map(r => r.id));
@@ -386,22 +386,22 @@
                 
                 if (uniqueNewResources.length > 0) {
                     allResources = [...allResources, ...uniqueNewResources];
-                    console.log(`Total resources now: ${allResources.length}`);
+                    // console.log(`Total resources now: ${allResources.length}`);
                 }
             } else {
-                console.log('No additional resources found');
+                // console.log('No additional resources found');
                 hasMoreToLoad = false;
             }
             
         } catch (e) {
             error = e.message;
-            console.error('Error fetching more images:', e);
+            // console.error('Error fetching more images:', e);
         }
     }
 
     // Handle runState images immediately
     $: if ($runState.images?.length) {
-        console.log('Processing runState images with batch:', $runState.batch_name);
+        // console.log('Processing runState images with batch:', $runState.batch_name);
         
         // Use a valid workflow name from our allowed workflow names
         const effectiveWorkflowName = workflow_name || 
@@ -427,11 +427,11 @@
             // Then set up a short delay to fetch from database instead
             // This gives Supabase time to create the records with proper batch names
             setTimeout(() => {
-                console.log('Refreshing images from database after generation');
+                // console.log('Refreshing images from database after generation');
                 fetchUserImages();
             }, 2000); // 2 second delay
         } else {
-            console.log('Skipping runState images due to workflow name mismatch');
+            // console.log('Skipping runState images due to workflow name mismatch');
         }
     }
 
@@ -443,7 +443,7 @@
         }
 
         if (user_id) {
-            console.log('Setting up subscription for resource changes');
+            // console.log('Setting up subscription for resource changes');
             
             subscription = supabase
                 .channel(`resource_changes_${user_id}`)
@@ -456,16 +456,16 @@
                         filter: `user_id=eq.${user_id}`
                     },
                     (payload) => {
-                        console.log('New resource inserted:', payload.new?.batch_name, 'workflow:', payload.new?.workflow_name);
+                        // console.log('New resource inserted:', payload.new?.batch_name, 'workflow:', payload.new?.workflow_name);
                         
                         // Only refresh if the new resource has a matching workflow_name
                         if (payload.new && 
                             payload.new.workflow_name && 
                             workflowsToFetch.includes(payload.new.workflow_name)) {
-                            console.log('Refreshing due to matching workflow_name');
+                            // console.log('Refreshing due to matching workflow_name');
                             fetchUserImages();
                         } else {
-                            console.log('Ignoring new resource with non-matching workflow_name');
+                            // console.log('Ignoring new resource with non-matching workflow_name');
                         }
                     }
                 )
@@ -478,16 +478,16 @@
                         filter: `user_id=eq.${user_id}`
                     },
                     (payload) => {
-                        console.log('Resource updated:', payload.new?.batch_name, 'workflow:', payload.new?.workflow_name);
+                        // console.log('Resource updated:', payload.new?.batch_name, 'workflow:', payload.new?.workflow_name);
                         
                         // Only refresh if the updated resource has a matching workflow_name
                         if (payload.new && 
                             payload.new.workflow_name && 
                             workflowsToFetch.includes(payload.new.workflow_name)) {
-                            console.log('Refreshing due to matching workflow_name');
+                            // console.log('Refreshing due to matching workflow_name');
                             fetchUserImages();
                         } else {
-                            console.log('Ignoring updated resource with non-matching workflow_name');
+                            // console.log('Ignoring updated resource with non-matching workflow_name');
                         }
                     }
                 )
@@ -506,7 +506,7 @@
     let initialLoadComplete = false;
     $: {
         if (user_id && !initialLoadComplete) {
-            console.log('Initial component setup');
+            // console.log('Initial component setup');
             setupSubscription();
             allResources = []; // Clear existing resources
             fetchUserImages();
@@ -566,7 +566,7 @@
         error = null;
         
         try {
-            console.log(`Fetching images for user ${userId}, page ${page}, workflow ${selectedWorkflow}`);
+            // console.log(`Fetching images for user ${userId}, page ${page}, workflow ${selectedWorkflow}`);
             
             // Start building the query
             let query = supabase
@@ -607,11 +607,11 @@
             page += 1;
             hasMore = (data?.length || 0) === INITIAL_BATCH_COUNT * 40;
             
-            console.log(`Fetched ${data?.length} images, total now: ${resources.length}`);
+            // console.log(`Fetched ${data?.length} images, total now: ${resources.length}`);
             
         } catch (e) {
             error = e.message;
-            console.error('Error fetching images:', e);
+            // console.error('Error fetching images:', e);
         } finally {
             isLoading = false;
         }
@@ -621,23 +621,23 @@
     async function fetchUserImages() {
         try {
             if (!user_id) {
-                console.log('No user_id available, skipping fetch');
+                // console.log('No user_id available, skipping fetch');
                 return;
             }
             
-            console.log('Fetching user images with filters:', { 
-                workflows: workflowsToFetch, 
-                types: typeArray 
-            });
+            // console.log('Fetching user images with filters:', { 
+            //     workflows: workflowsToFetch, 
+            //     types: typeArray 
+            // });
             
             // Single query to fetch all resources for the user
             const fetchedResources = await fetchResourcesFromSupabase({});
             
-            console.log(`Fetched ${fetchedResources.length} resources`);
+            // console.log(`Fetched ${fetchedResources.length} resources`);
             allResources = fetchedResources;
         } catch (e) {
             error = e.message;
-            console.error('Error fetching images:', e);
+            // console.error('Error fetching images:', e);
         }
     }
 
@@ -650,12 +650,12 @@
                 .map(r => r.workflow_name);
             
             if (nonMatchingWorkflows.length > 0) {
-                console.warn(`Found ${nonMatchingWorkflows.length} resources with non-matching workflows:`, 
-                    [...new Set(nonMatchingWorkflows)]);
+                // console.warn(`Found ${nonMatchingWorkflows.length} resources with non-matching workflows:`, 
+                //     [...new Set(nonMatchingWorkflows)]);
                 
                 // Filter them out
                 allResources = allResources.filter(r => workflowsToFetch.includes(r.workflow_name));
-                console.log(`After filtering, ${allResources.length} resources remain`);
+                // console.log(`After filtering, ${allResources.length} resources remain`);
             }
         }
     }
