@@ -1,6 +1,8 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import Button from '$lib/atoms/Button.svelte';
+    import Label from '$lib/atoms/Label.svelte';
+    import Textarea from '$lib/atoms/InputTextarea.svelte';
 
     export let id: string;
     export let label: string;
@@ -9,37 +11,76 @@
 
     const dispatch = createEventDispatcher();
 
-    // Parse the initial value or start with an empty object
-    let prompts: { [frame: string]: string } = {};
+    // Add all our state variables at the top
+    let globalPositivePrompt: string = '';
+    let globalNegativePrompt: string = '';
+    let hasUserEdits: boolean = false;
+    let defaultPrompts: { [frame: string]: string } = {};
+    let entries: { frame: string; prompt: string; negativePrompt: string }[] = [];
+    let prompts: { [frame: string]: string } = {};  // Added this declaration
+
+    // Parse the initial value
     try {
         if (value && value !== '{}') {
-            prompts = JSON.parse(value);
+            defaultPrompts = JSON.parse(value); // Store default values separately
+            initializeEntries();
         }
     } catch (e) {
         console.error('Error parsing prompts value:', e);
     }
 
-    // Maintain a list of keyframe entries
-    let entries: { frame: string; prompt: string; negativePrompt: string }[] = [];
-
-    // Initialize entries from prompts object
     function initializeEntries() {
         entries = [];
-        Object.entries(prompts).forEach(([frame, promptValue]) => {
-            const parts = promptValue.split('--neg');
-            const prompt = parts[0]?.trim() || '';
-            const negativePrompt = parts[1]?.trim() || '';
-            entries.push({ frame, prompt, negativePrompt });
+        Object.entries(defaultPrompts).forEach(([frame, _]) => {
+            entries.push({ frame, prompt: '', negativePrompt: '' });
         });
 
-        // Add an empty entry if there are none
         if (entries.length === 0) {
             addEntry();
         }
     }
 
-    // Initialize on component mount
-    initializeEntries();
+    function updateValue() {
+        console.log('=== updateValue start ===');
+        console.log('Global Positive:', globalPositivePrompt);
+        console.log('Global Negative:', globalNegativePrompt);
+        console.log('Entries:', entries);
+
+        prompts = {};  // Now this will work
+        entries.sort((a, b) => (parseInt(a.frame) || 0) - (parseInt(b.frame) || 0))
+              .forEach((entry) => {
+                  if (entry.frame) {
+                      // Build positive prompt with global
+                      let positivePrompt = '';
+                      if (globalPositivePrompt && entry.prompt) {
+                          positivePrompt = `${globalPositivePrompt} ${entry.prompt}`;
+                          console.log('Combined positive:', positivePrompt);
+                      } else if (globalPositivePrompt) {
+                          positivePrompt = globalPositivePrompt;
+                      } else {
+                          positivePrompt = entry.prompt;
+                      }
+
+                      // Build negative prompt with global
+                      let negativePrompt = '';
+                      if (globalNegativePrompt && entry.negativePrompt) {
+                          negativePrompt = `${globalNegativePrompt} ${entry.negativePrompt}`;
+                          console.log('Combined negative:', negativePrompt);
+                      } else if (globalNegativePrompt) {
+                          negativePrompt = globalNegativePrompt;
+                      } else {
+                          negativePrompt = entry.negativePrompt;
+                      }
+
+                      prompts[entry.frame] = `${positivePrompt} --neg ${negativePrompt}`.trim();
+                      console.log(`Frame ${entry.frame} final:`, prompts[entry.frame]);
+                  }
+              });
+        
+        value = JSON.stringify(prompts);
+        console.log('Final value:', value);
+        dispatch('change', value);
+    }
 
     // Add a new entry
     function addEntry() {
@@ -58,42 +99,9 @@
         updateValue();
     }
 
-    // Update the value when entries change
-    function updateValue() {
-        prompts = {};
-        entries.sort((a, b) => (parseInt(a.frame) || 0) - (parseInt(b.frame) || 0))
-              .forEach((entry, index) => {
-                  if (entry.frame) {
-                      // For the first item, include it even if both prompts are empty
-                      // and ensure it's at frame 0 if not specified
-                      if (index === 0) {
-                          const frameNum = parseInt(entry.frame) || 0;
-                          const frameKey = frameNum.toString();
-                          prompts[frameKey] = `${entry.prompt || ''} --neg ${entry.negativePrompt || ''}`;
-                      } 
-                      // For other items, only include if there's content in either prompt
-                      else if (entry.prompt || entry.negativePrompt) {
-                          prompts[entry.frame] = `${entry.prompt || ''} --neg ${entry.negativePrompt || ''}`;
-                      }
-                  }
-              });
-        value = JSON.stringify(prompts);
-        dispatch('change', value);
-    }
-
     // Handlers for input changes
     function updateFrame(index: number, newFrame: string) {
         entries[index].frame = newFrame;
-        updateValue();
-    }
-
-    function updatePrompt(index: number, newPrompt: string) {
-        entries[index].prompt = newPrompt;
-        updateValue();
-    }
-
-    function updateNegativePrompt(index: number, newNegPrompt: string) {
-        entries[index].negativePrompt = newNegPrompt;
         updateValue();
     }
 
@@ -103,19 +111,57 @@
     }
 
     function handleInputPrompt(event: Event, index: number) {
+        hasUserEdits = true;
         const target = event.target as HTMLTextAreaElement;
-        updatePrompt(index, target.value);
+        entries[index].prompt = target.value;
+        updateValue();
     }
 
     function handleInputNegativePrompt(event: Event, index: number) {
+        hasUserEdits = true;
         const target = event.target as HTMLTextAreaElement;
-        updateNegativePrompt(index, target.value);
+        entries[index].negativePrompt = target.value;
+        updateValue();
+    }
+
+    // Add handlers for global prompts
+    function handleGlobalPositivePrompt(event: Event) {
+        console.log('Setting global positive:', (event.target as HTMLTextAreaElement).value);
+        globalPositivePrompt = (event.target as HTMLTextAreaElement).value;
+        updateValue();
+    }
+
+    function handleGlobalNegativePrompt(event: Event) {
+        console.log('Setting global negative:', (event.target as HTMLTextAreaElement).value);
+        globalNegativePrompt = (event.target as HTMLTextAreaElement).value;
+        updateValue();
     }
 </script>
 
 <div class="mb-6 w-full {hidden ? 'hidden' : ''}">
     <label for={id} class="block font-semibold mb-2">{label}</label>
-    
+
+    <!-- Add global prompt fields -->
+    <div class="grid grid-cols-2 gap-4 mb-6 p-4 border border-gray-200 bg-blue-50">
+        <div class="flex flex-col">
+            <Label label="Global Positive Prompt" for_id="global-positive" />
+            <Textarea
+                id="global-positive"
+                bind:value={globalPositivePrompt}
+                on:input={handleGlobalPositivePrompt}
+            />
+        </div>
+        
+        <div class="flex flex-col">
+            <Label label="Global Negative Prompt" for_id="global-negative" />
+            <Textarea
+                id="global-negative"
+                bind:value={globalNegativePrompt}
+                on:input={handleGlobalNegativePrompt}
+            />
+        </div>
+    </div>
+
     <div class="flex flex-col gap-4 mb-4">
         {#each entries as entry, index}
             <div class="grid grid-cols-[80px_1fr_1fr_40px] gap-4 p-4 border border-gray-200 bg-gray-50">
