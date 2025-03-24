@@ -63,7 +63,7 @@
         hidden?: boolean;
     };
 
-    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField | RandomNumberField;
+    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField | RandomNumberField | SelectCheckpointField;
 
     export let UI: UIField[] = [];
     export let values: Record<string, string | number | boolean> = {};
