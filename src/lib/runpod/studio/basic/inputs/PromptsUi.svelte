@@ -17,16 +17,43 @@
     let hasUserEdits: boolean = false;
     let defaultPrompts: { [frame: string]: string } = {};
     let entries: { frame: string; prompt: string; negativePrompt: string }[] = [];
-    let prompts: { [frame: string]: string } = {};  // Added this declaration
+    let prompts: { [frame: string]: string } = {};
 
-    // Parse the initial value
+    // Parse the initial value and set defaults
     try {
-        if (value && value !== '{}') {
-            defaultPrompts = JSON.parse(value); // Store default values separately
-            initializeEntries();
+        if (value) {
+            // Handle both string and object values
+            const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+            
+            // Set global prompts from defaults
+            if (parsed.globalPositive) {
+                globalPositivePrompt = parsed.globalPositive;
+            }
+            if (parsed.globalNegative) {
+                globalNegativePrompt = parsed.globalNegative;
+            }
+
+            // Set frame entries from defaults
+            if (parsed.frames) {
+                entries = Object.entries(parsed.frames).map(([frame, promptValue]) => {
+                    const [prompt, negative] = (promptValue as string).split('--neg').map(p => p.trim());
+                    return {
+                        frame,
+                        prompt: prompt || '',
+                        negativePrompt: negative || ''
+                    };
+                });
+            }
         }
     } catch (e) {
         console.error('Error parsing prompts value:', e);
+        // Initialize with empty entry if parsing fails
+        entries = [{ frame: '0', prompt: '', negativePrompt: '' }];
+    }
+
+    // If no entries were created, add an empty one
+    if (entries.length === 0) {
+        entries = [{ frame: '0', prompt: '', negativePrompt: '' }];
     }
 
     function initializeEntries() {

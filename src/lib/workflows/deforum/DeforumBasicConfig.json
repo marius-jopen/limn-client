@@ -33,7 +33,14 @@
         "type": "prompts",
         "placeholder": "${PROMPTS}",
         "label": "Animation Prompts",
-        "default": "{\"0\": \"\"}",
+        "default": {
+            "globalPositive": "masterpiece, best quality",
+            "globalNegative": "worst quality, bad anatomy",
+            "frames": {
+                "0": "beautiful woman --neg blur",
+                "5": "happy woman --neg noise"
+            }
+        },
         "options": [
             { "value": "Add_Detail_XL", "label": "Detail XL", "trigger": "Detail" },
             { "value": "SDXL_ChalkBoard_Drawing_LoRA_r8", "label": "Chalkboard Drawing", "trigger": "ChalkBoardDrawing " },
