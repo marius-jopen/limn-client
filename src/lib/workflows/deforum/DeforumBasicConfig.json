@@ -43,7 +43,16 @@
         "options": [
             { "value": "Add_Detail_XL", "label": "Detail XL", "trigger": "Detail" },
             { "value": "SDXL_ChalkBoard_Drawing_LoRA_r8", "label": "Chalkboard Drawing", "trigger": "ChalkBoardDrawing " },
-            { "value": "SDXL_MSPaint_Portrait", "label": "MS Paint Portrait", "trigger": "MS Paint" }
+            { "value": "SDXL_MSPaint_Portrait", "label": "MS Paint Portrait", "trigger": "MS Paint" },
+            { "value": "Prada_outfit_autumn_clothes-000006", "label": "Prada Outfit Autumn Clothes", "trigger": "Prada Outfit" },
+            { "value": "Crayon_Drawing", "label": "Crayon Drawing", "trigger": "Crayon Drawing" },
+            { "value": "sd_xl_James_Turrell_Style", "label": "James Turrell", "trigger": "James Turrell" },
+            { "value": "sd_xl_Made_Of_Iridescent_Foil", "label": "Iridescent Foil", "trigger": "Iridescent Foil" },
+            { "value": "sd_xl_Popovy_Dolls", "label": "Popovy Dolls", "trigger": "fashion doll" },
+            { "value": "sd_xl_Wake_Up", "label": "Wake Up", "trigger": "Wake Up" },
+            { "value": "sd_xl_HR_Giger", "label": "H R Giger", "trigger": "g1g3r" },
+            { "value": "sd_xl_Latex", "label": "Latex", "trigger": "latex" },
+            { "value": "sd_xl_Sphynxcatgirl", "label": "Sphynxcatgirl", "trigger": "sphinx cats" }
         ]
     },
     {
