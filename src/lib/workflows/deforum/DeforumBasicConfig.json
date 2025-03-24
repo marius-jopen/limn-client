@@ -48,5 +48,17 @@
         "placeholder": "${INIT_IMAGE}",
         "label": "Init Image",
         "default": ""
+    },
+    {
+        "id": "selectedCheckpoint",
+        "type": "select",
+        "placeholder": "${CKPT_NAME}",
+        "label": "Checkpoint Model",
+        "default": "xl/Jugg_XI_by_RunDiffusion.safetensors",
+        "options": [
+            { "value": "xl/sd_xl_base_1.0.safetensors", "label": "SDXL Base 1.0" },
+            { "value": "xl/Jugg_XI_by_RunDiffusion.safetensors", "label": "Juggernaut XI" },
+            { "value": "flux/flux1-dev.safetensors", "label": "Flux 1 Dev" }
+        ]
     }
 ]
