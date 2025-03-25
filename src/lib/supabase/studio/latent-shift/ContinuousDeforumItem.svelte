@@ -244,7 +244,6 @@
                 <Dropdown 
                     position="top" 
                     width="min-w-[150px]"
-                    containerClass="dropdown-animate"
                 >
                     <svelte:fragment slot="trigger">
                         <Button
@@ -321,22 +320,5 @@
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
-    }
-    
-    /* Animation for dropdown */
-    :global(.dropdown-animate) {
-        animation: dropdownFly 0.25s ease-out;
-        transform-origin: bottom center;
-    }
-    
-    @keyframes dropdownFly {
-        from {
-            opacity: 0;
-            transform: translateY(8px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
     }
 </style>

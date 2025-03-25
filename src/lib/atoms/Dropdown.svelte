@@ -62,8 +62,8 @@
     {#if isOpen}
         <div 
             class="absolute {positionClasses} right-0 bg-gray-200 shadow-mdcan rounded-md z-10 {width} overflow-hidden {containerClass}"
-            in:fly={{ y: 5, duration: 400, easing: quintOut }}
-            out:fade={{ duration: 300 }}
+            in:fly={{ y: 5, duration: 150, easing: quintOut }}
+            out:fade={{ duration: 100 }}
         >
             <slot name="content"></slot>
         </div>
