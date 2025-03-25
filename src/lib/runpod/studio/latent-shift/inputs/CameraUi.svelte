@@ -76,11 +76,12 @@
     let hoveredValue: string | null = null;
 </script>
 
-<div class="camera-ui px-8">
-    <div class="controls-container bg-gray-100">
+<div class="font-sans max-w-[800px] mx-auto p-2.5">
+   
+    <div class="flex gap-2.5 justify-center bg-gray-100 rounded-xl p-4 w-fit mx-auto">
         <!-- Translation Pod -->
-        <div class="control-pod">
-            <h4>Translation</h4>
+        <div class="p-3 w-40">
+            <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Translation</h4>
             <div class="control-wheel">
                 <button class="wheel-button top" 
                     on:mouseenter={() => hoveredValue = 'y'}
@@ -125,8 +126,8 @@
         </div>
 
         <!-- Center Pod -->
-        <div class="control-pod">
-            <h4>Center</h4>
+        <div class="bg-gray-100 rounded-xl p-3 w-40 ">
+            <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Center</h4>
             <div class="control-wheel">
                 <button class="wheel-button top" 
                     on:mouseenter={() => hoveredValue = 'center_y'}
@@ -167,8 +168,8 @@
         </div>
 
         <!-- Rotation Pod -->
-        <div class="control-pod">
-            <h4>Rotation</h4>
+        <div class="bg-gray-100 rounded-xl p-3 w-40 ">
+            <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Rotation</h4>
             <div class="control-wheel">
                 <button class="wheel-button top"
                     on:mouseenter={() => hoveredValue = 'rotation_x'}
@@ -215,55 +216,14 @@
 </div>
 
 <style>
-    .camera-ui {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        margin: 0 auto;
-
-    }
-
-    .header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 10px;
-    }
-
-    .title {
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
-        text-align: center;
-        margin: 0;
-    }
-
-    .controls-container {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-    }
-
-    .control-pod {
-        border-radius: 12px;
-        padding: 12px;
-        width: 160px;
-    }
-
-    .control-pod h4 {
-        text-align: center;
-        font-size: 13px;
-        font-weight: 500;
-        margin-bottom: 8px;
-        color: #1d1d1f;
-    }
-
+    /* We only keep styles that can't be easily done with Tailwind */
     .control-wheel {
         position: relative;
         width: 140px;
         height: 140px;
         margin: 0 auto;
         border-radius: 50%;
-        background: #ffffff;
+        @apply bg-white ;
     }
 
     .wheel-button {
@@ -271,15 +231,11 @@
         width: 30px;
         height: 30px;
         border: none;
-        background: transparent;
-        color: #1d1d1f;
-        font-size: 14px;
-        cursor: pointer;
-        transition: color 0.2s;
+        @apply bg-transparent text-gray-800 text-sm cursor-pointer transition-colors;
     }
 
     .wheel-button:hover {
-        color: var(--color-primary);
+        @apply text-primary;
     }
 
     .wheel-button.top { top: 15px; left: 50%; transform: translateX(-50%); }
@@ -294,28 +250,27 @@
         transform: translate(-50%, -50%);
         width: 40px;
         height: 40px;
-        border-radius: 50%;
-        background: #f0f0f2;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        @apply bg-gray-100 rounded-full flex flex-col items-center justify-center overflow-hidden;
+    }
+
+    .center-dot {
+        width: 10px;
+        height: 10px;
+        @apply border-none bg-gray-700 rounded-full cursor-pointer transition-colors;
+    }
+
+    .center-dot:hover {
+        @apply bg-primary;
     }
 
     .z-control {
         flex: 1;
         width: 100%;
-        border: none;
-        background: transparent;
-        color: #1d1d1f;
-        font-size: 12px;
-        cursor: pointer;
-        padding: 0;
-        transition: color 0.2s;
+        @apply border-none bg-transparent text-gray-800 text-xs cursor-pointer p-0 transition-colors;
     }
 
     .z-control:hover {
-        color: var(--color-primary);
+        @apply text-primary;
     }
 
     .z-control.top {
@@ -323,51 +278,14 @@
     }
 
     .value-display {
-        margin-top: 8px;
-        text-align: center;
-        font-size: 11px;
-        color: #666;
+        @apply mt-2 text-center text-xs text-gray-600;
     }
 
     .value-display div {
-        margin: 2px 0;
-        font-family: "SF Mono", monospace;
-    }
-
-    .reset-button {
-        font-size: 12px;
-        padding: 3px 8px;
-        border-radius: 8px;
-        border: none;
-        background-color: #f5f5f7;
-        color: var(--color-primary);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .reset-button:hover {
-        background-color: #e5e5e7;
-    }
-
-    .reset-button:active {
-        transform: scale(0.96);
-    }
-
-    .center-dot {
-        width: 10px;
-        height: 10px;
-        border: none;
-        background: #333333;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .center-dot:hover {
-        background: var(--color-primary);
+        @apply my-0.5 font-mono;
     }
 
     .value-display div.highlight {
-        color: var(--color-primary);
+        @apply text-primary;
     }
 </style>
