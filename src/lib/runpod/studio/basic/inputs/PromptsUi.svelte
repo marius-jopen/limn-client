@@ -187,7 +187,7 @@
     <label for={id} class="block font-semibold mb-2">{label}</label>
 
     <!-- Global prompt fields -->
-    <div class="mb-6 p-4 border border-gray-200 rounded-md">
+    <div class="mb-6 ">
         <div class="flex flex-col">
             <PromptsUiLora
                 label="Global Positive Prompt"

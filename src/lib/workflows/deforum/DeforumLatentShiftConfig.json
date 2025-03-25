@@ -19,14 +19,7 @@
         "type": "int",
         "placeholder": "${MAX_FRAMES}",
         "label": "Max Frames",
-        "default": 10
-    },
-    {
-        "id": "steps",
-        "type": "int",
-        "placeholder": "${STEPS}",
-        "label": "Steps",
-        "default": 20
+        "default": 15
     },
     {
         "id": "prompts",
@@ -112,13 +105,6 @@
                 "description" : "Adds a HR Giger style image to the image"
             }
         ]
-    },
-    {
-        "id": "diffusion_cadence",
-        "type": "int",
-        "placeholder": "${DIFFUSION_CADENCE}",
-        "label": "Diffusion Cadence",
-        "default": 1
     },
     {
         "id": "init_image",
