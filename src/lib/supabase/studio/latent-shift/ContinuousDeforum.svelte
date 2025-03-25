@@ -805,7 +805,12 @@
             p.resources.some(r => r.id === resource.id)
         );
         if (path) {
-            selectedPathResources = path.resources;
+            // Get only the filtered resources that appear in the row
+            const rowResources = path.resources
+                .filter(r => workflowsToFetch.includes(r.workflow_name))
+                .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+                
+            selectedPathResources = rowResources;
             showVideoPreview = true;
         }
     }
@@ -815,36 +820,26 @@
     <p class="text-red-400 p-4">{error}</p>
 {:else}
     <!-- Display continuous lineage paths with horizontal scrolling -->
-    {#if visiblePaths.length > 0}
-        {#each visiblePaths as path (path.id)}
-            <div class="mb-10">
-                <!-- <h3 class="text-lg font-medium mb-2 text-gray-800">
-                    Lineage: {path.batchName} ({path.resources.length} images)
-                </h3> -->
-                
-                <div class="px-12 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
-                    {#each path.resources.filter(r => workflowsToFetch.includes(r.workflow_name)) as resource (resource.id)}
-                        <div class="flex-shrink-0">
-                            <ContinuousDeforumItem 
-                                {resource} 
-                                on:imageDeleted={handleImageDeleted}
-                                on:batchDeleted={handleBatchDeleted}
-                                on:showVideo={handleShowVideo}
-                            />
-                        </div>
-                    {/each}
-                </div>
+    {#each visiblePaths as path (path.id)}
+        {@const rowResources = path.resources.filter(r => workflowsToFetch.includes(r.workflow_name))}
+        <div class="mb-10">
+            <div class="px-12 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
+                {#each rowResources as resource (resource.id)}
+                    <div class="flex-shrink-0">
+                        <ContinuousDeforumItem 
+                            {resource} 
+                            on:imageDeleted={handleImageDeleted}
+                            on:batchDeleted={handleBatchDeleted}
+                            on:showVideo={() => {
+                                selectedPathResources = rowResources;
+                                showVideoPreview = true;
+                            }}
+                        />
+                    </div>
+                {/each}
             </div>
-        {/each}
-    {:else if allResources.length === 0}
-        <div class="min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
-            <p class="text-gray-500 text-lg">No images found in your account</p>
         </div>
-    {:else}
-        <div class="min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
-            <p class="text-gray-500 text-lg">No lineage paths to display</p>
-        </div>
-    {/if}
+    {/each}
 
     <!-- Only show the button if there are more paths to load and we haven't reached the end -->
     {#if hasMorePaths && (visiblePathCount < lineagePaths.length || hasMoreToLoad)}
