@@ -1,7 +1,7 @@
 {
     "deforum_settings": {
-        "W": "${W}",
-        "H": "${H}",
+        "W": 1024,
+        "H": 1024,
         "show_info_on_ui": true,
         "tiling": false,
         "restore_faces": false,

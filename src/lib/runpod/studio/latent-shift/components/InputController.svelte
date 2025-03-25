@@ -5,10 +5,9 @@
     import Button from '$lib/atoms/Button.svelte';
     import Number from '$lib/runpod/studio/basic/inputs/NumberUi.svelte';
     import InitImage from '$lib/runpod/studio/latent-shift/inputs/InitImage.svelte';
-    import PromptsSimpleUi from '$lib/runpod/studio/basic/inputs/PromptsSimpleUi.svelte';
-    import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
-    import PromptsUi from '$lib/runpod/studio/basic/inputs/PromptsUi.svelte';
+    import PromptsUi from '$lib/runpod/studio/latent-shift/inputs/PromptsUi.svelte';
+
     // Define types similar to InputRepeater
     type BaseField = {
         id: string;
@@ -64,23 +63,8 @@
         </div>
     {/if}
 
-    <div class="bg-gray-200 p-4 rounded-md w-8/12 mx-auto">
-        <!-- Format (Width and Height) field if available -->
-        {#if getField('format')}
-            <div class="mb-4">
-                <FormatSelectUi
-                    id="format"
-                    label={getField('format')?.label || 'Width, Height'}
-                    bind:value={values['format']}
-                    placeholder={getField('format')?.placeholder || '${W}, ${H}'}
-                    on:change={(e) => {
-                        values['format'] = e.detail.value;
-                        console.log(`InputController: Format field changed to ${values['format']}`);
-                    }}
-                />
-            </div>
-        {/if}
-      
+    <div class="bg-gray-100 p-4 rounded-md w-8/12 mx-auto">
+     
         <!-- Seed and Steps in a single row -->
         <div class="grid grid-cols-2 gap-4 mb-4">
             {#if getField('random-number')}

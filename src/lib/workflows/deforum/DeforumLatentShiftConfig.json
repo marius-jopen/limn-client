@@ -8,13 +8,6 @@
         "hidden": true
     },
     {
-        "id": "format",
-        "type": "format-select",
-        "placeholder": "${W}, ${H}",
-        "label": "Width, Height",
-        "default": "1024, 1024"
-    },
-    {
         "id": "max_frames",
         "type": "int",
         "placeholder": "${MAX_FRAMES}",

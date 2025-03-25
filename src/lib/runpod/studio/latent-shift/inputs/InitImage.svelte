@@ -404,7 +404,7 @@
         <p>Loading image...</p>
     {:else}
         <div 
-            class="w-[500px] h-[500px] bg-gray-200 rounded-md flex flex-col items-center justify-center cursor-pointer transition-colors {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'} relative"
+            class="w-[500px] h-[500px] bg-gray-100 hover:bg-gray-200 rounded-md flex flex-col items-center justify-center cursor-pointer transition-colors {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'} relative"
             on:dragenter={handleDragEnter}
             on:dragleave={handleDragLeave}
             on:dragover={handleDragOver}
@@ -423,14 +423,11 @@
             </div>
             
             {#if !uploading}
-                <p class="text-gray-700 text-center text-xl font-light pointer-events-none mb-3">
-                    Start here.
+                <p class="text-gray-700 text-center text-xl font-light pointer-events-none mb-3 px-12">
+                    Drop an image here or <br/> click to upload or <br/> remix one of the images from below
                 </p>
                 <p class="text-gray-500 text-center pointer-events-none">
-                    Drop an image here or click to upload
-                </p>
-                <p class="text-gray-500 text-center pointer-events-none">
-                    Or explore our gallery for inspiration below
+                   At the moment we only support square images
                 </p>
             {:else}
                 <p class="text-gray-700 text-center text-xl font-light pointer-events-none mb-2">
