@@ -11,7 +11,7 @@
     export let type: 'button' | 'submit' | 'reset' = "button";
 
     // Content
-    export let label: string = "Monitor";
+    export let label: string | undefined = undefined;
     export let icon: ComponentType | null = null; // Optional icon component
 
     // Styling
@@ -66,5 +66,9 @@
         </span>
     {/if}
 
-    {label}
+    {#if label}
+        {label}
+    {:else}
+        <slot />
+    {/if}
 </button> 

@@ -58,7 +58,7 @@
     
     <!-- Dropdown content with animation -->
     {#if isOpen}
-        <div class="absolute {positionClasses} right-0 bg-neutral-200 shadow-mdcan  rounded-md z-10 {width} overflow-hidden {containerClass}">
+        <div class="absolute {positionClasses} right-0 bg-gray-200 shadow-mdcan  rounded-md z-10 {width} overflow-hidden {containerClass}">
             <slot name="content"></slot>
         </div>
     {/if}

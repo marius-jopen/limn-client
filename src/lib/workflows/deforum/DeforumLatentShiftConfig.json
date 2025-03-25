@@ -9,10 +9,28 @@
     },
     {
         "id": "max_frames",
-        "type": "int",
+        "type": "dropdown",
         "placeholder": "${MAX_FRAMES}",
         "label": "Max Frames",
-        "default": 15
+        "default": 15,
+        "options": [
+            {
+                "value": 15,
+                "label": "15"
+            },
+            {
+                "value": 30,
+                "label": "30"
+            },
+            {
+                "value": 60,
+                "label": "60"
+            },
+            {
+                "value": 120,
+                "label": "120"
+            }
+        ]
     },
     {
         "id": "prompts",

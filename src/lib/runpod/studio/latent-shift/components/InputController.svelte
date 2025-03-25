@@ -7,6 +7,7 @@
     import InitImage from '$lib/runpod/studio/latent-shift/inputs/InitImage.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
     import PromptsUi from '$lib/runpod/studio/latent-shift/inputs/PromptsUi.svelte';
+    import Dropdown from '$lib/runpod/studio/basic/inputs/DropdownUi.svelte';   
 
     // Define types similar to InputRepeater
     type BaseField = {
@@ -78,22 +79,8 @@
                 </div>
             {/if}
         </div>
-    
-        <!-- Max Frames and Diffusion Cadence in a single row -->
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            {#if getField('max_frames')}
-                <div>
-                    <Number
-                        id="max_frames"
-                        label={getField('max_frames')?.label || 'Max Frames'}
-                        bind:value={values['max_frames']}
-                    />
-                </div>
-            {/if}
-        </div>
-    
-     
-    
+
+
         <!-- Animation Prompts (full width) -->
         {#if getField('prompts')}
             <div class="mb-4">
@@ -111,6 +98,30 @@
                 />
             </div>
         {/if}
+    
+        <!-- Max Frames and Diffusion Cadence in a single row -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            {#if getField('max_frames')}
+                <div>
+                    <!-- <Number
+                        id="max_frames"
+                        label={getField('max_frames')?.label || 'Max Frames'}
+                        bind:value={values['max_frames']}
+                    /> -->
+
+                    <Dropdown
+                        id="max_frames"
+                        label={getField('max_frames')?.label || 'Max Frames'}
+                        options={getField('max_frames')?.options}
+                        bind:value={values['max_frames']}
+                        hidden={getField('max_frames')?.hidden}
+                    />
+                </div>
+            {/if}
+        </div>
+    
+     
+    
     
         <!-- Generate Button (inside the controller) -->
         {#if includeButton}
