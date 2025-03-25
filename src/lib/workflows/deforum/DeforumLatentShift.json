@@ -141,7 +141,7 @@
         "parseq_use_deltas": true,
         "use_looper": false,
         "init_images": "{'0': 'https://deforum.github.io/a1/Gi1.png', 'max_f/4-5': 'https://deforum.github.io/a1/Gi2.png', 'max_f/2-10': 'https://deforum.github.io/a1/Gi3.png', '3*max_f/4-15': 'https://deforum.github.io/a1/Gi4.jpg', 'max_f-20': 'https://deforum.github.io/a1/Gi1.png'}",
-        "image_strength_schedule": "0:(0.75)",
+        "image_strength_schedule": "0:(0.7)",
         "blendFactorMax": "0:(0.35)",
         "blendFactorSlope": "0:(0.25)",
         "tweening_frames_schedule": "0:(20)",
