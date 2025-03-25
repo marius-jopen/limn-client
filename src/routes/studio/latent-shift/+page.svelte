@@ -13,5 +13,5 @@
         inputLayout="controller-latent-shift"
     />
 
-    <!-- <ContinuousDeforum workflow_names={["deforum-latent-shift"]} /> -->
+    <ContinuousDeforum workflow_names={["deforum-latent-shift"]} />
 </div>

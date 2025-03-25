@@ -281,7 +281,7 @@
             />
         </div>
         
-        <div class="flex flex-col mt-4 ">
+        <div class="flex flex-col mt-4 hidden">
             <Label label="Global Negative Prompt" for_id="global-negative" />
             <Textarea
                 id="global-negative"
@@ -291,7 +291,7 @@
         </div>
     </div>
 
-    <div class="flex flex-col gap-4 mb-4 ">
+    <div class="flex flex-col gap-4 mb-4 hidden">
         {#each entries as entry, index}
             <div class="rounded-md grid grid-cols-[80px_1fr_1fr_40px] gap-4 p-4 border border-gray-200 bg-gray-50">
                 <div>
@@ -343,7 +343,7 @@
         onClick={addEntry} 
         label="Add Keyframe"
         variant="secondary" 
-        classes=""
+        classes="hidden"
     />
     
     <input type="hidden" {id} {value} />
