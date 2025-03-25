@@ -20,49 +20,49 @@
   const allNavigationItems = [
     {
       href: '/dashboard',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/sandbox.jpg',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/sandbox.jpg',
       imageAlt: 'Dashboard',
       title: 'Dashboard',
       visibleTo: ['limn', 'admin'] // Visible to limn users and admins
     },
     {
       href: '/studio/comfyui',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/abstract.jpg',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/abstract.jpg',
       imageAlt: 'Abstract',
       title: 'ComfyUI',
       visibleTo: ['admin'] // Only visible to admins
     },
     {
       href: '/studio/comfyui-flux',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/fashion.png',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/fashion.png',
       imageAlt: 'Fashion',
       title: 'ComfyUI Flux',
       visibleTo: ['admin'] // Only visible to admins
     },
     {
       href: '/studio/a1111',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/grab.png',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/grab.png',
       imageAlt: 'Grab',
       title: 'A1111',
       visibleTo: ['admin'] // Only visible to admins
     },
     {
       href: '/studio/deforum',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/cat.png',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/cat.png',
       imageAlt: 'Cat',
       title: 'Deforum',
       visibleTo: ['admin'] // Only visible to admins
     },
     {
       href: '/studio/latent-shift',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/glass.png',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/glass.png',
       imageAlt: 'Glass',
       title: 'Latent Shift',
       visibleTo: ['limn', 'admin'] // Visible to limn users and admins
     },
     {
       href: '/studio/output',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/nz.png',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/nz.png',
       imageAlt: 'Nz',
       title: 'Output',
       visibleTo: ['admin'] // Only visible to admins
