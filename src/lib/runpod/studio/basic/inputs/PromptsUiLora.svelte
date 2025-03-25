@@ -170,10 +170,3 @@
         </div>
     </div>
 {/if}
-
-<style>
-    /* Prevent body scroll when overlay is open */
-    :global(body) {
-        overflow: hidden;
-    }
-</style> 
