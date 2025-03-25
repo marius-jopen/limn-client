@@ -6,6 +6,7 @@
     import ContinuousDeforumItem from '$lib/supabase/studio/latent-shift/ContinuousDeforumItem.svelte';
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
     import Button from '$lib/atoms/Button.svelte';
+    import ContinuousDeforumVideo from './ContinuousDeforumVideo.svelte';
     
     // Configuration for pagination
     const INITIAL_BATCH_COUNT = 3; // Number of batches to load initially
@@ -793,6 +794,21 @@
             isLoading = false;
         }
     }
+
+    let showVideoPreview = false;
+    let selectedPathResources: Resource[] = [];
+
+    function handleShowVideo(event) {
+        const { resource } = event.detail;
+        // Find the path containing this resource
+        const path = visiblePaths.find(p => 
+            p.resources.some(r => r.id === resource.id)
+        );
+        if (path) {
+            selectedPathResources = path.resources;
+            showVideoPreview = true;
+        }
+    }
 </script>
 
 {#if error}
@@ -813,6 +829,7 @@
                                 {resource} 
                                 on:imageDeleted={handleImageDeleted}
                                 on:batchDeleted={handleBatchDeleted}
+                                on:showVideo={handleShowVideo}
                             />
                         </div>
                     {/each}
@@ -849,6 +866,13 @@
             {/if}
         </div>
     {/if}
+{/if}
+
+{#if showVideoPreview}
+    <ContinuousDeforumVideo 
+        resources={selectedPathResources}
+        on:close={() => showVideoPreview = false}
+    />
 {/if}
 
 <style>
