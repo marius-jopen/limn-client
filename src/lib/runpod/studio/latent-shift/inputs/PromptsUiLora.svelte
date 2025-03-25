@@ -177,7 +177,7 @@
         />
 
         <div 
-            class="bg-gray-200 rounded-lg w-[800px] max-h-[80vh] flex flex-col"
+            class="bg-gray-200 rounded-lg w-[800px] max-h-[80vh] flex flex-col overflow-hidden"
             transition:scale={{ 
                 duration: 300, 
                 delay: 100,
@@ -185,16 +185,16 @@
                 start: 0.95
             }}
         >
-            <div class="p-6 text-center w-8/12 mx-auto">
+            <!-- <div class="p-6 text-center w-8/12 mx-auto">
                 <h2 class="text-xl font-semibold mb-2">Select a Style</h2>
                 <p class="text-gray-600">
                     Choose a style below. After selection, you can adjust its strength using the number input in the bubble above your prompt field.
                 </p>
-            </div>
+            </div> -->
 
             
             <!-- LoRA Grid -->
-            <div class="p-3 overflow-y-auto grid grid-cols-2 gap-2">
+            <div class="p-3 overflow-y-auto flex-1 grid grid-cols-2 gap-2">
                 {#each filteredOptions as option}
                     <div 
                         class="flex bg-gray-100 border rounded-lg hover:bg-gray-50 cursor-pointer"

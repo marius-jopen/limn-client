@@ -58,7 +58,7 @@
     $: user_id = $user?.id;
 </script>
 
-<div class="input-controller pt-12 pb-28 ">
+<div class="input-controller pt-8 pb-16 ">
    <InitImage
         id="init_image"
         label={getField('init_image')?.label || 'Init Image'}
