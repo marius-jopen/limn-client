@@ -1,4 +1,8 @@
 <script lang="ts">
+    import Dropdown from '$lib/atoms/Dropdown.svelte';
+    import Button from "$lib/atoms/Button.svelte";
+    import { fade, scale } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
     export let id: string;
     export let label: string;
     export let value: {
@@ -74,146 +78,180 @@
     }
 
     let hoveredValue: string | null = null;
+    let isOverlayOpen = false;
 </script>
 
-<div class="font-sans max-w-[800px] mx-auto p-2.5">
-   
-    <div class="flex gap-2.5 justify-center bg-gray-100 rounded-xl p-4 w-fit mx-auto">
-        <!-- Translation Pod -->
-        <div class="p-3 w-40">
-            <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Translation</h4>
-            <div class="control-wheel">
-                <button class="wheel-button top" 
-                    on:mouseenter={() => hoveredValue = 'y'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('y', true)}>
-                    <span>▲</span>
-                </button>
-                <button class="wheel-button right"
-                    on:mouseenter={() => hoveredValue = 'x'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('x', true)}>
-                    <span>▶</span>
-                </button>
-                <button class="wheel-button bottom" 
-                    on:mouseenter={() => hoveredValue = 'y'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('y', false)}>
-                    <span>▼</span>
-                </button>
-                <button class="wheel-button left"
-                    on:mouseenter={() => hoveredValue = 'x'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('x', false)}>
-                    <span>◀</span>
-                </button>
-                <div class="center-button">
-                    <button class="z-control top"
-                        on:mouseenter={() => hoveredValue = 'z'}
-                        on:mouseleave={() => hoveredValue = null}
-                        on:click={() => updateValue('z', true)}>▲</button>
-                    <button class="z-control bottom"
-                        on:mouseenter={() => hoveredValue = 'z'}
-                        on:mouseleave={() => hoveredValue = null}
-                        on:click={() => updateValue('z', false)}>▼</button>
-                </div>
-            </div>
-            <div class="value-display">
-                <div class:highlight={hoveredValue === 'x'}>X: {value.x}</div>
-                <div class:highlight={hoveredValue === 'y'}>Y: {value.y}</div>
-                <div class:highlight={hoveredValue === 'z'}>Z: {value.z}</div>
-            </div>
-        </div>
+<!-- Trigger Button -->
+<div class="flex justify-center">
+    <Button
+        label="🍿 Camera Controls"
+        variant="secondary"
+        size="sm"
+        onClick={() => isOverlayOpen = true}
+    />
+</div>
 
-        <!-- Center Pod -->
-        <div class="bg-gray-100 rounded-xl p-3 w-40 ">
-            <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Center</h4>
-            <div class="control-wheel">
-                <button class="wheel-button top" 
-                    on:mouseenter={() => hoveredValue = 'center_y'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('center_y', true)}>
-                    <span>▲</span>
-                </button>
-                <button class="wheel-button right"
-                    on:mouseenter={() => hoveredValue = 'center_x'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('center_x', true)}>
-                    <span>▶</span>
-                </button>
-                <button class="wheel-button bottom"
-                    on:mouseenter={() => hoveredValue = 'center_y'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('center_y', false)}>
-                    <span>▼</span>
-                </button>
-                <button class="wheel-button left"
-                    on:mouseenter={() => hoveredValue = 'center_x'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('center_x', false)}>
-                    <span>◀</span>
-                </button>
-                <div class="center-button">
-                    <button class="center-dot" 
-                        on:mouseenter={() => hoveredValue = 'reset'}
-                        on:mouseleave={() => hoveredValue = null}
-                        on:click={resetAll}></button>
-                </div>
-            </div>
-            <div class="value-display">
-                <div class:highlight={hoveredValue === 'center_x'}>X: {value.center_x}</div>
-                <div class:highlight={hoveredValue === 'center_y'}>Y: {value.center_y}</div>
-                <div class:highlight={hoveredValue === 'reset'}>Reset all</div>
-            </div>
-        </div>
+<!-- Camera Controls Overlay -->
+{#if isOverlayOpen}
+    <div 
+        class="fixed bg-neutral-100/80 backdrop-blur-2xl inset-0 z-50 flex items-center justify-center"
+        on:click|self={() => isOverlayOpen = false}
+        transition:fade={{ duration: 200 }}
+    >
+        <button 
+            class="fixed top-3 right-4 bg-gray-200 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors z-[51]"
+            on:click={() => isOverlayOpen = false}
+        >
+            Close
+        </button>
 
-        <!-- Rotation Pod -->
-        <div class="bg-gray-100 rounded-xl p-3 w-40 ">
-            <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Rotation</h4>
-            <div class="control-wheel">
-                <button class="wheel-button top"
-                    on:mouseenter={() => hoveredValue = 'rotation_x'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('rotation_x', true)}>
-                    <span>▲</span>
-                </button>
-                <button class="wheel-button right"
-                    on:mouseenter={() => hoveredValue = 'rotation_y'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('rotation_y', true)}>
-                    <span>▶</span>
-                </button>
-                <button class="wheel-button bottom"
-                    on:mouseenter={() => hoveredValue = 'rotation_x'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('rotation_x', false)}>
-                    <span>▼</span>
-                </button>
-                <button class="wheel-button left"
-                    on:mouseenter={() => hoveredValue = 'rotation_y'}
-                    on:mouseleave={() => hoveredValue = null}
-                    on:click={() => updateValue('rotation_y', false)}>
-                    <span>◀</span>
-                </button>
-                <div class="center-button">
-                    <button class="z-control top"
-                        on:mouseenter={() => hoveredValue = 'rotation_z'}
-                        on:mouseleave={() => hoveredValue = null}
-                        on:click={() => updateValue('rotation_z', true)}>▲</button>
-                    <button class="z-control bottom"
-                        on:mouseenter={() => hoveredValue = 'rotation_z'}
-                        on:mouseleave={() => hoveredValue = null}
-                        on:click={() => updateValue('rotation_z', false)}>▼</button>
+        <div 
+            class="bg-gray-300 rounded-lg p-4"
+            transition:scale={{ 
+                duration: 300, 
+                delay: 100,
+                easing: quintOut,
+                start: 0.95
+            }}
+        >
+            <div class="flex gap-2.5 justify-center w-fit">
+                <!-- Translation Pod -->
+                <div class="p-3 w-40">
+                    <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Translation</h4>
+                    <div class="control-wheel">
+                        <button class="wheel-button top" 
+                            on:mouseenter={() => hoveredValue = 'y'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('y', true)}>
+                            <span>▲</span>
+                        </button>
+                        <button class="wheel-button right"
+                            on:mouseenter={() => hoveredValue = 'x'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('x', true)}>
+                            <span>▶</span>
+                        </button>
+                        <button class="wheel-button bottom" 
+                            on:mouseenter={() => hoveredValue = 'y'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('y', false)}>
+                            <span>▼</span>
+                        </button>
+                        <button class="wheel-button left"
+                            on:mouseenter={() => hoveredValue = 'x'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('x', false)}>
+                            <span>◀</span>
+                        </button>
+                        <div class="center-button">
+                            <button class="z-control top"
+                                on:mouseenter={() => hoveredValue = 'z'}
+                                on:mouseleave={() => hoveredValue = null}
+                                on:click={() => updateValue('z', true)}>▲</button>
+                            <button class="z-control bottom"
+                                on:mouseenter={() => hoveredValue = 'z'}
+                                on:mouseleave={() => hoveredValue = null}
+                                on:click={() => updateValue('z', false)}>▼</button>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <div class:highlight={hoveredValue === 'x'}>X: {value.x}</div>
+                        <div class:highlight={hoveredValue === 'y'}>Y: {value.y}</div>
+                        <div class:highlight={hoveredValue === 'z'}>Z: {value.z}</div>
+                    </div>
                 </div>
-            </div>
-            <div class="value-display">
-                <div class:highlight={hoveredValue === 'rotation_x'}>X: {value.rotation_x}</div>
-                <div class:highlight={hoveredValue === 'rotation_y'}>Y: {value.rotation_y}</div>
-                <div class:highlight={hoveredValue === 'rotation_z'}>Z: {value.rotation_z}</div>
+
+                <!-- Center Pod -->
+                <div class="p-3 w-40 ">
+                    <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Center</h4>
+                    <div class="control-wheel">
+                        <button class="wheel-button top" 
+                            on:mouseenter={() => hoveredValue = 'center_y'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('center_y', true)}>
+                            <span>▲</span>
+                        </button>
+                        <button class="wheel-button right"
+                            on:mouseenter={() => hoveredValue = 'center_x'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('center_x', true)}>
+                            <span>▶</span>
+                        </button>
+                        <button class="wheel-button bottom"
+                            on:mouseenter={() => hoveredValue = 'center_y'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('center_y', false)}>
+                            <span>▼</span>
+                        </button>
+                        <button class="wheel-button left"
+                            on:mouseenter={() => hoveredValue = 'center_x'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('center_x', false)}>
+                            <span>◀</span>
+                        </button>
+                        <div class="center-button">
+                            <button class="center-dot" 
+                                on:mouseenter={() => hoveredValue = 'reset'}
+                                on:mouseleave={() => hoveredValue = null}
+                                on:click={resetAll}></button>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <div class:highlight={hoveredValue === 'center_x'}>X: {value.center_x}</div>
+                        <div class:highlight={hoveredValue === 'center_y'}>Y: {value.center_y}</div>
+                        <div class:highlight={hoveredValue === 'reset'}>Reset all</div>
+                    </div>
+                </div>
+
+                <!-- Rotation Pod -->
+                <div class="p-3 w-40 ">
+                    <h4 class="text-center text-sm font-medium mb-2 text-gray-800">Rotation</h4>
+                    <div class="control-wheel">
+                        <button class="wheel-button top"
+                            on:mouseenter={() => hoveredValue = 'rotation_x'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('rotation_x', true)}>
+                            <span>▲</span>
+                        </button>
+                        <button class="wheel-button right"
+                            on:mouseenter={() => hoveredValue = 'rotation_y'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('rotation_y', true)}>
+                            <span>▶</span>
+                        </button>
+                        <button class="wheel-button bottom"
+                            on:mouseenter={() => hoveredValue = 'rotation_x'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('rotation_x', false)}>
+                            <span>▼</span>
+                        </button>
+                        <button class="wheel-button left"
+                            on:mouseenter={() => hoveredValue = 'rotation_y'}
+                            on:mouseleave={() => hoveredValue = null}
+                            on:click={() => updateValue('rotation_y', false)}>
+                            <span>◀</span>
+                        </button>
+                        <div class="center-button">
+                            <button class="z-control top"
+                                on:mouseenter={() => hoveredValue = 'rotation_z'}
+                                on:mouseleave={() => hoveredValue = null}
+                                on:click={() => updateValue('rotation_z', true)}>▲</button>
+                            <button class="z-control bottom"
+                                on:mouseenter={() => hoveredValue = 'rotation_z'}
+                                on:mouseleave={() => hoveredValue = null}
+                                on:click={() => updateValue('rotation_z', false)}>▼</button>
+                        </div>
+                    </div>
+                    <div class="value-display">
+                        <div class:highlight={hoveredValue === 'rotation_x'}>X: {value.rotation_x}</div>
+                        <div class:highlight={hoveredValue === 'rotation_y'}>Y: {value.rotation_y}</div>
+                        <div class:highlight={hoveredValue === 'rotation_z'}>Z: {value.rotation_z}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+{/if}
 
 <style>
     /* We only keep styles that can't be easily done with Tailwind */
@@ -286,6 +324,6 @@
     }
 
     .value-display div.highlight {
-        @apply text-primary;
+        @apply text-white;
     }
 </style>
