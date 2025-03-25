@@ -91,9 +91,9 @@
     <textarea 
         {id}
         bind:value={userText}
-        class="text-sm w-full min-h-[50px] rounded-lg bg-transparent border-none 
+        class="text-sm w-full min-h-[70px] rounded-lg bg-transparent border-none 
                focus:outline-none focus:ring-0
-               text-gray-800 placeholder-gray-400 resize-none"
+               text-gray-800 placeholder-gray-560 resize-none"
         placeholder="Describe what you want to create..."
     />
     
