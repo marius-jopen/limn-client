@@ -7,7 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#00ff94',
+        primary: '#46ffbe',
+        secondary: '#fbabff',
       },
       gridTemplateColumns: {
         // Simple 8-12 column grid

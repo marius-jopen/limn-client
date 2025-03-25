@@ -225,7 +225,7 @@
                 on:click={handlePreview}
                 src={cdnImageUrl}
                 alt={currentResource.name || 'User uploaded image'} 
-                class="cursor-pointer h-full w-auto object-contain rounded-md"
+                class="cursor-pointer h-full w-auto object-contain rounded-xl"
                 loading="lazy"
             />
         </div>
@@ -280,7 +280,7 @@
                 <img 
                     src={cdnImageUrl} 
                     alt={currentResource.name || 'Preview'} 
-                    class="max-w-full max-h-[90vh] object-contain rounded-md"
+                    class="max-w-full max-h-[90vh] object-contain rounded-xl"
                 />
                 
                 <!-- Using Button atom for the close button -->

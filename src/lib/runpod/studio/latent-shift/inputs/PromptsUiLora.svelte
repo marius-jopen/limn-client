@@ -1,6 +1,8 @@
 <script lang="ts">
     import Button from "$lib/atoms/Button.svelte";
     import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
+    import { fade, scale } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
 
     interface DropdownOption {
         value: string;
@@ -160,6 +162,7 @@
             isOverlayOpen = false;
             searchTerm = "";
         }}
+        transition:fade={{ duration: 200 }}
     >
         <!-- Close button fixed to top-right of screen -->
         <Button 
@@ -173,7 +176,15 @@
             classes="fixed top-3 right-4 text-sm z-[51]"
         />
 
-        <div class="bg-gray-200 rounded-lg w-[800px] max-h-[80vh] flex flex-col">
+        <div 
+            class="bg-gray-200 rounded-lg w-[800px] max-h-[80vh] flex flex-col"
+            transition:scale={{ 
+                duration: 300, 
+                delay: 100,
+                easing: quintOut,
+                start: 0.95
+            }}
+        >
             <div class="p-6 text-center w-8/12 mx-auto">
                 <h2 class="text-xl font-semibold mb-2">Select a Style</h2>
                 <p class="text-gray-600">

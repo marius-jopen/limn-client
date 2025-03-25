@@ -58,7 +58,7 @@
     $: user_id = $user?.id;
 </script>
 
-<div class="input-controller pt-24 pb-28">
+<div class="input-controller pt-24 pb-28 ">
    <InitImage
         id="init_image"
         label={getField('init_image')?.label || 'Init Image'}
@@ -66,7 +66,7 @@
         userId={user_id}
     />
 
-    <div class="bg-gray-100 p-3 rounded-md w-8/12 mx-auto mt-8">
+    <div class="bg-gray-100 p-3 rounded-lg w-8/12 mx-auto mt-8">
         <PromptsUi
             id="prompts"
             label={getField('prompts')?.label || 'Animation Prompts'}
