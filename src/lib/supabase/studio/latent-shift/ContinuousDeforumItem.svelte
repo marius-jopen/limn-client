@@ -240,12 +240,12 @@
                     onClick={selectImage}
                 />
 
-                <!-- <Button
-                    label="Watch"
+                <Button
+                    label="👀"
                     variant="secondary"
                     size="sm"
                     onClick={() => dispatch('showVideo', { resource: currentResource })}
-                /> -->
+                />
                 
                 <!-- Use the slot-based Dropdown component with animated dropdown -->
                 <Dropdown 
