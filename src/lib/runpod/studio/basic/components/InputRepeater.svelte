@@ -11,7 +11,8 @@
     import FormatUi from '$lib/runpod/studio/basic/inputs/FormatUi.svelte';
     import FormatSelectUi from '$lib/runpod/studio/basic/inputs/FormatSelectUi.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
-    
+    import CameraUi from '$lib/runpod/studio/basic/inputs/CameraUi.svelte';
+
     type BaseField = {
         id: string;
         label: string;
@@ -57,7 +58,12 @@
         type: 'random-number';
         hidden?: boolean;
     };
-    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField | RandomNumberField ;
+
+    type CameraField = BaseField & {
+        type: 'camera';
+    };
+    
+    type UIField = StringField | IntField | SelectField | SliderField | BooleanField | UploadImageField | PromptsField | FormatField | FormatSelectField | RandomNumberField | CameraField;
 
     export let UI: UIField[] = [];
     export let values: Record<string, string | number | boolean> = {};
@@ -134,6 +140,12 @@
                 label={field.label}
                 bind:value={values[field.id]}
                 hidden={field.hidden}
+            />
+        {:else if field.type === 'camera'}
+            <CameraUi
+                id={field.id}
+                label={field.label}
+                bind:value={values[field.id]}
             />
         {:else if field.type === 'format'}
             <FormatUi
