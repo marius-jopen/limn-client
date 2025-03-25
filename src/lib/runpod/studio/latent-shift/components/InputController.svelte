@@ -73,6 +73,7 @@
             bind:value={values['prompts']}
             options={getField('prompts')?.options}
             bind:this={loraComponent}
+            defaultValues={getField('prompts')?.default}
         />
     
         <div class="flex flex-row gap-2 justify-between mt-1">

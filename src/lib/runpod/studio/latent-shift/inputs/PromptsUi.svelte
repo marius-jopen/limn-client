@@ -11,6 +11,7 @@
     export let value: string = '{}';
     export let hidden: boolean = false;
     export let options: DropdownOption[] = [];  // Make sure we receive the options
+    export let defaultValues: any = undefined;
 
     const dispatch = createEventDispatcher();
 
@@ -22,28 +23,48 @@
     let defaultPrompts: { [frame: string]: string } = {};
     let entries: { frame: string; prompt: string; negativePrompt: string }[] = [];
     let prompts: { [frame: string]: string } = {};
+    let globalPositiveHidden: string = '';
+    let globalNegativeHidden: string = '';
 
     let loraComponent: { openLoraOverlay: () => void };
 
     // Parse the initial value and set defaults
     try {
         if (value) {
-            // Handle both string and object values
             const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+            const defaults = defaultValues || parsed.default;
             
+            console.log('Parsing initialization:');
+            console.log('Parsed value:', parsed);
+            console.log('Default values:', defaultValues);
+            console.log('Using defaults:', defaults);
+
             // Set global prompts from defaults
             if (parsed.globalPositive) {
                 globalPositiveText = parsed.globalPositive;
                 globalPositiveWithLora = parsed.globalPositive;
-            } else if (parsed.default?.globalPositive) {
-                globalPositiveText = parsed.default.globalPositive;
-                globalPositiveWithLora = parsed.default.globalPositive;
+            } else if (defaults?.globalPositive) {
+                globalPositiveText = defaults.globalPositive;
+                globalPositiveWithLora = defaults.globalPositive;
             }
 
+            // Set global negative prompts
             if (parsed.globalNegative) {
                 globalNegativePrompt = parsed.globalNegative;
-            } else if (parsed.default?.globalNegative) {
-                globalNegativePrompt = parsed.default.globalNegative;
+            } else if (defaults?.globalNegative) {
+                globalNegativePrompt = defaults.globalNegative;
+            }
+
+            // Set hidden prompts
+            if (defaults?.globalPositiveHidden) {
+                globalPositiveHidden = defaults.globalPositiveHidden;
+                console.log('Set globalPositiveHidden:', globalPositiveHidden);
+            }
+            if (defaults?.gobalNegativeHidden) {
+                globalNegativeHidden = defaults.gobalNegativeHidden;
+                console.log('Set globalNegativeHidden:', globalNegativeHidden);
+            } else {
+                console.log('No globalNegativeHidden found in defaults:', defaults);
             }
 
             // Set frame entries from defaults
@@ -56,8 +77,8 @@
                         negativePrompt: negative || ''
                     };
                 });
-            } else if (parsed.default?.frames) {
-                entries = Object.entries(parsed.default.frames).map(([frame, promptValue]) => {
+            } else if (defaults?.frames) {
+                entries = Object.entries(defaults.frames).map(([frame, promptValue]) => {
                     const [prompt, negative] = (promptValue as string).split('--neg').map(p => p.trim());
                     return {
                         frame,
@@ -69,7 +90,7 @@
         }
     } catch (e) {
         console.error('Error parsing prompts value:', e);
-        // Initialize with empty entry if parsing fails
+        console.error('Error details:', e.message);
         entries = [{ frame: '0', prompt: '', negativePrompt: '' }];
     }
 
@@ -96,54 +117,81 @@
         }
     }
 
+    $: {
+        // This will run whenever entries changes
+        if (entries) {
+            console.log('Entries changed:', entries);
+            updateValue();
+        }
+    }
+
     function updateValue() {
         console.log('=== updateValue start ===');
         console.log('Global Positive with LoRA:', globalPositiveWithLora);
         console.log('Global Negative:', globalNegativePrompt);
-        console.log('Entries:', entries);
+        console.log('Global Negative Hidden:', globalNegativeHidden);
+        console.log('All entries:', entries);
 
         prompts = {};
         entries.sort((a, b) => (parseInt(a.frame) || 0) - (parseInt(b.frame) || 0))
               .forEach((entry) => {
                   if (entry.frame) {
-                      let positivePrompt = '';
-                      if (globalPositiveWithLora && entry.prompt) {
-                          positivePrompt = `${globalPositiveWithLora} ${entry.prompt}`;
-                      } else if (globalPositiveWithLora) {
-                          positivePrompt = globalPositiveWithLora;
-                      } else {
-                          positivePrompt = entry.prompt;
+                      console.log('Processing entry:', entry);
+                      
+                      // Build positive prompt
+                      const positiveComponents = [];
+                      if (globalPositiveWithLora) positiveComponents.push(globalPositiveWithLora);
+                      if (entry.prompt && entry.prompt.trim()) {
+                          console.log('Adding entry prompt:', entry.prompt);
+                          positiveComponents.push(entry.prompt);
                       }
-
-                      // Build negative prompt with global
-                      let negativePrompt = '';
-                      if (globalNegativePrompt && entry.negativePrompt) {
-                          negativePrompt = `${globalNegativePrompt} ${entry.negativePrompt}`;
-                          console.log('Combined negative:', negativePrompt);
-                      } else if (globalNegativePrompt) {
-                          negativePrompt = globalNegativePrompt;
-                      } else {
-                          negativePrompt = entry.negativePrompt;
+                      if (globalPositiveHidden) positiveComponents.push(globalPositiveHidden);
+                      
+                      // Build negative prompt
+                      const negativeComponents = [];
+                      if (globalNegativePrompt) negativeComponents.push(globalNegativePrompt);
+                      if (entry.negativePrompt && entry.negativePrompt.trim()) {
+                          console.log('Adding entry negative:', entry.negativePrompt);
+                          negativeComponents.push(entry.negativePrompt);
                       }
+                      if (globalNegativeHidden) negativeComponents.push(globalNegativeHidden);
 
-                      prompts[entry.frame] = `${positivePrompt} --neg ${negativePrompt}`.trim();
-                      console.log(`Frame ${entry.frame} final:`, prompts[entry.frame]);
+                      const finalPositive = positiveComponents.join(' ');
+                      const finalNegative = negativeComponents.join(' ');
+
+                      prompts[entry.frame] = `${finalPositive.trim()} --neg ${finalNegative}`.trim();
+                      console.log(`Frame ${entry.frame} components:`, {
+                          positive: positiveComponents,
+                          negative: negativeComponents
+                      });
                   }
               });
         
         value = JSON.stringify(prompts);
-        console.log('Final value:', value);
+        console.log('Value immediately after update:', value);
+        
+        // Check the value after a brief delay
+        setTimeout(() => {
+            console.log('Value after delay:', value);
+            console.log('Hidden input value:', document.getElementById(id)?.value);
+        }, 100);
+
         dispatch('change', value);
     }
 
-    // Add a new entry
+    // Fix the addEntry function to preserve existing entries
     function addEntry() {
         // Find the next available frame number
         const maxFrame = entries.length > 0 
             ? Math.max(...entries.map(e => parseInt(e.frame) || 0)) 
             : -1;
         const nextFrame = (maxFrame + 5).toString();
-        entries = [...entries, { frame: nextFrame, prompt: '', negativePrompt: '' }];
+        
+        // Create new entry while preserving existing ones
+        entries = [
+            ...entries,
+            { frame: nextFrame, prompt: '', negativePrompt: '' }
+        ];
         updateValue();
     }
 
@@ -164,17 +212,37 @@
         updateFrame(index, target.value);
     }
 
+    // Make sure the entry update handlers preserve the values
     function handleInputPrompt(event: Event, index: number) {
         hasUserEdits = true;
         const target = event.target as HTMLTextAreaElement;
-        entries[index].prompt = target.value;
+        console.log('Handling prompt input:', {
+            index,
+            newValue: target.value,
+            currentEntries: entries
+        });
+        
+        entries = entries.map((entry, i) => {
+            if (i === index) {
+                const updated = { ...entry, prompt: target.value };
+                console.log('Updated entry:', updated);
+                return updated;
+            }
+            return entry;
+        });
+        
+        console.log('Entries after update:', entries);
         updateValue();
     }
 
     function handleInputNegativePrompt(event: Event, index: number) {
         hasUserEdits = true;
         const target = event.target as HTMLTextAreaElement;
-        entries[index].negativePrompt = target.value;
+        entries = entries.map((entry, i) => 
+            i === index 
+                ? { ...entry, negativePrompt: target.value }
+                : entry
+        );
         updateValue();
     }
 
@@ -188,6 +256,12 @@
     export function openLoraOverlay() {
         // Call the LoRA component's openLoraOverlay
         loraComponent?.openLoraOverlay();
+    }
+
+    $: {
+        if (value) {
+            console.log('Value changed reactively:', value);
+        }
     }
 </script>
 
@@ -207,7 +281,7 @@
             />
         </div>
         
-        <div class="flex flex-col mt-4 hidden">
+        <div class="flex flex-col mt-4 ">
             <Label label="Global Negative Prompt" for_id="global-negative" />
             <Textarea
                 id="global-negative"
@@ -217,7 +291,7 @@
         </div>
     </div>
 
-    <div class="flex flex-col gap-4 mb-4 hidden">
+    <div class="flex flex-col gap-4 mb-4 ">
         {#each entries as entry, index}
             <div class="rounded-md grid grid-cols-[80px_1fr_1fr_40px] gap-4 p-4 border border-gray-200 bg-gray-50">
                 <div>
@@ -225,8 +299,7 @@
                     <InputText
                         id={`frame-${index}`}
                         type="number"
-                        value={entry.frame}
-                        on:input={(e) => handleInputFrame(e, index)}
+                        bind:value={entry.frame}
                     />
                 </div>
                 
@@ -234,8 +307,11 @@
                     <Label label="Prompt" for_id={`prompt-${index}`} />
                     <Textarea
                         id={`prompt-${index}`}
-                        value={entry.prompt}
-                        on:input={(e) => handleInputPrompt(e, index)}
+                        bind:value={entry.prompt}
+                        on:input={() => {
+                            console.log('Prompt changed:', entry.prompt);
+                            updateValue();
+                        }}
                     />
                 </div>
                 
@@ -243,8 +319,11 @@
                     <Label label="Negative Prompt" for_id={`negative-${index}`} />
                     <Textarea
                         id={`negative-${index}`}
-                        value={entry.negativePrompt}
-                        on:input={(e) => handleInputNegativePrompt(e, index)}
+                        bind:value={entry.negativePrompt}
+                        on:input={() => {
+                            console.log('Negative prompt changed:', entry.negativePrompt);
+                            updateValue();
+                        }}
                     />
                 </div>
                 
@@ -264,7 +343,7 @@
         onClick={addEntry} 
         label="Add Keyframe"
         variant="secondary" 
-        classes="hidden"
+        classes=""
     />
     
     <input type="hidden" {id} {value} />
