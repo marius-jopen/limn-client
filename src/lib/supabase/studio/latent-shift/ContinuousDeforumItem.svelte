@@ -231,7 +231,7 @@
         </div>
         
         <!-- Button row with dropdown - simple fade in/out on hover with fly-in animation -->
-        <div class="p-2 mt-5 w-full">
+        <div class="p-2 mt-3 w-full">
             <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
                 <Button
                     label="Explore"

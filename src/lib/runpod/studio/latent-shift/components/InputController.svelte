@@ -75,7 +75,7 @@
             bind:this={loraComponent}
         />
     
-        <div class="flex flex-row gap-2 justify-between mt-3">
+        <div class="flex flex-row gap-2 justify-between mt-1">
             <div class="flex flex-row gap-2">
                 <Dropdown
                     id="max_frames"

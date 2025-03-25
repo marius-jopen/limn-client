@@ -842,7 +842,7 @@
                 <Button 
                     label="Load More"
                     variant="secondary"
-                    size="md"
+                    size="sm"
                     onClick={loadMore}
                     classes="mt-12 mb-20"
                 />
