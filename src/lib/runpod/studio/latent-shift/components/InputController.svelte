@@ -7,7 +7,7 @@
     import InitImage from '$lib/runpod/studio/latent-shift/inputs/InitImage.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
     import PromptsUi from '$lib/runpod/studio/latent-shift/inputs/PromptsUi.svelte';
-    import Dropdown from '$lib/runpod/studio/basic/inputs/DropdownUi.svelte';   
+    import IntDropdown from '$lib/runpod/studio/basic/inputs/IntDropdownUi.svelte';   
 
     // Define types similar to InputRepeater
     type BaseField = {
@@ -77,7 +77,7 @@
     
         <div class="flex flex-row gap-2 justify-between mt-1">
             <div class="flex flex-row gap-2">
-                <Dropdown
+                <IntDropdown
                     id="max_frames"
                     options={getField('max_frames')?.options}
                     bind:value={values['max_frames']}

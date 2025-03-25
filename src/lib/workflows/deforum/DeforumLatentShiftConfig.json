@@ -9,7 +9,7 @@
     },
     {
         "id": "max_frames",
-        "type": "dropdown",
+        "type": "int-dropdown",
         "placeholder": "${MAX_FRAMES}",
         "label": "Max Frames",
         "default": 15,

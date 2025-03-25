@@ -2,7 +2,7 @@
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import Textarea from '$lib/runpod/studio/basic/inputs/TextareaUi.svelte';
     import Number from '$lib/runpod/studio/basic/inputs/NumberUi.svelte';
-    import Dropdown from '$lib/runpod/studio/basic/inputs/DropdownUi.svelte';
+    import Dropdown from '$lib/runpod/studio/basic/inputs/IntDropdownUi.svelte';
     import SliderUi from '$lib/runpod/studio/basic/inputs/SliderUi.svelte';
     import BooleanUi from '$lib/runpod/studio/basic/inputs/BooleanUi.svelte';
     import InitImageUi from '$lib/runpod/studio/basic/inputs/InitImage.svelte';

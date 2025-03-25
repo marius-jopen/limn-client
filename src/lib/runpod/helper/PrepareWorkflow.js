@@ -64,7 +64,7 @@ export function prepareWorkflow(workflow, uiConfig, values) {
             return;
         }
         
-        if (field.type === 'int' || field.type === 'number') {
+        if (field.type === 'int' || field.type === 'number' || field.type === 'int-dropdown') {
             // Handle numeric values
             const value = Number(values[field.id]);
             

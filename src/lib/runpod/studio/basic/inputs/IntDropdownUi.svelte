@@ -3,12 +3,12 @@
     import Button from '$lib/atoms/Button.svelte';
     
     interface DropdownOption {
-        value: string;
+        value: number;
         label: string;
     }
 
-    export const id: string = "";
-    export let value: string = "";
+    export let id: string = "";
+    export let value: number = 15;
     export let options: DropdownOption[] = [];
     export let hidden: boolean = false;
     export let prefix: string = "";
@@ -17,8 +17,8 @@
     let dropdown: Dropdown;
     let isOpen = false;
 
-    function handleSelect(newValue: string) {
-        value = newValue;
+    function handleSelect(newValue: string | number) {
+        value = typeof newValue === 'string' ? parseInt(newValue) : newValue;
         dropdown.close();
     }
 
