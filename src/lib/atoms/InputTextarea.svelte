@@ -5,7 +5,7 @@
 </script>
 
 <textarea
-    class="w-full p-2 border border-gray-200 {readonly ? 'bg-gray-50' : ''}"
+    class="w-full p-2 border border-gray-200 rounded-md {readonly ? 'bg-gray-50' : ''}"
     bind:value
     {id}
     {readonly}

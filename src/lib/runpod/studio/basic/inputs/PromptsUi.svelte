@@ -186,7 +186,7 @@
     <label for={id} class="block font-semibold mb-2">{label}</label>
 
     <!-- Global prompt fields -->
-    <div class="grid grid-cols-2 gap-4 mb-6 p-4 border border-gray-200 bg-blue-50">
+    <div class="mb-6 p-4 border border-gray-200 rounded-md">
         <div class="flex flex-col">
             <PromptsUiLora
                 label="Global Positive Prompt"
@@ -209,7 +209,7 @@
 
     <div class="flex flex-col gap-4 mb-4">
         {#each entries as entry, index}
-            <div class="grid grid-cols-[80px_1fr_1fr_40px] gap-4 p-4 border border-gray-200 bg-gray-50">
+            <div class="rounded-md grid grid-cols-[80px_1fr_1fr_40px] gap-4 p-4 border border-gray-200 bg-gray-50">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Frame</label>
                     <input 
