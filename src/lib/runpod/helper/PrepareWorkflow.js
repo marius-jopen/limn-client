@@ -124,6 +124,23 @@ export function prepareWorkflow(workflow, uiConfig, values) {
         }
     }
 
+    // Special handling for camera field
+    const cameraField = uiConfig.find(field => field.type === 'camera');
+    if (cameraField && values[cameraField.id]) {
+        const cameraValues = values[cameraField.id];
+        
+        // Replace camera-related placeholders
+        workflowStr = workflowStr
+            .replace('${TRANSLATION_X}', cameraValues.x)
+            .replace('${TRANSLATION_Y}', cameraValues.y)
+            .replace('${TRANSLATION_Z}', cameraValues.z)
+            .replace('${TRANSFORM_CENTER_X}', cameraValues.center_x)
+            .replace('${TRANSFORM_CENTER_Y}', cameraValues.center_y)
+            .replace('${ROTATION_3D_X}', cameraValues.rotation_x)
+            .replace('${ROTATION_3D_Y}', cameraValues.rotation_y)
+            .replace('${ROTATION_3D_Z}', cameraValues.rotation_z);
+    }
+
     try {
         // Final check: ensure W and H are numbers in the result
         const result = JSON.parse(workflowStr);

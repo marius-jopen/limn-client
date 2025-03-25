@@ -4,6 +4,7 @@
     import Label from '$lib/atoms/Label.svelte';
     import Textarea from '$lib/atoms/InputTextarea.svelte';
     import InputText from '$lib/atoms/InputText.svelte';
+    import Dropdown from '$lib/atoms/Dropdown.svelte';
     import PromptsUiLora from './PromptsUiLora.svelte';  // Import the LoRA component
 
     export let id: string;
@@ -12,6 +13,7 @@
     export let hidden: boolean = false;
     export let options: DropdownOption[] = [];  // Make sure we receive the options
     export let defaultValues: any = undefined;
+    export let promptMode: 'clean' | 'original' = 'clean';
 
     const dispatch = createEventDispatcher();
 
@@ -131,6 +133,7 @@
         console.log('Global Negative:', globalNegativePrompt);
         console.log('Global Negative Hidden:', globalNegativeHidden);
         console.log('All entries:', entries);
+        console.log('Current mode:', promptMode);
 
         prompts = {};
         entries.sort((a, b) => (parseInt(a.frame) || 0) - (parseInt(b.frame) || 0))
@@ -145,7 +148,10 @@
                           console.log('Adding entry prompt:', entry.prompt);
                           positiveComponents.push(entry.prompt);
                       }
-                      if (globalPositiveHidden) positiveComponents.push(globalPositiveHidden);
+                      // Only add hidden prompts in clean mode
+                      if (promptMode === 'clean' && globalPositiveHidden) {
+                          positiveComponents.push(globalPositiveHidden);
+                      }
                       
                       // Build negative prompt
                       const negativeComponents = [];
@@ -154,7 +160,10 @@
                           console.log('Adding entry negative:', entry.negativePrompt);
                           negativeComponents.push(entry.negativePrompt);
                       }
-                      if (globalNegativeHidden) negativeComponents.push(globalNegativeHidden);
+                      // Only add hidden negative prompts in clean mode
+                      if (promptMode === 'clean' && globalNegativeHidden) {
+                          negativeComponents.push(globalNegativeHidden);
+                      }
 
                       const finalPositive = positiveComponents.join(' ');
                       const finalNegative = negativeComponents.join(' ');
@@ -266,6 +275,29 @@
 </script>
 
 <div class="w-full {hidden ? 'hidden' : ''}">
+    <!-- Add mode selector dropdown -->
+    <div class="flex justify-end mb-4 hidden">
+        <Dropdown position="bottom">
+            <div slot="trigger" class="cursor-pointer px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-200">
+                {promptMode === 'clean' ? 'Clean' : 'Original'}
+            </div>
+            <div slot="content" class="p-2">
+                <div 
+                    class="cursor-pointer px-3 py-1 hover:bg-gray-300 rounded {promptMode === 'clean' ? 'bg-gray-300' : ''}"
+                    on:click={() => { promptMode = 'clean'; updateValue(); }}
+                >
+                    Clean
+                </div>
+                <div 
+                    class="cursor-pointer px-3 py-1 hover:bg-gray-300 rounded {promptMode === 'original' ? 'bg-gray-300' : ''}"
+                    on:click={() => { promptMode = 'original'; updateValue(); }}
+                >
+                    Original
+                </div>
+            </div>
+        </Dropdown>
+    </div>
+
     <!-- <label for={id} class="block font-semibold mb-2">{label}</label> -->
 
     <!-- Global prompt fields -->

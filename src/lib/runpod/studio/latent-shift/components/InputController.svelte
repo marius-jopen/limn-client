@@ -8,6 +8,8 @@
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
     import PromptsUi from '$lib/runpod/studio/latent-shift/inputs/PromptsUi.svelte';
     import IntDropdown from '$lib/runpod/studio/basic/inputs/IntDropdownUi.svelte';   
+    import CameraUi from '$lib/runpod/studio/latent-shift/inputs/CameraUi.svelte';
+    import Dropdown from '$lib/atoms/Dropdown.svelte';
 
     // Define types similar to InputRepeater
     type BaseField = {
@@ -40,6 +42,9 @@
     // Add this variable to store the reference
     let loraComponent: { openLoraOverlay: () => void };
 
+    // Add prompt mode state
+    let promptMode: 'clean' | 'original' = 'clean';
+
     // Initialize values from UI config on mount
     onMount(() => {
         UI.forEach(field => {
@@ -66,7 +71,14 @@
         userId={user_id}
     />
 
+    <CameraUi
+        id="camera"
+        label={getField('camera')?.label || 'Camera'}
+        bind:value={values['camera']}
+    />
+
     <div class="bg-gray-100 p-3 rounded-lg max-w-[800px] mx-auto mt-8 ">
+        
         <PromptsUi
             id="prompts"
             label={getField('prompts')?.label || 'Animation Prompts'}
@@ -74,6 +86,7 @@
             options={getField('prompts')?.options}
             bind:this={loraComponent}
             defaultValues={getField('prompts')?.default}
+            bind:promptMode={promptMode}
         />
     
         <div class="flex flex-row gap-2 justify-between mt-1">
@@ -93,6 +106,38 @@
                     variant="secondary"
                     classes="text-sm"
                 />
+
+                <Dropdown position="top" >
+                    <div slot="trigger">
+                        <Button 
+                            variant="secondary"
+                            size="sm"
+                            label={promptMode === 'clean' ? '💦 Clean' : '🪨 Original'}
+                        />
+                    </div>
+                    <div slot="content">
+                        <Button 
+                            variant="ghost"
+                            size="sm"
+                            label="Clean"
+                            onClick={() => {
+                                promptMode = 'clean';
+                                document.body.click(); // This will close the dropdown
+                            }}
+                            classes={`w-full justify-start ${promptMode === 'clean' ? 'bg-gray-300' : ''}`}
+                        />
+                        <Button 
+                            variant="ghost"
+                            size="sm"
+                            label="Original"
+                            onClick={() => {
+                                promptMode = 'original';
+                                document.body.click(); // This will close the dropdown
+                            }}
+                            classes={`w-full justify-start ${promptMode === 'original' ? 'bg-gray-300' : ''}`}
+                        />
+                    </div>
+                </Dropdown>
             </div>
 
             <div class="flex flex-row gap-2">

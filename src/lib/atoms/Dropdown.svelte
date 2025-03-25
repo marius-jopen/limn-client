@@ -5,7 +5,7 @@
     
     // Props
     export let position: "top" | "bottom" | "left" | "right" = "top";
-    export let width: string = "min-w-[150px]";
+    export let width: string = "";
     export let containerClass: string = "";
     
     // State
