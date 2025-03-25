@@ -358,12 +358,12 @@
     {#if error}
         <p class="text-red-400">{error}</p>
     {:else if resource}
-        <div class="relative w-full h-[500px] mt-2 flex justify-center">
+        <div class="relative w-full h-[450px] mt-2 flex justify-center">
             <div class="relative inline-block animate-fade-in group">
                 <img 
                     src={resource.image_url} 
                     alt="Selected image" 
-                    class="rounded-md shadow-sm max-h-[500px] object-contain opacity-0 animate-fade-in hover:cursor-pointer"
+                    class="rounded-xl shadow-sm max-h-[450px] object-contain opacity-0 animate-fade-in hover:cursor-pointer"
                 />
                 
                 <div class="absolute inset-x-0 bottom-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
@@ -378,12 +378,12 @@
             </div>
         </div>
     {:else if preview}
-        <div class="relative w-[500px] h-[500px] mt-2 flex justify-center">
+        <div class="relative w-[450px] h-[450px] mt-2 flex justify-center">
             <div class="relative inline-block group">
                 <img 
                     src={preview} 
                     alt="Upload preview" 
-                    class="rounded-md shadow-sm max-h-[500px] object-contain opacity-0 animate-fade-in hover:cursor-pointer"
+                    class="rounded-xl shadow-sm max-h-[450px] object-contain opacity-0 animate-fade-in hover:cursor-pointer"
                 />
                 <div class="absolute inset-x-0 bottom-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                     <Button
@@ -404,7 +404,7 @@
         <p>Loading image...</p>
     {:else}
         <div 
-            class="w-[500px] h-[500px] bg-gray-100 hover:bg-gray-200 rounded-md flex flex-col items-center justify-center cursor-pointer transition-colors {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'} relative"
+            class="w-[450px] h-[450px] bg-gray-100 hover:bg-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-colors {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'} relative"
             on:dragenter={handleDragEnter}
             on:dragleave={handleDragLeave}
             on:dragover={handleDragOver}
@@ -423,14 +423,14 @@
             </div>
             
             {#if !uploading}
-                <p class="text-gray-700 text-center text-xl font-light pointer-events-none mb-3 px-12">
-                    Drop an image here or <br/> click to upload or <br/> remix one of the images from below
+                <p class="text-gray-700 text-center text-lg font-light pointer-events-none mb-3 px-12">
+                    Drop an image here or <br/> remix one of the images from below
                 </p>
-                <p class="text-gray-500 text-center pointer-events-none">
+                <!-- <p class="text-gray-500 text-center pointer-events-none">
                    At the moment we only support square images
-                </p>
+                </p> -->
             {:else}
-                <p class="text-gray-700 text-center text-xl font-light pointer-events-none mb-2">
+                <p class="text-gray-700 text-center text-lg font-light pointer-events-none mb-2">
                     Just a moment...
                 </p>
                 <div class="bg-white/70 rounded-full px-4 py-2 mt-2 pointer-events-none">
