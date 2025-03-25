@@ -39,8 +39,9 @@
     export let isGenerating: boolean = false;
     export let includeButton: boolean = true; // Allow toggling the button
 
-    // Add this variable to store the reference
+    // Add this variable to store the references
     let loraComponent: { openLoraOverlay: () => void };
+    let cameraComponent: { isOverlayOpen: boolean };
 
     // Add prompt mode state
     let promptMode: 'clean' | 'original' = 'clean';
@@ -75,6 +76,7 @@
         id="camera"
         label={getField('camera')?.label || 'Camera'}
         bind:value={values['camera']}
+        bind:this={cameraComponent}
     />
 
     <div class="bg-gray-100 p-3 rounded-lg max-w-[800px] mx-auto mt-8 ">
@@ -103,6 +105,13 @@
                 <Button 
                     onClick={() => loraComponent?.openLoraOverlay()} 
                     label="💥 Style"
+                    variant="secondary"
+                    classes="text-sm"
+                />
+
+                <Button 
+                    onClick={() => cameraComponent?.openOverlay()} 
+                    label="🎥 Camera"
                     variant="secondary"
                     classes="text-sm"
                 />

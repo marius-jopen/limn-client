@@ -78,11 +78,15 @@
     }
 
     let hoveredValue: string | null = null;
-    let isOverlayOpen = false;
+    export let isOverlayOpen = false;
+
+    export function openOverlay() {
+        isOverlayOpen = true;
+    }
 </script>
 
 <!-- Trigger Button -->
-<div class="flex justify-center">
+<div class="flex justify-center hidden">
     <Button
         label="🍿 Camera Controls"
         variant="secondary"
@@ -98,12 +102,13 @@
         on:click|self={() => isOverlayOpen = false}
         transition:fade={{ duration: 200 }}
     >
-        <button 
-            class="fixed top-3 right-4 bg-gray-200 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors z-[51]"
-            on:click={() => isOverlayOpen = false}
-        >
-            Close
-        </button>
+        <Button 
+            variant="secondary"
+            size="sm"
+            label="Close"
+            onClick={() => isOverlayOpen = false}
+            classes="fixed top-3 right-4 z-[51]"
+        />
 
         <div 
             class="bg-gray-300 rounded-lg p-4"
