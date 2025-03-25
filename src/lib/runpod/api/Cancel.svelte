@@ -42,15 +42,14 @@
     }
 </script>
 
-<div class="mt-4">
-    <Button 
-        onClick={cancelJob}
-        label="Pause" 
-        variant="primary" 
-        size="md" 
-    />
-    <div class="mt-2 text-sm">
-        <p>Status: {status}</p>
-        {#if error}<p class="text-red-500">{error}</p>{/if}
-    </div>
-</div>
+<Button 
+    onClick={cancelJob}
+    label="Pause" 
+    variant="tertiary" 
+    size="sm" 
+/>
+
+<!-- <div class="mt-2 text-sm">
+    <p>Status: {status}</p>
+    {#if error}<p class="text-red-500">{error}</p>{/if}
+</div> -->

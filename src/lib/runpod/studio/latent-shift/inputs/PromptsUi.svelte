@@ -23,6 +23,8 @@
     let entries: { frame: string; prompt: string; negativePrompt: string }[] = [];
     let prompts: { [frame: string]: string } = {};
 
+    let loraComponent: { openLoraOverlay: () => void };
+
     // Parse the initial value and set defaults
     try {
         if (value) {
@@ -181,15 +183,22 @@
         globalNegativePrompt = (event.target as HTMLTextAreaElement).value;
         updateValue();
     }
+
+    // Add this to expose the function up to InputController
+    export function openLoraOverlay() {
+        // Call the LoRA component's openLoraOverlay
+        loraComponent?.openLoraOverlay();
+    }
 </script>
 
-<div class="mb-6 w-full {hidden ? 'hidden' : ''}">
+<div class="w-full {hidden ? 'hidden' : ''}">
     <!-- <label for={id} class="block font-semibold mb-2">{label}</label> -->
 
     <!-- Global prompt fields -->
-    <div class="mb-6 ">
+    <div class=" ">
         <div class="flex flex-col">
             <PromptsUiLora
+                bind:this={loraComponent}
                 label="Global Positive Prompt"
                 id="global-positive"
                 bind:value={globalPositiveWithLora}

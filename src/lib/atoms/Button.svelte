@@ -24,6 +24,7 @@
     const variantClasses = {
         primary: "bg-primary text-black hover:bg-primary/80  rounded-full",
         secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-full",
+        tertiary: "bg-orange-200 text-gray-800 hover:bg-gray-300 rounded-full",
         danger: "bg-red-500 text-white hover:bg-red-700",
         success: "bg-green-500 text-white hover:bg-green-700",
         warning: "bg-yellow-500 text-white hover:bg-yellow-700",
