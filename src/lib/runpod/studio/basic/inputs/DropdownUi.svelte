@@ -11,6 +11,8 @@
     export let value: string = "15";
     export let options: DropdownOption[] = [];
     export let hidden: boolean = false;
+    export let prefix: string = "";
+    export let suffix: string = "";
 
     let dropdown: Dropdown;
     let isOpen = false;
@@ -23,6 +25,8 @@
     function handleToggle(event: CustomEvent<{isOpen: boolean}>) {
         isOpen = event.detail.isOpen;
     }
+
+    $: formattedValue = `${prefix}${value}${suffix}`;
 </script>
 
 <div class="{hidden ? 'hidden' : ''} relative">
@@ -38,7 +42,7 @@
                 variant="secondary" 
                 classes="text-sm {isOpen ? 'bg-gray-300' : ''}"
             >
-                🕒 {value} frames
+                {formattedValue}
             </Button>
         </div>
         
@@ -48,7 +52,7 @@
                     class="w-full px-4 py-2 text-left text-sm hover:bg-gray-300 transition-colors"
                     on:click={() => handleSelect(option.value)}
                 >
-                    {option.value} frames
+                    {option.value}{suffix}
                 </button>
             {/each}
         </div>

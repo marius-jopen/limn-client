@@ -23,6 +23,10 @@
         options?: Array<{ label: string; value: string }>;
         min?: number;
         max?: number;
+        display?: {
+            prefix?: string;
+            suffix?: string;
+        };
     };
 
     // Props: UI config and values binding
@@ -78,6 +82,8 @@
                     options={getField('max_frames')?.options}
                     bind:value={values['max_frames']}
                     hidden={getField('max_frames')?.hidden}
+                    prefix={getField('max_frames')?.display?.prefix || ''}
+                    suffix={getField('max_frames')?.display?.suffix || ''}
                 />
         
                 <Button 

@@ -1,5 +1,7 @@
 <script lang="ts">
     import { onMount, createEventDispatcher } from 'svelte';
+    import { fade, fly } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
     
     // Props
     export let position: "top" | "bottom" | "left" | "right" = "top";
@@ -58,7 +60,11 @@
     
     <!-- Dropdown content with animation -->
     {#if isOpen}
-        <div class="absolute {positionClasses} right-0 bg-gray-200 shadow-mdcan  rounded-md z-10 {width} overflow-hidden {containerClass}">
+        <div 
+            class="absolute {positionClasses} right-0 bg-gray-200 shadow-mdcan rounded-md z-10 {width} overflow-hidden {containerClass}"
+            in:fly={{ y: 5, duration: 400, easing: quintOut }}
+            out:fade={{ duration: 300 }}
+        >
             <slot name="content"></slot>
         </div>
     {/if}

@@ -13,6 +13,10 @@
         "placeholder": "${MAX_FRAMES}",
         "label": "Max Frames",
         "default": 15,
+        "display": {
+            "prefix": "🕒 ",
+            "suffix": " frames"
+        },
         "options": [
             {
                 "value": 15,
