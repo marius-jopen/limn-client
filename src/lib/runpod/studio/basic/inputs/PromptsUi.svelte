@@ -3,6 +3,7 @@
     import Button from '$lib/atoms/Button.svelte';
     import Label from '$lib/atoms/Label.svelte';
     import Textarea from '$lib/atoms/InputTextarea.svelte';
+    import InputText from '$lib/atoms/InputText.svelte';
     import PromptsUiLora from './PromptsUiLora.svelte';  // Import the LoRA component
 
     export let id: string;
@@ -197,7 +198,7 @@
             />
         </div>
         
-        <div class="flex flex-col">
+        <div class="flex flex-col mt-4">
             <Label label="Global Negative Prompt" for_id="global-negative" />
             <Textarea
                 id="global-negative"
@@ -211,50 +212,49 @@
         {#each entries as entry, index}
             <div class="rounded-md grid grid-cols-[80px_1fr_1fr_40px] gap-4 p-4 border border-gray-200 bg-gray-50">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Frame</label>
-                    <input 
+                    <Label label="Frame" for_id={`frame-${index}`} />
+                    <InputText
+                        id={`frame-${index}`}
                         type="number"
                         value={entry.frame}
-                        min="0"
                         on:input={(e) => handleInputFrame(e, index)}
-                        class="w-full py-2 px-3 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                 </div>
                 
                 <div class="flex flex-col">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Prompt</label>
-                    <textarea
-                        rows="3"
+                    <Label label="Prompt" for_id={`prompt-${index}`} />
+                    <Textarea
+                        id={`prompt-${index}`}
                         value={entry.prompt}
                         on:input={(e) => handleInputPrompt(e, index)}
-                        class="p-2 border border-gray-200 font-inherit resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    ></textarea>
+                    />
                 </div>
                 
                 <div class="flex flex-col">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Negative Prompt</label>
-                    <textarea
-                        rows="3"
+                    <Label label="Negative Prompt" for_id={`negative-${index}`} />
+                    <Textarea
+                        id={`negative-${index}`}
                         value={entry.negativePrompt}
                         on:input={(e) => handleInputNegativePrompt(e, index)}
-                        class="p-2 border border-gray-200 font-inherit resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    ></textarea>
+                    />
                 </div>
                 
-                <button 
-                    class="h-8 w-8 bg-red-400 hover:bg-red-500 text-white text-xl border-none cursor-pointer flex items-center justify-center self-center disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    on:click={() => removeEntry(index)}
+                <Button 
+                    variant="secondary"
+                    size="sm"
+                    label="×"
+                    onClick={() => removeEntry(index)}
                     disabled={entries.length <= 1}
-                >
-                    ×
-                </button>
+                    classes="h-8 w-8 p-0 text-xl"
+                />
             </div>
         {/each}
     </div>
     
     <Button 
         onClick={addEntry} 
-        label="Add Keyframe" 
+        label="Add Keyframe"
+        variant="secondary" 
     />
     
     <input type="hidden" {id} {value} />

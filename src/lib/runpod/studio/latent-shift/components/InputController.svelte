@@ -143,6 +143,7 @@
                     id="prompts"
                     label={getField('prompts')?.label || 'Animation Prompts'}
                     bind:value={values['prompts']}
+                    options={getField('prompts')?.options}
                 />
             </div>
         {/if}

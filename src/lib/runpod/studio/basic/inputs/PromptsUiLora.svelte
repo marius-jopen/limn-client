@@ -2,6 +2,7 @@
     import Label from "$lib/atoms/Label.svelte";
     import Textarea from "$lib/atoms/InputTextarea.svelte";
     import Button from "$lib/atoms/Button.svelte";
+    import InputText from "$lib/atoms/InputText.svelte";
 
     interface DropdownOption {
         value: string;
@@ -79,40 +80,44 @@
 
 <div class="flex flex-col gap-2 {hidden ? 'hidden' : ''}">
     <Label for_id={id} {label} />
+    
+    <!-- Active LoRA bubbles - Moved above and restyled -->
+    {#if activeLoras.length > 0}
+        <div class="flex flex-wrap gap-1 mb-2">
+            {#each activeLoras as lora}
+                <div class="inline-flex items-center bg-gray-100 border border-gray-200 rounded-full text-xs">
+                    <span class="font-semibold px-2 py-1 text-gray-700">{lora.label}</span>
+                    <div class="flex items-center border-l border-gray-200">
+                        <input
+                            type="number"
+                            class="w-12 px-1 py-1 bg-transparent border-0 text-center text-xs"
+                            min="0"
+                            max="2"
+                            step="0.1"
+                            value={lora.strength}
+                            on:input={(e) => updateStrength(lora.value, parseFloat(e.currentTarget.value))}
+                        />
+                        <button
+                            class="px-1.5 py-1 text-gray-400 hover:text-gray-600 border-l border-gray-200"
+                            on:click={() => removeLora(lora.value)}
+                        >×</button>
+                    </div>
+                </div>
+            {/each}
+        </div>
+    {/if}
+
     <Textarea 
         {id} 
         bind:value={userText}
     />
 
-    <!-- Replace the button with Button component -->
     <Button
         label="Add LoRA"
         variant="secondary"
         size="sm"
         onClick={() => isOverlayOpen = true}
     />
-
-    <!-- Active LoRA bubbles -->
-    <div class="flex flex-wrap gap-2 mt-2">
-        {#each activeLoras as lora}
-            <div class="flex items-center gap-2 bg-gray-200 rounded-full px-3 py-1">
-                <span>{lora.label}</span>
-                <input
-                    type="number"
-                    class="w-16 text-sm bg-transparent"
-                    min="0"
-                    max="2"
-                    step="0.1"
-                    value={lora.strength}
-                    on:input={(e) => updateStrength(lora.value, parseFloat(e.currentTarget.value))}
-                />
-                <button
-                    class="ml-1 text-gray-600 hover:text-gray-800"
-                    on:click={() => removeLora(lora.value)}
-                >×</button>
-            </div>
-        {/each}
-    </div>
 </div>
 
 <!-- LoRA Selection Overlay -->
@@ -122,23 +127,23 @@
             <!-- Header -->
             <div class="p-4 border-b flex justify-between items-center">
                 <h2 class="text-xl font-semibold">Select LoRA</h2>
-                <button 
-                    class="text-gray-500 hover:text-gray-700"
-                    on:click={() => {
+                <Button 
+                    variant="secondary"
+                    size="sm"
+                    label="×"
+                    onClick={() => {
                         isOverlayOpen = false;
                         searchTerm = "";
                     }}
-                >
-                    ×
-                </button>
+                    classes="h-8 w-8 p-0 text-xl"
+                />
             </div>
 
             <!-- Search -->
             <div class="p-4 border-b">
-                <input
+                <InputText
                     type="text"
                     placeholder="Search LoRAs..."
-                    class="w-full px-3 py-2 border rounded-md"
                     bind:value={searchTerm}
                 />
             </div>

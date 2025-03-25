@@ -33,7 +33,85 @@
         "type": "prompts",
         "placeholder": "${PROMPTS}",
         "label": "Animation Prompts",
-        "default": "{\"0\": \"beautiful lady, (freckles), big smile, brown hazel eyes, Ponytail, dark makeup, hyperdetailed photography, soft light, head and shoulders portrait, cover --neg bad eyes, cgi, airbrushed, plastic, deformed, watermark\", \"5\": \"alien --neg bad eyes, cgi, airbrushed, plastic, deformed, watermark\"}"
+        "default": {
+            "globalPositive": "",
+            "globalNegative": "",
+            "frames": {
+                "0": " --neg "
+            }
+        },
+        "options": [
+            { 
+                "value": "Add_Detail_XL", 
+                "label": "Detail XL", 
+                "trigger": "Detail",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/add-detail-xl.jpeg",
+                "description" : "Adds detail to the image"
+            },
+            { 
+                "value": "SDXL_ChalkBoard_Drawing_LoRA_r8", 
+                "label": "Chalkboard Drawing", 
+                "trigger": "ChalkBoardDrawing",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/chalkboard-drawing.jpeg",
+                "description" : "Adds a chalkboard drawing to the image"
+            },
+            { 
+                "value": "SDXL_MSPaint_Portrait", 
+                "label": "MS Paint Portrait", 
+                "trigger": "MS Paint",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ms-paint.jpeg",
+                "description" : "Adds a MS Paint portrait to the image"
+            },
+            { 
+                "value": "Prada_outfit_autumn_clothes-000006", 
+                "label": "Prada Outfit Autumn Clothes", 
+                "trigger": "Prada Outfit",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/prada-outfit-autumn.png",
+                "description" : "Adds a Prada outfit to the image"
+            },
+            { 
+                "value": "Crayon_Drawing", 
+                "label": "Crayon Drawing", 
+                "trigger": "Crayon Drawing",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/crayon-drawing.jpeg",
+                "description" : "Adds a crayon drawing to the image"
+            },
+            { 
+                "value": "sd_xl_James_Turrell_Style", 
+                "label": "James Turrell", 
+                "trigger": "James Turrell",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/james-turell.png",
+                "description" : "Adds a James Turrell style image to the image"
+            },
+            { 
+                "value": "sd_xl_Made_Of_Iridescent_Foil", 
+                "label": "Iridescent Foil", 
+                "trigger": "Iridescent Foil",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/iridescent-foil.png",
+                "description" : "Adds an iridescent foil to the image"
+            },
+            { 
+                "value": "sd_xl_Popovy_Dolls", 
+                "label": "Popovy Dolls", 
+                "trigger": "fashion doll",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/popoy-dolls.png",
+                "description" : "Adds a Popovy dolls to the image"
+            },
+            { 
+                "value": "sd_xl_Wake_Up", 
+                "label": "Wake Up", 
+                "trigger": "Wake Up",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/wake-up.jpeg",
+                "description" : "Adds a wake up to the image"
+            },
+            { 
+                "value": "sd_xl_HR_Giger", 
+                "label": "H R Giger", 
+                "trigger": "g1g3r",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/hr-giger.jpeg",
+                "description" : "Adds a HR Giger style image to the image"
+            }
+        ]
     },
     {
         "id": "diffusion_cadence",
