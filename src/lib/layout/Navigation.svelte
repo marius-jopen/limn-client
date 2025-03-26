@@ -32,9 +32,9 @@
         classes="fixed top-3 right-4 z-50"
     />
 
-    <div class="fixed top-3 left-4 z-0 font-bold text-xl">
+    <a href="/dashboard" class="fixed top-3 left-4 z-0 font-bold text-xl">
         Limn
-    </div>
+    </a>
 
     <NavigationOverlay 
         isOpen={menuVisible} 
