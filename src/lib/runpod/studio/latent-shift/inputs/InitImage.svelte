@@ -404,7 +404,7 @@
         <p>Loading image...</p>
     {:else}
         <div 
-            class="w-[400px] h-[400px] bg-gray-100 hover:bg-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-colors {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'} relative"
+            class="w-[400px] h-[400px] bg-white rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group relative {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'}"
             on:dragenter={handleDragEnter}
             on:dragleave={handleDragLeave}
             on:dragover={handleDragOver}
@@ -418,8 +418,8 @@
                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             
-            <div class="text-4xl mb-4 pointer-events-none">
-                {uploading ? '⏳' : '🚀'}
+            <div class="text-4xl smooth-float mb-2">
+                🚀
             </div>
             
             {#if !uploading}
@@ -463,5 +463,31 @@
     
     .animate-fade-in {
         animation: fade-in 0.5s ease-in-out forwards;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0) rotate(-2deg);
+        }
+        25% {
+            transform: translateY(-4px) rotate(2deg);
+        }
+        50% {
+            transform: translateY(-8px) rotate(-1deg);
+        }
+        75% {
+            transform: translateY(-4px) rotate(1deg);
+        }
+        100% {
+            transform: translateY(0) rotate(-2deg);
+        }
+    }
+
+    .smooth-float {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .group:hover .smooth-float {
+        animation: float 3s ease-in-out infinite;
     }
 </style> 

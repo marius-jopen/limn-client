@@ -39,7 +39,7 @@
     >
         <div slot="trigger">
             <Button 
-                variant="secondary" 
+                variant="quaternary" 
                 classes="text-sm {isOpen ? 'bg-gray-300' : ''}"
             >
                 {formattedValue}

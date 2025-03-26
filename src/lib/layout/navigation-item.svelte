@@ -21,7 +21,7 @@
 </script>
 
 <div class="flex flex-col items-center transition-transform duration-[600ms] ease-in-out hover:scale-[1.02] group w-full">
-  <div class="w-full aspect-square max-w-[200px]">
+  <div class="w-full aspect-square max-w-[200px] relative">
     <img 
       class="w-full h-full object-cover rounded-xl transition-all duration-[600ms] ease-in-out group-hover:shadow-lg group-hover:-translate-y-1"
       src={transformedImageSrc + "?width=200"} 
@@ -40,3 +40,18 @@
     />
   </div>
 </div>
+
+<style>
+  @keyframes bounce {
+    0%, 100% {
+      transform: translate(-50%, -50%) translateY(0);
+    }
+    50% {
+      transform: translate(-50%, -50%) translateY(-10px);
+    }
+  }
+
+  .animate-bounce {
+    animation: bounce 1s infinite;
+  }
+</style>

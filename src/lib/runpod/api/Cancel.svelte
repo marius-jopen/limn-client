@@ -44,7 +44,7 @@
 
 <Button 
     onClick={cancelJob}
-    label="Pause" 
+    label="🖐️ Stop" 
     variant="tertiary" 
     size="sm" 
 />

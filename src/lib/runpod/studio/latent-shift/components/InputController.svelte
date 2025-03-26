@@ -79,8 +79,7 @@
         bind:this={cameraComponent}
     />
 
-    <div class="bg-gray-100 p-3 rounded-lg max-w-[800px] mx-auto mt-8 ">
-        
+    <div class="bg-white p-3 rounded-lg max-w-[800px] mx-auto mt-8 ">
         <PromptsUi
             id="prompts"
             label={getField('prompts')?.label || 'Animation Prompts'}
@@ -105,21 +104,21 @@
                 <Button 
                     onClick={() => loraComponent?.openLoraOverlay()} 
                     label="💥 Style"
-                    variant="secondary"
+                    variant="quaternary"
                     classes="text-sm"
                 />
 
                 <Button 
                     onClick={() => cameraComponent?.openOverlay()} 
                     label="🎥 Camera"
-                    variant="secondary"
+                    variant="quaternary"
                     classes="text-sm"
                 />
 
                 <Dropdown position="top" >
                     <div slot="trigger">
                         <Button 
-                            variant="secondary"
+                            variant="quaternary"
                             size="sm"
                             label={promptMode === 'clean' ? '💦 Clean' : '🪨 Original'}
                         />
@@ -154,7 +153,7 @@
         
                 <Button 
                     onClick={onGenerate} 
-                    label="Generate" 
+                    label="💥 Generate" 
                     disabled={isGenerating}
                     variant="primary"
                     size="sm"

@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--color-primary, #46ffbe)',
-        primaryDark: 'var(--color-primaryDark,rgb(172, 255, 226))',
+        primary: 'var(--color-primary,rgb(83, 255, 195))',
+        primaryDark: 'var(--color-primaryDark,rgb(36, 238, 167))',
         secondary: '#fbabff',
       },
       gridTemplateColumns: {

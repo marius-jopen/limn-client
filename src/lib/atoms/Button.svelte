@@ -23,8 +23,9 @@
     // Dynamic classes based on props
     const variantClasses = {
         primary: "bg-primary text-black hover:bg-primaryDark rounded-full font-medium",
-        secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-full",
-        tertiary: "bg-secondary/50 text-gray-800 hover:bg-secondary/80 rounded-full",
+        secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-full font-medium",
+        tertiary: "bg-secondary/50 text-gray-800 hover:bg-secondary/80 rounded-full font-medium",
+        quaternary: "bg-gray-100 text-gray-800 hover:bg-gray-200 rounded-full font-medium",
         danger: "bg-red-500 text-white hover:bg-red-700",
         success: "bg-green-500 text-white hover:bg-green-700",
         warning: "bg-yellow-500 text-white hover:bg-yellow-700",
