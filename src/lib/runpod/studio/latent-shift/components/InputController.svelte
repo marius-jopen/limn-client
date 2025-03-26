@@ -243,7 +243,7 @@
         </div>
     </div>
 
-    <div class="flex justify-center mt-4">
+    <div class="flex justify-center mt-4 hidden md:block">
         <div 
             class="p-2 text-sm text-gray-500 px-4 transition-all duration-200 ease-in-out"
             style="opacity: {statusOpacity}"
