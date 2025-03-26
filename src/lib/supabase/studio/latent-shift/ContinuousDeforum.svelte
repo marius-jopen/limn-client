@@ -823,7 +823,7 @@
     {#each visiblePaths as path (path.id)}
         {@const rowResources = path.resources.filter(r => workflowsToFetch.includes(r.workflow_name))}
         <div class="mb-10">
-            <div class="px-12 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
+            <div class="px-4 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
                 {#each rowResources as resource (resource.id)}
                     <div class="flex-shrink-0">
                         <ContinuousDeforumItem 

@@ -423,11 +423,11 @@
             </div>
             
             {#if !uploading}
-                <p class="text-gray-700 text-center text-md sm:text-lg font-light pointer-events-none mb-3 px-4 sm:px-12">
+                <p class="text-gray-700 text-center text-md font-light pointer-events-none mb-3 px-4 sm:px-12">
                     Drop an image here or <br/> remix one of the images from below
                 </p>
             {:else}
-                <p class="text-gray-700 text-center text-md sm:text-lg font-light pointer-events-none mb-2">
+                <p class="text-gray-700 text-center text-md font-light pointer-events-none mb-2">
                     Just a moment...
                 </p>
                 <div class="bg-white/70 rounded-full px-4 py-2 mt-2 pointer-events-none">

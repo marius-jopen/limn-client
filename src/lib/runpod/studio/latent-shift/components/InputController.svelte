@@ -104,7 +104,7 @@
                 <Button 
                     onClick={() => loraComponent?.openLoraOverlay()} 
                     variant="quaternary"
-                    classes="text-sm p-1.5 md:p-2"
+                    classes="text-sm "
                 >
                     <span class="md:hidden">💥</span>
                     <span class="hidden md:block">💥 Style</span>
@@ -113,7 +113,7 @@
                 <Button 
                     onClick={() => cameraComponent?.openOverlay()} 
                     variant="quaternary"
-                    classes="text-sm p-1.5 md:p-2"
+                    classes="text-sm "
                 >
                     <span class="md:hidden">🎥</span>
                     <span class="hidden md:block">🎥 Camera</span>
@@ -124,7 +124,7 @@
                         <Button 
                             variant="quaternary"
                             size="sm"
-                            classes="p-1.5 md:p-2"
+                            classes=""
                         >
                             <span class="md:hidden">{promptMode === 'clean' ? '💦' : '🪨'}</span>
                             <span class="hidden md:block">{promptMode === 'clean' ? '💦 Clean' : '🪨 Original'}</span>
@@ -162,7 +162,7 @@
                     onClick={onGenerate} 
                     disabled={isGenerating}
                     variant="primary"
-                    classes="text-sm p-1.5 md:p-2"
+                    classes="text-sm "
                 >
                     💥 Generate
                 </Button>    

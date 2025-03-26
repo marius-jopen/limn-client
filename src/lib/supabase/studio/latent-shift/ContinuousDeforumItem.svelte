@@ -218,9 +218,9 @@
     </div>
 {:else if currentResource}
     <!-- Image container with hover effect for buttons -->
-    <div class="flex flex-col w-auto group  hover:scale-[1.03] transition-all duration-300 ease-in-out mt-4">
+    <div class="flex flex-col w-auto group hover:scale-[1.03] transition-all duration-300 ease-in-out mt-2 md:mt-4">
         <!-- Image tile -->
-        <div class="h-[400px] overflow-hidden ">
+        <div class="h-[220px] md:h-[400px] overflow-hidden">
             <img 
                 on:click={handlePreview}
                 src={cdnImageUrl}
@@ -232,20 +232,24 @@
         
         <!-- Button row with dropdown - simple fade in/out on hover with fly-in animation -->
         <div class="p-2 mt-3 w-full">
-            <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
+            <div class="flex justify-center gap-2 md:opacity-0 group-hover:opacity-100 md:translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
                 <Button
-                    label="Explore"
                     variant="secondary"
                     size="sm"
                     onClick={selectImage}
-                />
+                >
+                    <span class="md:hidden">🔮</span>
+                    <span class="hidden md:block">🔮 Explore</span>
+                </Button>
 
                 <Button
-                    label="👀"
                     variant="secondary"
                     size="sm"
                     onClick={() => dispatch('showVideo', { resource: currentResource })}
-                />
+                    >
+                    <span class="md:hidden">👀</span>
+                    <span class="hidden md:block">👀 Video</span>
+                </Button>
                 
                 <!-- Use the slot-based Dropdown component with animated dropdown -->
                 <Dropdown 
