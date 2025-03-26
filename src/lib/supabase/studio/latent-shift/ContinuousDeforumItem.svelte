@@ -220,7 +220,7 @@
     <!-- Image container with hover effect for buttons -->
     <div class="flex flex-col w-auto group hover:scale-[1.03] transition-all duration-300 ease-in-out mt-2 md:mt-4">
         <!-- Image tile -->
-        <div class="h-[220px] md:h-[400px] overflow-hidden">
+        <div class="h-[200px] md:h-[400px] overflow-hidden">
             <img 
                 on:click={handlePreview}
                 src={cdnImageUrl}
