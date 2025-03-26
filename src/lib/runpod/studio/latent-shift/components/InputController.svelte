@@ -3,7 +3,6 @@
     import { onMount } from 'svelte';
     import { user } from '$lib/supabase/helper/StoreSupabase';
     import Button from '$lib/atoms/Button.svelte';
-    import Number from '$lib/runpod/studio/basic/inputs/NumberUi.svelte';
     import InitImage from '$lib/runpod/studio/latent-shift/inputs/InitImage.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
     import PromptsUi from '$lib/runpod/studio/latent-shift/inputs/PromptsUi.svelte';
@@ -49,6 +48,13 @@
     // Add status text and opacity state
     let statusText = "Status";
     let statusOpacity = 0;
+
+    // Add button info texts
+    const BUTTON_INFO = {
+        cancel: "Pause the image generation, so you can continue the generation with a new image",
+        generate: "Generate new images",
+        clean: "Enhanced: Adds some enhancements to the prompt | Original: Keeps the prompt as is"
+    };
 
     // Initialize values from UI config on mount
     onMount(() => {
@@ -145,7 +151,7 @@
                 </div>
         
                 <div
-                    on:mouseenter={() => handleHover(true, 'prompts', 'style', "Add style presets to your animation")}
+                    on:mouseenter={() => handleHover(true, 'prompts', 'style')}
                     on:mouseleave={() => handleHover(false, 'prompts')}
                 >
                     <Button 
@@ -175,7 +181,7 @@
                 <Dropdown position="top">
                     <div 
                         slot="trigger"
-                        on:mouseenter={() => handleHover(true, 'prompt_mode', undefined, "Switch between clean and original prompt mode")}
+                        on:mouseenter={() => handleHover(true, 'prompt_mode', undefined, BUTTON_INFO.clean)}
                         on:mouseleave={() => handleHover(false, 'prompt_mode')}
                     >
                         <Button 
@@ -183,8 +189,8 @@
                             size="sm"
                             classes=""
                         >
-                            <span class="md:hidden">{promptMode === 'clean' ? '💦' : '🪨'}</span>
-                            <span class="hidden md:block">{promptMode === 'clean' ? '💦 Clean' : '🪨 Original'}</span>
+                            <span class="md:hidden">{promptMode === 'clean' ? '🌸' : '🪨'}</span>
+                            <span class="hidden md:block">{promptMode === 'clean' ? '🌸 Enhanced' : '🪨 Original'}</span>
                         </Button>
                     </div>
                     <div slot="content">
@@ -213,16 +219,26 @@
             </div>
 
             <div class="flex flex-row gap-1 md:gap-2 justify-center sm:justify-start">
-                <Cancel />   
-        
-                <Button 
-                    onClick={onGenerate} 
-                    disabled={isGenerating}
-                    variant="primary"
-                    classes="text-sm "
+                <div
+                    on:mouseenter={() => handleHover(true, 'cancel', undefined, BUTTON_INFO.cancel)}
+                    on:mouseleave={() => handleHover(false, 'cancel')}
                 >
-                    💥 Generate
-                </Button>    
+                    <Cancel />   
+                </div>
+        
+                <div
+                    on:mouseenter={() => handleHover(true, 'generate', undefined, BUTTON_INFO.generate)}
+                    on:mouseleave={() => handleHover(false, 'generate')}
+                >
+                    <Button 
+                        onClick={onGenerate} 
+                        disabled={isGenerating}
+                        variant="primary"
+                        classes="text-sm"
+                    >
+                        💥 Generate
+                    </Button>    
+                </div>
             </div>
         </div>
     </div>

@@ -43,8 +43,8 @@
         "placeholder": "${PROMPTS}",
         "label": "Animation Prompts",
         "info": {
-            "prompts": "The prompts to use for the animation",
-            "style": "Add style presets to enhance your animation"
+            "prompts": "Write a prompt to describe the animation you want to create",
+            "style": "Select some styles you like"
         },
         "default": {
             "globalPositive": "",
@@ -133,14 +133,14 @@
         "type": "init-image",
         "placeholder": "${INIT_IMAGE}",
         "label": "Init Image",
-        "info": "The initial image to use for the animation",
+        "info": "Upload an image or remix one of the images from below",
         "default": ""
     },
     {
         "id": "camera",
         "type": "camera",
         "label": "Camera",
-        "info": "The camera settings to use for the animation",
+        "info": "Move the camera",
         "placeholder": {
             "x": "${TRANSLATION_X}",
             "y": "${TRANSLATION_Y}",
