@@ -354,16 +354,16 @@
     }
 </script>
 
-<div class="flex flex-col gap-2 {hidden ? 'hidden' : ''} items-center">    
+<div class="flex flex-col gap-2 {hidden ? 'hidden' : ''} items-center w-full">    
     {#if error}
         <p class="text-red-400">{error}</p>
     {:else if resource}
-        <div class="relative w-full h-[400px] mt-2 flex justify-center">
-            <div class="relative inline-block animate-fade-in group">
+        <div class="relative w-full min-h-[200px] max-h-[400px] mt-2 flex justify-center">
+            <div class="relative inline-block animate-fade-in group max-w-full">
                 <img 
                     src={resource.image_url} 
                     alt="Selected image" 
-                    class="rounded-xl shadow-sm max-h-[400px] object-contain opacity-0 animate-fade-in hover:cursor-pointer"
+                    class="rounded-xl shadow-sm max-h-[400px] w-auto max-w-full object-contain opacity-0 animate-fade-in hover:cursor-pointer"
                 />
                 
                 <div class="absolute inset-x-0 bottom-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
@@ -378,12 +378,12 @@
             </div>
         </div>
     {:else if preview}
-        <div class="relative w-[400px] h-[400px] mt-2 flex justify-center">
-            <div class="relative inline-block group">
+        <div class="relative w-full min-h-[200px] max-h-[400px] mt-2 flex justify-center">
+            <div class="relative inline-block group max-w-full">
                 <img 
                     src={preview} 
                     alt="Upload preview" 
-                    class="rounded-xl shadow-sm max-h-[400px] object-contain opacity-0 animate-fade-in hover:cursor-pointer"
+                    class="rounded-xl shadow-sm max-h-[400px] w-auto max-w-full object-contain opacity-0 animate-fade-in hover:cursor-pointer"
                 />
                 <div class="absolute inset-x-0 bottom-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                     <Button
@@ -404,7 +404,7 @@
         <p>Loading image...</p>
     {:else}
         <div 
-            class="w-[400px] h-[400px] bg-white rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group relative {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'}"
+            class="w-full max-w-[400px] aspect-square bg-white rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group relative {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'}"
             on:dragenter={handleDragEnter}
             on:dragleave={handleDragLeave}
             on:dragover={handleDragOver}
@@ -423,14 +423,11 @@
             </div>
             
             {#if !uploading}
-                <p class="text-gray-700 text-center text-lg font-light pointer-events-none mb-3 px-12">
+                <p class="text-gray-700 text-center text-md sm:text-lg font-light pointer-events-none mb-3 px-4 sm:px-12">
                     Drop an image here or <br/> remix one of the images from below
                 </p>
-                <!-- <p class="text-gray-500 text-center pointer-events-none">
-                   At the moment we only support square images
-                </p> -->
             {:else}
-                <p class="text-gray-700 text-center text-lg font-light pointer-events-none mb-2">
+                <p class="text-gray-700 text-center text-md sm:text-lg font-light pointer-events-none mb-2">
                     Just a moment...
                 </p>
                 <div class="bg-white/70 rounded-full px-4 py-2 mt-2 pointer-events-none">
