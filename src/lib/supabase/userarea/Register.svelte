@@ -17,9 +17,9 @@
     onMount(async () => {
         const { data } = await supabase.auth.getSession();
         
-        // If session exists, redirect to dashboard
-        if (data.session) {
-            console.log('User already logged in, redirecting to dashboard');
+        // Only redirect if we're actually on the register page
+        if (data.session && window.location.pathname === '/register') {
+            console.log('User already logged in, redirecting from register page to dashboard');
             goto('/dashboard');
         }
     });
@@ -91,7 +91,7 @@
 </script>
 
 <div class="flex flex-col justify-center items-center h-screen">
-    <div class="mx-auto w-4/12 rounded-xxl bg-white p-12">
+    <div class="mx-auto w-11/12 md:w-8/12 lg:w-4/12 rounded-lg md:rounded-xl bg-white pt-10 pb-12 px-8">
 
         <h1 class="text-2xl font-medium w-full text-center pb-10">
             Register

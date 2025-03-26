@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-primary: #46ffbe;
-  --color-secondary: #fbabff;
-}
-
 h1 {
     @apply text-2xl font-bold;
 }

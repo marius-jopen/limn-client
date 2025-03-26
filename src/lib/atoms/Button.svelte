@@ -22,7 +22,7 @@
 
     // Dynamic classes based on props
     const variantClasses = {
-        primary: "bg-primary/50 text-black hover:bg-primary/80  rounded-full",
+        primary: "bg-primary text-black hover:bg-primaryDark rounded-full font-medium",
         secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-full",
         tertiary: "bg-secondary/50 text-gray-800 hover:bg-secondary/80 rounded-full",
         danger: "bg-red-500 text-white hover:bg-red-700",
@@ -43,7 +43,7 @@
         ${sizeClasses[size]}
         ${fullWidth ? 'w-full' : ''}
         transition-colors
-        duration-200
+        duration-300
         disabled:opacity-50
         disabled:cursor-not-allowed
         flex

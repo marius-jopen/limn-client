@@ -42,6 +42,10 @@
     />
 
 {:else}
+    <a href="/" class="fixed top-3 left-4 z-0 font-bold text-xl">
+        Limn
+    </a>
+
     <div class="flex gap-2 top-3 right-4 z-20 fixed">
         <Button 
             label="Register" 

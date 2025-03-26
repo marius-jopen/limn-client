@@ -4,10 +4,12 @@ export default {
     './src/**/*.{html,js,svelte,ts}',
     "./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        primary: '#46ffbe',
+        primary: 'var(--color-primary, #46ffbe)',
+        primaryDark: 'var(--color-primaryDark,rgb(172, 255, 226))',
         secondary: '#fbabff',
       },
       gridTemplateColumns: {
