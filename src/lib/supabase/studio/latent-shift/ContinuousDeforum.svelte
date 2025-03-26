@@ -293,18 +293,27 @@
     let scrollObserver: IntersectionObserver;
     let observerTarget: HTMLDivElement;
 
-    // Add these functions for infinite scrolling
-    // Set up the intersection observer for infinite scrolling
+    // Add these variables near the top with other state variables
+    let lastInfiniteScrollTrigger = 0;
+    const INFINITE_SCROLL_COOLDOWN = 1000; // 1 second cooldown between infinite scroll triggers
+
+    // Update the setupInfiniteScroll function
     function setupInfiniteScroll() {
         if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
             scrollObserver = new IntersectionObserver(
                 (entries) => {
                     const [entry] = entries;
-                    if (entry.isIntersecting && hasMorePaths && !loadingMore) {
+                    const now = Date.now();
+                    if (entry.isIntersecting && hasMorePaths && !loadingMore && 
+                        (now - lastInfiniteScrollTrigger > INFINITE_SCROLL_COOLDOWN)) {
+                        lastInfiniteScrollTrigger = now;
                         loadMore();
                     }
                 },
-                { rootMargin: '200px' } // Start loading when within 200px of the observer
+                { 
+                    rootMargin: '200px',
+                    threshold: 0.1
+                }
             );
             
             if (observerTarget) {
@@ -352,20 +361,21 @@
         cleanupInfiniteScroll();
     });
 
-    // Modify the loadMore function to handle the loading state
+    // Update the loadMore function to handle both button clicks and infinite scroll
     async function loadMore() {
         if (loadingMore || !hasMorePaths) return;
         
         loadingMore = true;
         console.log(`Loading more paths. Current count: ${visiblePathCount}, total: ${lineagePaths.length}`);
         visiblePathCount += LOAD_MORE_BATCH_COUNT;
-        userClickedLoadMore = true; // User has explicitly requested more paths
         
         // If we've displayed all the currently fetched paths and there might be more, fetch more
         if (visiblePathCount >= lineagePaths.length && hasMoreToLoad) {
             await fetchMoreImages();
         }
         
+        // Small delay to prevent rapid consecutive loads
+        await new Promise(resolve => setTimeout(resolve, 100));
         loadingMore = false;
     }
     
@@ -841,7 +851,14 @@
         </div>
     {/each}
 
-    <!-- Only show the button if there are more paths to load and we haven't reached the end -->
+    <!-- Add this invisible target element for infinite scroll detection -->
+    <div 
+        bind:this={observerTarget} 
+        class="invisible-target"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Only show the button if there are more paths to load and infinite scroll hasn't triggered recently -->
     {#if hasMorePaths && (visiblePathCount < lineagePaths.length || hasMoreToLoad)}
         <div class="py-6 flex justify-center">
             {#if loadingMore}
@@ -852,7 +869,7 @@
                 </div>
             {:else}
                 <Button 
-                    label="Load More"
+                    label="🌴 Load More"
                     variant="secondary"
                     size="sm"
                     onClick={loadMore}
