@@ -297,6 +297,26 @@
     let lastInfiniteScrollTrigger = 0;
     const INFINITE_SCROLL_COOLDOWN = 1000; // 1 second cooldown between infinite scroll triggers
 
+    // Add these new variables near the top with other state variables
+    let latestBatchContainer: HTMLDivElement;
+    let shouldAutoScroll = false;
+
+    // Add these variables near the other state variables
+    let userHovering = false;
+    let hoverTimeout: number;
+
+    // Add this function to handle smooth scrolling
+    function scrollToEnd(container: HTMLDivElement) {
+        if (!container) return;
+        
+        const scrollOptions = {
+            left: container.scrollWidth,
+            behavior: 'smooth' as ScrollBehavior
+        };
+        
+        container.scrollTo(scrollOptions);
+    }
+
     // Update the setupInfiniteScroll function
     function setupInfiniteScroll() {
         if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
@@ -359,6 +379,11 @@
         
         // Clean up infinite scrolling
         cleanupInfiniteScroll();
+
+        // Clean up the timeout in onDestroy
+        if (hoverTimeout) {
+            clearTimeout(hoverTimeout);
+        }
     });
 
     // Update the loadMore function to handle both button clicks and infinite scroll
@@ -612,7 +637,7 @@
         }
     }
 
-    // Handle runState images immediately
+    // Modify the runState watcher to trigger scrolling
     $: if ($runState.images?.length) {
         console.log('Processing runState images with batch:', $runState.batch_name);
         
@@ -631,12 +656,23 @@
         const uniqueNewImages = newImages.filter(img => !existingUrls.has(img.image_url));
         allResources = [...uniqueNewImages, ...allResources];
         
+        // Set flag to trigger scroll after render
+        shouldAutoScroll = true;
+        
         // Then set up a short delay to fetch from database instead
-        // This gives Supabase time to create the records with proper batch names
         setTimeout(() => {
             console.log('Refreshing images from database after generation');
             fetchUserImages();
-        }, 2000); // 2 second delay
+        }, 2000);
+    }
+
+    // Update the reactive statement for auto-scrolling to check for hover state
+    $: if (shouldAutoScroll && latestBatchContainer && !userHovering) {
+        // Small delay to ensure DOM is updated
+        setTimeout(() => {
+            scrollToEnd(latestBatchContainer);
+            shouldAutoScroll = false;
+        }, 100);
     }
 
     // Simplified subscription setup
@@ -824,16 +860,64 @@
             showVideoPreview = true;
         }
     }
+
+    // Update the bindLatestContainer function to handle hover states
+    function bindLatestContainer(node: HTMLElement, isLatest: boolean) {
+        if (isLatest) {
+            latestBatchContainer = node;
+            
+            // Add hover event listeners
+            const handleMouseEnter = () => {
+                userHovering = true;
+                // Clear any existing timeout
+                if (hoverTimeout) {
+                    clearTimeout(hoverTimeout);
+                }
+            };
+            
+            const handleMouseLeave = () => {
+                // Add a small delay before re-enabling auto-scroll
+                hoverTimeout = window.setTimeout(() => {
+                    userHovering = false;
+                }, 1000); // 1 second delay
+            };
+            
+            node.addEventListener('mouseenter', handleMouseEnter);
+            node.addEventListener('mouseleave', handleMouseLeave);
+            
+            return {
+                update(newIsLatest: boolean) {
+                    if (newIsLatest) {
+                        latestBatchContainer = node;
+                    }
+                },
+                destroy() {
+                    if (latestBatchContainer === node) {
+                        latestBatchContainer = null;
+                    }
+                    node.removeEventListener('mouseenter', handleMouseEnter);
+                    node.removeEventListener('mouseleave', handleMouseLeave);
+                    if (hoverTimeout) {
+                        clearTimeout(hoverTimeout);
+                    }
+                }
+            };
+        }
+        return {};
+    }
 </script>
 
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
 {:else}
     <!-- Display continuous lineage paths with horizontal scrolling -->
-    {#each visiblePaths as path (path.id)}
+    {#each visiblePaths as path, index (path.id)}
         {@const rowResources = path.resources.filter(r => workflowsToFetch.includes(r.workflow_name))}
         <div class="mb-10">
-            <div class="px-4 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar">
+            <div 
+                class="px-4 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar"
+                use:bindLatestContainer={index === 0}
+            >
                 {#each rowResources as resource (resource.id)}
                     <div class="flex-shrink-0">
                         <ContinuousDeforumItem 
