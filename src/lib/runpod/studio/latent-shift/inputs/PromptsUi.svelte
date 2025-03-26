@@ -127,6 +127,13 @@
         }
     }
 
+    $: {
+        if (promptMode) {
+            console.log('Prompt mode changed to:', promptMode);
+            updateValue();
+        }
+    }
+
     function updateValue() {
         console.log('=== updateValue start ===');
         console.log('Global Positive with LoRA:', globalPositiveWithLora);
@@ -148,7 +155,7 @@
                           console.log('Adding entry prompt:', entry.prompt);
                           positiveComponents.push(entry.prompt);
                       }
-                      // Only add hidden prompts in clean mode
+                      // Add hidden prompts in clean mode only
                       if (promptMode === 'clean' && globalPositiveHidden) {
                           positiveComponents.push(globalPositiveHidden);
                       }
@@ -160,7 +167,7 @@
                           console.log('Adding entry negative:', entry.negativePrompt);
                           negativeComponents.push(entry.negativePrompt);
                       }
-                      // Only add hidden negative prompts in clean mode
+                      // Add hidden negative prompts in clean mode only
                       if (promptMode === 'clean' && globalNegativeHidden) {
                           negativeComponents.push(globalNegativeHidden);
                       }
@@ -275,8 +282,8 @@
 </script>
 
 <div class="w-full {hidden ? 'hidden' : ''}">
-    <!-- Add mode selector dropdown -->
-    <div class="flex justify-end mb-4 hidden">
+    <!-- Mode selector dropdown -->
+    <div class="flex justify-end mb-4">
         <Dropdown position="bottom">
             <div slot="trigger" class="cursor-pointer px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-200">
                 {promptMode === 'clean' ? 'Clean' : 'Original'}
@@ -284,13 +291,21 @@
             <div slot="content" class="p-2">
                 <div 
                     class="cursor-pointer px-3 py-1 hover:bg-gray-300 rounded {promptMode === 'clean' ? 'bg-gray-300' : ''}"
-                    on:click={() => { promptMode = 'clean'; updateValue(); }}
+                    on:click={() => {
+                        console.log('Switching to clean mode');
+                        promptMode = 'clean';
+                        updateValue();
+                    }}
                 >
                     Clean
                 </div>
                 <div 
                     class="cursor-pointer px-3 py-1 hover:bg-gray-300 rounded {promptMode === 'original' ? 'bg-gray-300' : ''}"
-                    on:click={() => { promptMode = 'original'; updateValue(); }}
+                    on:click={() => {
+                        console.log('Switching to original mode');
+                        promptMode = 'original';
+                        updateValue();
+                    }}
                 >
                     Original
                 </div>
