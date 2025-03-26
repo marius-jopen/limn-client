@@ -305,6 +305,10 @@
     let userHovering = false;
     let hoverTimeout: number;
 
+    // Add these new state variables near the top
+    let lastNewImageTimestamp = 0;
+    let previousImageCount = 0;
+
     // Add this function to handle smooth scrolling
     function scrollToEnd(container: HTMLDivElement) {
         if (!container) return;
@@ -383,6 +387,10 @@
         // Clean up the timeout in onDestroy
         if (hoverTimeout) {
             clearTimeout(hoverTimeout);
+        }
+
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
         }
     });
 
@@ -637,33 +645,49 @@
         }
     }
 
-    // Modify the runState watcher to trigger scrolling
+    // Update the runState watcher to be more precise about when to scroll
     $: if ($runState.images?.length) {
         console.log('Processing runState images with batch:', $runState.batch_name);
         
-        // First show the images immediately for better UX
-        const newImages = $runState.images.map(img => ({
-            id: crypto.randomUUID(), 
-            image_url: getImageUrl(img),
-            user_id: user_id,
-            workflow_name: workflow_name,
-            created_at: new Date().toISOString(),
-            batch_name: $runState.batch_name || undefined
-        }));
+        // Check if we actually have new images
+        const hasNewImages = $runState.images.length > previousImageCount;
+        previousImageCount = $runState.images.length;
         
-        // Merge new images with existing ones, avoiding duplicates
-        const existingUrls = new Set(allResources.map(r => r.image_url));
-        const uniqueNewImages = newImages.filter(img => !existingUrls.has(img.image_url));
-        allResources = [...uniqueNewImages, ...allResources];
-        
-        // Set flag to trigger scroll after render
-        shouldAutoScroll = true;
-        
-        // Then set up a short delay to fetch from database instead
-        setTimeout(() => {
-            console.log('Refreshing images from database after generation');
-            fetchUserImages();
-        }, 2000);
+        if (hasNewImages) {
+            console.log('New images detected, updating and scrolling');
+            lastNewImageTimestamp = Date.now();
+            
+            // Process the new images
+            const newImages = $runState.images.map(img => ({
+                id: crypto.randomUUID(), 
+                image_url: getImageUrl(img),
+                user_id: user_id,
+                workflow_name: workflow_name,
+                created_at: new Date().toISOString(),
+                batch_name: $runState.batch_name || undefined
+            }));
+            
+            // Merge new images with existing ones, avoiding duplicates
+            const existingUrls = new Set(allResources.map(r => r.image_url));
+            const uniqueNewImages = newImages.filter(img => !existingUrls.has(img.image_url));
+            
+            if (uniqueNewImages.length > 0) {
+                allResources = [...uniqueNewImages, ...allResources];
+                
+                // Only scroll if user is not hovering and we have new images
+                if (!userHovering && latestBatchContainer) {
+                    scrollToEnd(latestBatchContainer);
+                }
+            }
+            
+            // Then set up a short delay to fetch from database instead
+            setTimeout(() => {
+                console.log('Refreshing images from database after generation');
+                fetchUserImages();
+            }, 2000);
+        } else {
+            console.log('No new images in runState update');
+        }
     }
 
     // Update the reactive statement for auto-scrolling to check for hover state
@@ -675,9 +699,8 @@
         }, 100);
     }
 
-    // Simplified subscription setup
+    // Update the subscription handler to check for new images
     function setupSubscription() {
-        // Clean up existing subscription
         if (subscription && typeof subscription.unsubscribe === 'function') {
             subscription.unsubscribe();
         }
@@ -697,8 +720,14 @@
                     },
                     (payload) => {
                         console.log('New resource inserted:', payload.new?.batch_name);
+                        lastNewImageTimestamp = Date.now(); // Update timestamp for new inserts
                         // Refresh all resources on new inserts
                         fetchUserImages();
+                        
+                        // Scroll if it's a new image and user isn't hovering
+                        if (!userHovering && latestBatchContainer) {
+                            scrollToEnd(latestBatchContainer);
+                        }
                     }
                 )
                 .on(
@@ -711,7 +740,7 @@
                     },
                     (payload) => {
                         console.log('Resource updated:', payload.new?.batch_name);
-                        // Refresh all resources on updates
+                        // Only refresh resources on updates, no scrolling needed
                         fetchUserImages();
                     }
                 )
@@ -866,40 +895,21 @@
         if (isLatest) {
             latestBatchContainer = node;
             
-            // Add hover event listeners
             const handleMouseEnter = () => {
                 userHovering = true;
-                // Clear any existing timeout
-                if (hoverTimeout) {
-                    clearTimeout(hoverTimeout);
-                }
             };
             
             const handleMouseLeave = () => {
-                // Add a small delay before re-enabling auto-scroll
-                hoverTimeout = window.setTimeout(() => {
-                    userHovering = false;
-                }, 1000); // 1 second delay
+                userHovering = false;
             };
             
             node.addEventListener('mouseenter', handleMouseEnter);
             node.addEventListener('mouseleave', handleMouseLeave);
             
             return {
-                update(newIsLatest: boolean) {
-                    if (newIsLatest) {
-                        latestBatchContainer = node;
-                    }
-                },
                 destroy() {
-                    if (latestBatchContainer === node) {
-                        latestBatchContainer = null;
-                    }
                     node.removeEventListener('mouseenter', handleMouseEnter);
                     node.removeEventListener('mouseleave', handleMouseLeave);
-                    if (hoverTimeout) {
-                        clearTimeout(hoverTimeout);
-                    }
                 }
             };
         }
