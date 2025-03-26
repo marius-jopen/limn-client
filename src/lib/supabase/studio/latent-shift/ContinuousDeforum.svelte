@@ -309,16 +309,28 @@
     let lastNewImageTimestamp = 0;
     let previousImageCount = 0;
 
-    // Add this function to handle smooth scrolling
+    // Add this with other state variables near the top
+    let scrollTimeout: number | undefined;
+
+    // Update the scrollToEnd function to use scrollTimeout
     function scrollToEnd(container: HTMLDivElement) {
         if (!container) return;
+        
+        // Clear any existing timeout
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+        }
         
         const scrollOptions = {
             left: container.scrollWidth,
             behavior: 'smooth' as ScrollBehavior
         };
         
-        container.scrollTo(scrollOptions);
+        // Set new timeout
+        scrollTimeout = window.setTimeout(() => {
+            container.scrollTo(scrollOptions);
+            scrollTimeout = undefined;
+        }, 100);
     }
 
     // Update the setupInfiniteScroll function
@@ -370,7 +382,7 @@
         setupInfiniteScroll();
     });
 
-    // Update onDestroy to clean up infinite scrolling
+    // Update onDestroy to properly handle scrollTimeout
     onDestroy(() => {
         if (subscription && typeof subscription.unsubscribe === 'function') {
             subscription.unsubscribe();
@@ -384,13 +396,14 @@
         // Clean up infinite scrolling
         cleanupInfiniteScroll();
 
-        // Clean up the timeout in onDestroy
+        // Clean up the timeouts in onDestroy
         if (hoverTimeout) {
             clearTimeout(hoverTimeout);
         }
 
         if (scrollTimeout) {
             clearTimeout(scrollTimeout);
+            scrollTimeout = undefined;
         }
     });
 
