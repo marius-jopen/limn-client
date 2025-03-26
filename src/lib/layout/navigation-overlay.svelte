@@ -216,28 +216,32 @@
     class="z-40 bg-neutral-100/80 backdrop-blur-2xl w-screen h-screen top-0 left-0 fixed"
     transition:fade={{ duration: 300 }}
   >
-    <div class="flex justify-center items-center h-full">
-        <div class="flex flex-col gap-8">
-            {#each navigationRows as row, rowIndex}
-                <div class="flex flex-row gap-8">
-                    {#each row as item, colIndex}
-                        <div in:fade={{ duration: 800, delay: baseDelay + ((rowIndex * itemsPerRow + colIndex) * delayIncrement) }}>
-                            <NavigationItem 
-                                href={item.href}
-                                imageSrc={item.imageSrc}
-                                imageAlt={item.imageAlt}
-                                title={item.title}
-                                on:navigate={handleNavigate}
-                            />
-                        </div>
-                    {/each}
-                </div>
-            {/each}
-        </div>
+    <!-- Fixed Logout button container -->
+    <div class="fixed top-3 left-4 z-50">
+        <Logout on:logout={handleLogout} />
     </div>
 
-    <div class="absolute top-3 left-4">
-        <Logout on:logout={handleLogout} />
+    <!-- Scrollable content area -->
+    <div class="h-full overflow-y-auto">
+        <div class="flex justify-center min-h-full py-16">
+            <div class="flex flex-col gap-8 p-4 w-full md:w-auto pt-20">
+                {#each navigationRows as row, rowIndex}
+                    <div class="flex flex-col md:flex-row gap-12">
+                        {#each row as item, colIndex}
+                            <div class="w-full md:w-auto" in:fade={{ duration: 800, delay: baseDelay + ((rowIndex * itemsPerRow + colIndex) * delayIncrement) }}>
+                                <NavigationItem 
+                                    href={item.href}
+                                    imageSrc={item.imageSrc}
+                                    imageAlt={item.imageAlt}
+                                    title={item.title}
+                                    on:navigate={handleNavigate}
+                                />
+                            </div>
+                        {/each}
+                    </div>
+                {/each}
+            </div>
+        </div>
     </div>
   </div>
 {/if}
