@@ -90,8 +90,8 @@
             bind:promptMode={promptMode}
         />
     
-        <div class="flex flex-row gap-2 justify-between mt-1">
-            <div class="flex flex-row gap-2">
+        <div class="flex flex-col sm:flex-row gap-1 md:gap-2 justify-between mt-1">
+            <div class="flex flex-row gap-1 md:gap-2 justify-center sm:justify-start mb-1 md:mb-0">
                 <IntDropdown
                     id="max_frames"
                     options={getField('max_frames')?.options}
@@ -103,25 +103,32 @@
         
                 <Button 
                     onClick={() => loraComponent?.openLoraOverlay()} 
-                    label="💥 Style"
                     variant="quaternary"
-                    classes="text-sm"
-                />
+                    classes="text-sm p-1.5 md:p-2"
+                >
+                    <span class="md:hidden">💥</span>
+                    <span class="hidden md:block">💥 Style</span>
+                </Button>
 
                 <Button 
                     onClick={() => cameraComponent?.openOverlay()} 
-                    label="🎥 Camera"
                     variant="quaternary"
-                    classes="text-sm"
-                />
+                    classes="text-sm p-1.5 md:p-2"
+                >
+                    <span class="md:hidden">🎥</span>
+                    <span class="hidden md:block">🎥 Camera</span>
+                </Button>
 
                 <Dropdown position="top" >
                     <div slot="trigger">
                         <Button 
                             variant="quaternary"
                             size="sm"
-                            label={promptMode === 'clean' ? '💦 Clean' : '🪨 Original'}
-                        />
+                            classes="p-1.5 md:p-2"
+                        >
+                            <span class="md:hidden">{promptMode === 'clean' ? '💦' : '🪨'}</span>
+                            <span class="hidden md:block">{promptMode === 'clean' ? '💦 Clean' : '🪨 Original'}</span>
+                        </Button>
                     </div>
                     <div slot="content">
                         <Button 
@@ -130,7 +137,7 @@
                             label="Clean"
                             onClick={() => {
                                 promptMode = 'clean';
-                                document.body.click(); // This will close the dropdown
+                                document.body.click();
                             }}
                             classes={`w-full justify-start ${promptMode === 'clean' ? 'bg-gray-300' : ''}`}
                         />
@@ -140,7 +147,7 @@
                             label="Original"
                             onClick={() => {
                                 promptMode = 'original';
-                                document.body.click(); // This will close the dropdown
+                                document.body.click();
                             }}
                             classes={`w-full justify-start ${promptMode === 'original' ? 'bg-gray-300' : ''}`}
                         />
@@ -148,16 +155,17 @@
                 </Dropdown>
             </div>
 
-            <div class="flex flex-row gap-2">
+            <div class="flex flex-row gap-1 md:gap-2 justify-center sm:justify-start">
                 <Cancel />   
         
                 <Button 
                     onClick={onGenerate} 
-                    label="💥 Generate" 
                     disabled={isGenerating}
                     variant="primary"
-                    size="sm"
-                />    
+                    classes="text-sm p-1.5 md:p-2"
+                >
+                    💥 Generate
+                </Button>    
             </div>
         </div>
     </div>

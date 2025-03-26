@@ -42,7 +42,8 @@
                 variant="quaternary" 
                 classes="text-sm {isOpen ? 'bg-gray-300' : ''}"
             >
-                {formattedValue}
+                <span class="md:hidden">{prefix} {value}</span>
+                <span class="hidden md:block">{formattedValue}</span>
             </Button>
         </div>
         

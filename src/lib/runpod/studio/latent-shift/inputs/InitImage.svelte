@@ -418,7 +418,7 @@
                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             
-            <div class="text-4xl smooth-float mb-2">
+            <div class="text-3xl md:text-4xl smooth-float mb-2">
                 🚀
             </div>
             
