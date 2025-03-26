@@ -32,7 +32,7 @@
         classes="fixed top-3 right-4 z-50"
     />
 
-    <a href="/dashboard" class="fixed top-3 left-4 z-0 font-bold text-xl">
+    <a href="/dashboard" class="fixed top-3 left-4 z-0 font-bold text-xl z-50">
         Limn
     </a>
 
@@ -42,7 +42,7 @@
     />
 
 {:else}
-    <a href="/" class="fixed top-3 left-4 z-0 font-bold text-xl">
+    <a href="/" class="fixed top-3 left-4 z-0 font-bold text-xl z-50">
         Limn
     </a>
 
