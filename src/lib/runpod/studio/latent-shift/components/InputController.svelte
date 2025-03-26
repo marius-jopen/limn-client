@@ -46,6 +46,10 @@
     // Add prompt mode state
     let promptMode: 'clean' | 'original' = 'clean';
 
+    // Add status text and opacity state
+    let statusText = "Status";
+    let statusOpacity = 0;
+
     // Initialize values from UI config on mount
     onMount(() => {
         UI.forEach(field => {
@@ -62,6 +66,26 @@
 
     // Get user ID for upload components
     $: user_id = $user?.id;
+
+    // Helper function to handle hover for any element
+    function handleHover(isHovering: boolean, fieldId: string, infoKey?: string, defaultText = "Status") {
+        if (isHovering) {
+            const field = getField(fieldId);
+            if (infoKey && typeof field?.info === 'object') {
+                statusText = field.info[infoKey] || defaultText;
+            } else {
+                statusText = field?.info || defaultText;
+            }
+            statusOpacity = 1;
+        } else {
+            statusOpacity = 0;
+            setTimeout(() => {
+                if (statusOpacity === 0) {
+                    statusText = "Status";
+                }
+            }, 200);
+        }
+    }
 </script>
 
 <div class="input-controller pt-8 pb-16 px-3">
@@ -70,6 +94,7 @@
         label={getField('init_image')?.label || 'Init Image'}
         bind:value={values['init_image']}
         userId={user_id}
+        info={getField('init_image')?.info}
     />
 
     <CameraUi
@@ -77,50 +102,76 @@
         label={getField('camera')?.label || 'Camera'}
         bind:value={values['camera']}
         bind:this={cameraComponent}
+        info={getField('camera')?.info}
     />
 
     <div class="bg-white p-3 rounded-lg max-w-[800px] mx-auto mt-8 ">
-        <PromptsUi
-            id="prompts"
-            label={getField('prompts')?.label || 'Animation Prompts'}
-            bind:value={values['prompts']}
-            options={getField('prompts')?.options}
-            bind:this={loraComponent}
-            defaultValues={getField('prompts')?.default}
-            bind:promptMode={promptMode}
-        />
+        <div
+            on:mouseenter={() => handleHover(true, 'prompts')}
+            on:mouseleave={() => handleHover(false, 'prompts')}
+        >
+            <PromptsUi
+                id="prompts"
+                label={getField('prompts')?.label || 'Animation Prompts'}
+                bind:value={values['prompts']}
+                options={getField('prompts')?.options}
+                bind:this={loraComponent}
+                defaultValues={getField('prompts')?.default}
+                bind:promptMode={promptMode}
+                info={getField('prompts')?.info}
+            />
+        </div>
     
         <div class="flex flex-col sm:flex-row gap-1 md:gap-2 justify-between mt-1">
             <div class="flex flex-row gap-1 md:gap-2 justify-center sm:justify-start mb-1 md:mb-0">
-                <IntDropdown
-                    id="max_frames"
-                    options={getField('max_frames')?.options}
-                    bind:value={values['max_frames']}
-                    hidden={getField('max_frames')?.hidden}
-                    prefix={getField('max_frames')?.display?.prefix || ''}
-                    suffix={getField('max_frames')?.display?.suffix || ''}
-                />
+                <div
+                    on:mouseenter={() => handleHover(true, 'max_frames')}
+                    on:mouseleave={() => handleHover(false, 'max_frames')}
+                >
+                    <IntDropdown
+                        id="max_frames"
+                        options={getField('max_frames')?.options}
+                        bind:value={values['max_frames']}
+                        hidden={getField('max_frames')?.hidden}
+                        prefix={getField('max_frames')?.display?.prefix || ''}
+                        suffix={getField('max_frames')?.display?.suffix || ''}
+                    />
+                </div>
         
-                <Button 
-                    onClick={() => loraComponent?.openLoraOverlay()} 
-                    variant="quaternary"
-                    classes="text-sm "
+                <div
+                    on:mouseenter={() => handleHover(true, 'prompts', 'style', "Add style presets to your animation")}
+                    on:mouseleave={() => handleHover(false, 'prompts')}
                 >
-                    <span class="md:hidden">💥</span>
-                    <span class="hidden md:block">💥 Style</span>
-                </Button>
+                    <Button 
+                        onClick={() => loraComponent?.openLoraOverlay()} 
+                        variant="quaternary"
+                        classes="text-sm"
+                    >
+                        <span class="md:hidden">💥</span>
+                        <span class="hidden md:block">💥 Style</span>
+                    </Button>
+                </div>
 
-                <Button 
-                    onClick={() => cameraComponent?.openOverlay()} 
-                    variant="quaternary"
-                    classes="text-sm "
+                <div
+                    on:mouseenter={() => handleHover(true, 'camera')}
+                    on:mouseleave={() => handleHover(false, 'camera')}
                 >
-                    <span class="md:hidden">🎥</span>
-                    <span class="hidden md:block">🎥 Camera</span>
-                </Button>
+                    <Button 
+                        onClick={() => cameraComponent?.openOverlay()} 
+                        variant="quaternary"
+                        classes="text-sm"
+                    >
+                        <span class="md:hidden">🎥</span>
+                        <span class="hidden md:block">🎥 Camera</span>
+                    </Button>
+                </div>
 
-                <Dropdown position="top" >
-                    <div slot="trigger">
+                <Dropdown position="top">
+                    <div 
+                        slot="trigger"
+                        on:mouseenter={() => handleHover(true, 'prompt_mode', undefined, "Switch between clean and original prompt mode")}
+                        on:mouseleave={() => handleHover(false, 'prompt_mode')}
+                    >
                         <Button 
                             variant="quaternary"
                             size="sm"
@@ -167,6 +218,15 @@
                     💥 Generate
                 </Button>    
             </div>
+        </div>
+    </div>
+
+    <div class="flex justify-center mt-4">
+        <div 
+            class="p-2 text-sm text-gray-500 px-4 transition-all duration-200 ease-in-out"
+            style="opacity: {statusOpacity}"
+        >
+            {statusText}
         </div>
     </div>
 </div>

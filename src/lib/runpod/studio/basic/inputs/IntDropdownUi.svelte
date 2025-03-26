@@ -29,7 +29,11 @@
     $: formattedValue = `${prefix}${value}${suffix}`;
 </script>
 
-<div class="{hidden ? 'hidden' : ''} relative">
+<div 
+    on:mouseenter 
+    on:mouseleave
+    class="{hidden ? 'hidden' : ''} relative"
+>
     <Dropdown 
         position="top" 
         containerClass="left-0" 

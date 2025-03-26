@@ -12,6 +12,7 @@
         "type": "int-dropdown",
         "placeholder": "${MAX_FRAMES}",
         "label": "Max Frames",
+        "info": "The maximum number of frames to generate",
         "default": 15,
         "display": {
             "prefix": "🕒 ",
@@ -41,6 +42,10 @@
         "type": "prompts",
         "placeholder": "${PROMPTS}",
         "label": "Animation Prompts",
+        "info": {
+            "prompts": "The prompts to use for the animation",
+            "style": "Add style presets to enhance your animation"
+        },
         "default": {
             "globalPositive": "",
             "globalPositiveHidden": "hyperdetailed photography, soft light, masterpiece, 8k, octane render, beautiful depth of field",
@@ -128,12 +133,14 @@
         "type": "init-image",
         "placeholder": "${INIT_IMAGE}",
         "label": "Init Image",
+        "info": "The initial image to use for the animation",
         "default": ""
     },
     {
         "id": "camera",
         "type": "camera",
         "label": "Camera",
+        "info": "The camera settings to use for the animation",
         "placeholder": {
             "x": "${TRANSLATION_X}",
             "y": "${TRANSLATION_Y}",
