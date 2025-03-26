@@ -283,7 +283,7 @@
 
 <div class="w-full {hidden ? 'hidden' : ''}">
     <!-- Mode selector dropdown -->
-    <div class="flex justify-end mb-4">
+    <div class="flex justify-end mb-4 hidden">
         <Dropdown position="bottom">
             <div slot="trigger" class="cursor-pointer px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-200">
                 {promptMode === 'clean' ? 'Clean' : 'Original'}
