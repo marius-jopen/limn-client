@@ -5,6 +5,7 @@
     import Label from "$lib/atoms/Label.svelte";
     import Button from "$lib/atoms/Button.svelte";
     import { onMount, onDestroy, afterUpdate } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
 
     export let label: string = "";
     export let value: string = "";
@@ -29,6 +30,8 @@
     let uploading = false;
     let preview: string | null = null;
     let status: string = 'Ready';
+    
+    const dispatch = createEventDispatcher();
     
     async function fetchImage(idToFetch: string) {
         if (!idToFetch) return;
@@ -352,6 +355,11 @@
             uploading = false;
         }
     }
+
+    // Add hover handlers for the image
+    function handleImageHover(isHovering: boolean) {
+        dispatch('hover', { isHovering });
+    }
 </script>
 
 <div class="flex flex-col gap-2 {hidden ? 'hidden' : ''} items-center w-full">    
@@ -404,6 +412,8 @@
         {:else}
             <div 
                 class="w-full max-w-[400px] aspect-square bg-white rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group relative {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'}"
+                on:mouseenter={() => dispatch('hover', { isHovering: true })}
+                on:mouseleave={() => dispatch('hover', { isHovering: false })}
             >
                 <input
                     type="file"

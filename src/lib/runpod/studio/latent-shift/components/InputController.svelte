@@ -89,13 +89,19 @@
 </script>
 
 <div class="input-controller pt-8 pb-16 px-3">
-   <InitImage
-        id="init_image"
-        label={getField('init_image')?.label || 'Init Image'}
-        bind:value={values['init_image']}
-        userId={user_id}
-        info={getField('init_image')?.info}
-    />
+   <div
+        on:mouseenter={() => handleHover(true, 'init_image')}
+        on:mouseleave={() => handleHover(false, 'init_image')}
+    >
+        <InitImage
+            id="init_image"
+            label={getField('init_image')?.label || 'Init Image'}
+            bind:value={values['init_image']}
+            userId={user_id}
+            info={getField('init_image')?.info}
+            on:hover={({ detail }) => handleHover(detail.isHovering, 'init_image')}
+        />
+    </div>
 
     <CameraUi
         id="camera"
@@ -107,7 +113,7 @@
 
     <div class="bg-white p-3 rounded-lg max-w-[800px] mx-auto mt-8 ">
         <div
-            on:mouseenter={() => handleHover(true, 'prompts')}
+            on:mouseenter={() => handleHover(true, 'prompts', 'prompts')}
             on:mouseleave={() => handleHover(false, 'prompts')}
         >
             <PromptsUi
