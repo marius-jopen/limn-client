@@ -101,7 +101,7 @@
     {#if activeLoras.length > 0}
         <div class="flex flex-wrap gap-1">
             {#each activeLoras as lora}
-                <div class="inline-flex items-center bg-gray-200 transition-all duration-300 hover:bg-gray-300 pl-2 pr-1 mb-1 border-gray-300 rounded-full text-xs">
+                <div class="inline-flex items-center bg-gray-100 transition-all duration-300 hover:bg-gray-300 pl-2 pr-1 mb-1 border-gray-300 rounded-full text-xs">
                     <span class="px-2 py-2 text-gray-700">{lora.label}</span>
                     <div class="flex items-center border-l border-gray-300">
                         <!-- Minus button -->
@@ -157,7 +157,7 @@
 <!-- LoRA Selection Overlay -->
 {#if isOverlayOpen}
     <div 
-        class="fixed bg-neutral-100/80 backdrop-blur-2xl inset-0 z-50 flex items-center justify-center"
+        class="fixed bg-neutral-100/80 backdrop-blur-2xl inset-0 z-50"
         on:click|self={() => {
             isOverlayOpen = false;
             searchTerm = "";
@@ -176,41 +176,31 @@
             classes="fixed top-3 right-4 text-sm z-[51]"
         />
 
-        <div 
-            class="bg-gray-200 rounded-lg w-[800px] max-h-[80vh] flex flex-col overflow-hidden"
-            transition:scale={{ 
-                duration: 300, 
-                delay: 100,
-                easing: quintOut,
-                start: 0.95
-            }}
-        >
-            <!-- <div class="p-6 text-center w-8/12 mx-auto">
-                <h2 class="text-xl font-semibold mb-2">Select a Style</h2>
-                <p class="text-gray-600">
-                    Choose a style below. After selection, you can adjust its strength using the number input in the bubble above your prompt field.
-                </p>
-            </div> -->
-
-            
-            <!-- LoRA Grid -->
-            <div class="p-3 overflow-y-auto flex-1 grid grid-cols-2 gap-2">
-                {#each filteredOptions as option}
-                    <div 
-                        class="flex bg-gray-100 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                        on:click={() => handleLoraSelect(option)}
-                    >
-                        <img 
-                            src={option.image} 
-                            alt={option.label} 
-                            class="w-24 h-24 object-cover rounded-l-md"
-                        />
-                        <div class="py-2 px-3">
-                            <div class="font-medium">{option.label}</div>
-                            <div class="text-sm text-gray-600 mt-1">{option.description}</div>
-                        </div>
+        <!-- Scrollable content area -->
+        <div class="h-full overflow-y-auto">
+            <div class="flex justify-center min-h-full py-16">
+                <div class="p-4 w-full md:w-[800px] pt-20">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {#each filteredOptions as option}
+                            <div 
+                                class="bg-white rounded-lg hover:bg-gray-50 cursor-pointer overflow-hidden"
+                                on:click={() => handleLoraSelect(option)}
+                            >
+                                <div class="overflow-hidden">
+                                    <img 
+                                        src={option.image} 
+                                        alt={option.label} 
+                                        class="w-full h-48 object-cover rounded-t-lg md:rounded-t-none md:rounded-tl-lg md:rounded-tr-lg transition-transform duration-300 hover:scale-110"
+                                    />
+                                </div>
+                                <div class="p-3">
+                                    <div class="font-medium">{option.label}</div>
+                                    <div class="text-sm text-gray-600 mt-1">{option.description}</div>
+                                </div>
+                            </div>
+                        {/each}
                     </div>
-                {/each}
+                </div>
             </div>
         </div>
     </div>
