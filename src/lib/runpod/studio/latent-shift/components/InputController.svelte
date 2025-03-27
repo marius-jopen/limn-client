@@ -239,15 +239,19 @@
         </div>
     </div>
 
-    <div class="flex justify-center mt-4 hidden md:block">
-        <div 
-            class="p-2 text-sm text-gray-500 px-4 transition-all duration-200 ease-in-out text-center"
-            style="opacity: {statusOpacity}"
-        >
-            {statusText}
+    <div class="flex justify-cente mt-12 md:mt-4 block relative  mb-4 md:mb-0">
+      
+        <div class="absolute top-0 left-0 w-full  ">
+            <LogViewer id="log-viewer" label="Generation Logs" />
         </div>
+
+        <div 
+        class="hidden md:block pt-[6px] w-full text-center bg-gray-100 text-sm text-gray-500 px-4 z-20 relative transition-all duration-200 ease-in-out text-center"
+        style="opacity: {statusOpacity}"
+    >
+        {statusText}
     </div>
-    <LogViewer id="log-viewer" label="Generation Logs" />
+    </div>
 </div>
 
 

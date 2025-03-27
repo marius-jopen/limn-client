@@ -56,9 +56,9 @@
     }
 </script>
 
-{#if logs.length > 0}
-    <div class="mt-4 w-full bg-gray-100">
-        <div class="text-gray-500 p-2 text-sm overflow-hidden h-8 flex items-center justify-center">
+<!-- {#if logs.length > 0} -->
+    <div class="w-full">
+        <div class="text-gray-500 p-[10px] text-sm overflow-hidden h-8 flex items-center justify-center">
             {#if logs[logs.length - 1]}
                 {#if logs[logs.length - 1].type === 'error'}
                     <span class="text-red-500 truncate text-center">
@@ -73,4 +73,4 @@
 
         </div>
     </div>
-{/if} 
+<!-- {/if}  -->
