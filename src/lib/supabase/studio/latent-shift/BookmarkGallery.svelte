@@ -9,6 +9,7 @@
     import { goto } from '$app/navigation';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
     import { selectedImageId } from '$lib/supabase/helper/StoreSupabase';
+    import ContinuousDeforumVideo from './ContinuousDeforumVideo.svelte';
 
     // Configuration for pagination
     const ITEMS_PER_PAGE = 20;
@@ -24,6 +25,8 @@
         visibility?: boolean;
         type?: string;
         liked?: boolean;
+        batch_name?: string;
+        batches_connected?: Array<{batch_name: string, id: string}>;
     }
 
     // State variables
@@ -42,6 +45,10 @@
     // Add preview state
     let isPreviewOpen = false;
     let previewResource: Resource | null = null;
+
+    // Add state for video preview
+    let showVideoPreview = false;
+    let selectedPathResources: Resource[] = [];
 
     // Fetch liked images from Supabase
     async function fetchLikedImages() {
@@ -186,6 +193,82 @@
         // Navigate to latent-shift page
         await goto('/studio/latent-shift');
     }
+
+    // Function to fetch complete lineage for an image
+    async function fetchImageLineage(resource: Resource) {
+        try {
+            console.log('Fetching lineage for resource:', resource.id);
+            
+            let processedBatches = new Set<string>();
+            let allResources: Resource[] = [];
+
+            // Helper function to recursively collect all connected resources
+            async function collectBatchResources(batchName: string) {
+                if (processedBatches.has(batchName)) return;
+                processedBatches.add(batchName);
+
+                // Get all images from this batch
+                const { data: batchImages, error: batchError } = await supabase
+                    .from('resource')
+                    .select('*')
+                    .eq('batch_name', batchName);
+
+                if (batchError) throw batchError;
+                
+                if (batchImages) {
+                    // Add all images from this batch
+                    allResources.push(...batchImages);
+
+                    // Process connected batches for each image in this batch
+                    for (const img of batchImages) {
+                        if (img.batches_connected) {
+                            for (const connected of img.batches_connected) {
+                                await collectBatchResources(connected.batch_name);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Start with the current image's batch
+            if (resource.batch_name) {
+                await collectBatchResources(resource.batch_name);
+            }
+
+            // If the current image has connected batches, process those too
+            if (resource.batches_connected) {
+                for (const connected of resource.batches_connected) {
+                    await collectBatchResources(connected.batch_name);
+                }
+            }
+
+            // If no resources were found, at least include the current resource
+            if (allResources.length === 0) {
+                allResources = [resource];
+            }
+
+            // Remove duplicates and sort by creation time
+            const uniqueResources = Array.from(new Set(allResources.map(r => JSON.stringify(r))))
+                .map(str => JSON.parse(str))
+                .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+            console.log(`Found ${uniqueResources.length} images in the complete family tree`);
+            return uniqueResources;
+
+        } catch (error) {
+            console.error('Error fetching image lineage:', error);
+            return [resource];
+        }
+    }
+
+    // Update the handleShowVideo function
+    async function handleShowVideo(resource: Resource) {
+        console.log('Starting video preview for resource:', resource.id);
+        const lineageResources = await fetchImageLineage(resource);
+        console.log(`Got ${lineageResources.length} images for video`);
+        selectedPathResources = lineageResources;
+        showVideoPreview = true;
+    }
 </script>
 
 {#if error}
@@ -258,6 +341,14 @@
                         >
                             🔮
                         </Button>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleShowVideo(resource)}
+                        >
+                            <span class="md:hidden">🎬</span>
+                            <span class="hidden md:block">🎬</span>
+                        </Button>
                     </div>
                 </div>
             {/each}
@@ -287,6 +378,14 @@
                 </div>
             </div>
         </div>
+    {/if}
+
+    <!-- Add video preview overlay -->
+    {#if showVideoPreview}
+        <ContinuousDeforumVideo 
+            resources={selectedPathResources}
+            on:close={() => showVideoPreview = false}
+        />
     {/if}
 
     {#if hasMore}
