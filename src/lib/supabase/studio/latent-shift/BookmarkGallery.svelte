@@ -35,7 +35,7 @@
     $: userId = $user?.id;
 
     // Grid layout state
-    $: gridClass = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4";
+    $: gridClass = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 ";
 
     // Fetch liked images from Supabase
     async function fetchLikedImages() {
@@ -170,27 +170,33 @@
         </div>
     </div>
 {:else}
-    <div class={gridClass}>
-        {#each likedResources as resource (resource.id)}
-            <div 
-                class="relative overflow-hidden rounded-lg group"
-                transition:fade={{ duration: 300 }}
-            >
-                <img
-                    src={resource.image_url}
-                    alt={resource.name || 'Liked image'}
-                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    loading="lazy"
-                />
-                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Like 
-                        resourceId={resource.id}
-                        initialLiked={true}
-                        on:likeChanged={handleLikeChanged}
+    <div class="">
+        <h2 class="text-xl font-medium text-gray-700 mb-6 text-center pt-20 pb-8">
+            Your Bookmarked Images. Yay!
+        </h2>
+
+        <div class={gridClass}>
+            {#each likedResources as resource (resource.id)}
+                <div 
+                    class="relative overflow-hidden rounded-lg group"
+                    transition:fade={{ duration: 300 }}
+                >
+                    <img
+                        src={resource.image_url}
+                        alt={resource.name || 'Liked image'}
+                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        loading="lazy"
                     />
+                    <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Like 
+                            resourceId={resource.id}
+                            initialLiked={true}
+                            on:likeChanged={handleLikeChanged}
+                        />
+                    </div>
                 </div>
-            </div>
-        {/each}
+            {/each}
+        </div>
     </div>
 
     {#if hasMore}
