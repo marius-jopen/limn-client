@@ -133,7 +133,7 @@
         "type": "init-image",
         "placeholder": "${INIT_IMAGE}",
         "label": "Init Image",
-        "info": "Upload an image or remix one of the images from below",
+        "info": "Upload an image or remix one of the images from below | Only square images supported at the moment",
         "default": ""
     },
     {
