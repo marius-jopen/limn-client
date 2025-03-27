@@ -223,8 +223,8 @@
 
     <!-- Scrollable content area -->
     <div class="h-full overflow-y-auto">
-        <div class="flex justify-center min-h-full py-16">
-            <div class="flex flex-col gap-8 p-4 w-full md:w-auto pt-20">
+        <div class="flex justify-center items-center min-h-full py-16">
+            <div class="flex flex-col gap-8 p-4 w-full md:w-auto">
                 {#each navigationRows as row, rowIndex}
                     <div class="flex flex-col md:flex-row gap-12">
                         {#each row as item, colIndex}
