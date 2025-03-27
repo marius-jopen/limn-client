@@ -41,30 +41,36 @@
             .replace(/\r/g, '\n')
             .replace(/\u001b\[\d+m/g, '');
     }
+
+    function cleanMessage(message: string) {
+        if (message.startsWith('Generated new image')) {
+            return 'Image generated';
+        }
+        if (message.includes('Status: ')) {
+            return 'Generating...';
+        }
+        if (message.includes('Job complete')) {
+            return 'All images generated';
+        }
+        return ''; // Hide all other messages
+    }
 </script>
 
 {#if logs.length > 0}
-    <div class="mt-4 w-full">
+    <div class="mt-4 w-full bg-gray-100">
         <div class="text-gray-500 p-2 text-sm overflow-hidden h-8 flex items-center justify-center">
             {#if logs[logs.length - 1]}
-                {#if logs[logs.length - 1].type === 'worker'}
-                    <span class="text-gray-500 truncate text-center">
-                        {logs[logs.length - 1].message}
-                    </span>
-                {:else if logs[logs.length - 1].type === 'error'}
+                {#if logs[logs.length - 1].type === 'error'}
                     <span class="text-red-500 truncate text-center">
-                        Error: {logs[logs.length - 1].message}
+                        Error: {cleanMessage(logs[logs.length - 1].message)}
                     </span>
                 {:else}
                     <span class="text-gray-500 truncate text-center">
-                        {logs[logs.length - 1].message}
+                        {cleanMessage(logs[logs.length - 1].message)}
                     </span>
                 {/if}
             {/if}
-            
-            {#if status !== 'Completed' && status !== 'Error'}
-                <span class="animate-pulse ml-1 text-gray-500">▋</span>
-            {/if}
+
         </div>
     </div>
 {/if} 

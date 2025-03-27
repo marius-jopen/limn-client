@@ -247,9 +247,9 @@
             {statusText}
         </div>
     </div>
+    <LogViewer id="log-viewer" label="Generation Logs" />
 </div>
 
-<LogViewer id="log-viewer" label="Generation Logs" />
 
 <RandomNumberUi
     id="random-number"
