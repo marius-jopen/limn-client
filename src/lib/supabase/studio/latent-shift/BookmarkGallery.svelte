@@ -37,6 +37,10 @@
     // Grid layout state
     $: gridClass = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 ";
 
+    // Add preview state
+    let isPreviewOpen = false;
+    let previewResource: Resource | null = null;
+
     // Fetch liked images from Supabase
     async function fetchLikedImages() {
         if (!userId || isLoading || !hasMore) return;
@@ -146,6 +150,18 @@
     function handleGenerateClick() {
         goto('/studio/latent-shift');
     }
+
+    // Function to handle image click for preview
+    function handlePreview(resource: Resource): void {
+        previewResource = resource;
+        isPreviewOpen = true;
+    }
+
+    // Function to close preview overlay
+    function closePreview(): void {
+        isPreviewOpen = false;
+        previewResource = null;
+    }
 </script>
 
 {#if error}
@@ -170,16 +186,14 @@
         </div>
     </div>
 {:else}
-    <div class="">
-        <h2 class="text-xl font-medium text-gray-700 mb-6 text-center pt-20 pb-8">
-            Your Bookmarked Images. Yay!
-        </h2>
-
+    <div class="p-4">
+        <h2 class="text-2xl text-center font-medium text-neutral-800 pt-16 pb-10">Your Bookmarked Images. Yay!</h2>
         <div class={gridClass}>
             {#each likedResources as resource (resource.id)}
                 <div 
-                    class="relative overflow-hidden rounded-lg group"
+                    class="relative overflow-hidden rounded-lg group cursor-pointer"
                     transition:fade={{ duration: 300 }}
+                    on:click={() => handlePreview(resource)}
                 >
                     <img
                         src={resource.image_url}
@@ -198,6 +212,31 @@
             {/each}
         </div>
     </div>
+
+    <!-- Preview overlay -->
+    {#if isPreviewOpen && previewResource}
+        <div 
+            class="fixed inset-0 bg-neutral-100/80 backdrop-blur-2xl z-50 flex items-center justify-center p-4 animate-fade-in"
+            on:click={closePreview}
+        >
+            <div class="max-w-4xl max-h-[90vh] relative">
+                <img 
+                    src={previewResource.image_url} 
+                    alt={previewResource.name || 'Preview'} 
+                    class="max-w-full max-h-[90vh] object-contain rounded-xl"
+                />
+                
+                <div class="fixed top-3 right-4">
+                    <Button
+                        label="Close"
+                        variant="secondary"
+                        size="sm"
+                        onClick={closePreview}
+                    />
+                </div>
+            </div>
+        </div>
+    {/if}
 
     {#if hasMore}
         <div class="py-6 flex justify-center">
@@ -223,6 +262,16 @@
     /* Ensure smooth transitions for grid items */
     :global(.grid) {
         transition: all 300ms ease-in-out;
+    }
+
+    /* Animation for preview overlay */
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     /* Add rocket animation styles */
