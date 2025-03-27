@@ -9,6 +9,7 @@
     import IntDropdown from '$lib/runpod/studio/basic/inputs/IntDropdownUi.svelte';   
     import CameraUi from '$lib/runpod/studio/latent-shift/inputs/CameraUi.svelte';
     import Dropdown from '$lib/atoms/Dropdown.svelte';
+    import LogViewer from '$lib/runpod/studio/latent-shift/components/LogViewer.svelte';
 
     // Define types similar to InputRepeater
     type BaseField = {
@@ -252,6 +253,8 @@
         </div>
     </div>
 </div>
+
+<LogViewer id="log-viewer" label="Generation Logs" />
 
 <RandomNumberUi
     id="random-number"
