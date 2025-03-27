@@ -10,8 +10,11 @@
     let email: string = '';
     let password: string = '';
     let confirmPassword: string = '';
+    let registrationCode: string = '';
     let loading: boolean = false;
     let errorMsg: string = '';
+
+    const VALID_REGISTRATION_CODE = 'LIMN2025';
 
     // Check if user is already logged in when component mounts
     onMount(async () => {
@@ -28,6 +31,10 @@
         try {
             loading = true;
             errorMsg = '';
+
+            if (registrationCode !== VALID_REGISTRATION_CODE) {
+                throw new Error('Invalid registration code');
+            }
 
             if (password !== confirmPassword) {
                 throw new Error("Passwords don't match");
@@ -98,6 +105,13 @@
         </h1>
 
         <form on:submit|preventDefault={handleRegister} class="space-y-6">
+            <div>
+                <InputText
+                    id="registration-code"
+                    bind:value={registrationCode}
+                    placeholder="Enter registration code"
+                />
+            </div>
             <div>
                 <InputText
                     id="email"
