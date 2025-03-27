@@ -96,19 +96,14 @@
 </script>
 
 <div class="input-controller pt-8 pb-16 px-3">
-   <div
-        on:mouseenter={() => handleHover(true, 'init_image')}
-        on:mouseleave={() => handleHover(false, 'init_image')}
-    >
-        <InitImage
-            id="init_image"
-            label={getField('init_image')?.label || 'Init Image'}
-            bind:value={values['init_image']}
-            userId={user_id}
-            info={getField('init_image')?.info}
-            on:hover={({ detail }) => handleHover(detail.isHovering, 'init_image')}
-        />
-    </div>
+    <InitImage
+        id="init_image"
+        label={getField('init_image')?.label || 'Init Image'}
+        bind:value={values['init_image']}
+        userId={user_id}
+        info={getField('init_image')?.info}
+        on:hover={({ detail }) => handleHover(detail.isHovering, 'init_image', undefined, detail.info || "Status")}
+    />
 
     <CameraUi
         id="camera"

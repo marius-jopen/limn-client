@@ -377,6 +377,8 @@
         {#if resource || preview}
             <div class="relative inline-block group max-w-full">
                 <img 
+                    on:mouseenter={() => dispatch('hover', { isHovering: true, info: "Drop an image here or select one from your gallery to start the animation" })}
+                    on:mouseleave={() => dispatch('hover', { isHovering: false })}
                     src={resource ? resource.image_url : preview} 
                     alt="Selected image" 
                     class="rounded-xl shadow-sm max-h-[400px] w-auto max-w-full object-contain opacity-100 transition-opacity duration-300"
@@ -412,7 +414,7 @@
         {:else}
             <div 
                 class="w-full max-w-[400px] aspect-square bg-white rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group relative {isDragging ? 'border-blue-500 bg-gray-200' : 'border-gray-200'}"
-                on:mouseenter={() => dispatch('hover', { isHovering: true })}
+                on:mouseenter={() => dispatch('hover', { isHovering: true, info: "Drop an image here or select one from your gallery to start the animation" })}
                 on:mouseleave={() => dispatch('hover', { isHovering: false })}
             >
                 <input
