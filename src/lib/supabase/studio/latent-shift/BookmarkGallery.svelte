@@ -7,6 +7,8 @@
     import Like from '$lib/supabase/studio/latent-shift/Like.svelte';
     import { fade } from 'svelte/transition';
     import { goto } from '$app/navigation';
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import { selectedImageId } from '$lib/supabase/helper/StoreSupabase';
 
     // Configuration for pagination
     const ITEMS_PER_PAGE = 20;
@@ -162,6 +164,26 @@
         isPreviewOpen = false;
         previewResource = null;
     }
+
+    // Function to handle image selection and navigation
+    async function handleExploreImage(resource: Resource) {
+        // Set the selected image ID in the store
+        selectedImageId.set(resource.id);
+
+        // Update runState with the workflow name and image ID
+        runState.update(state => ({
+            ...state,
+            workflow_name: 'deforum-latent-shift',
+            imageId: resource.id,
+            values: {
+                ...state.values,
+                init_image: resource.id // Make sure this matches the input name in your workflow
+            }
+        }));
+
+        // Navigate to latent-shift page
+        await goto('/studio/latent-shift');
+    }
 </script>
 
 {#if error}
@@ -219,7 +241,7 @@
                         on:click={() => handlePreview(resource)}
                     />
                     <div 
-                        class="absolute top-2 right-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        class="absolute top-2 right-2 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         on:click|stopPropagation
                     >
                         <Like 
@@ -227,6 +249,13 @@
                             initialLiked={true}
                             on:likeChanged={handleLikeChanged}
                         />
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleExploreImage(resource)}
+                        >
+                            🔮
+                        </Button>
                     </div>
                 </div>
             {/each}
