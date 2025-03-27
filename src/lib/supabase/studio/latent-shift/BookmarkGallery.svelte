@@ -5,6 +5,8 @@
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
     import Button from '$lib/atoms/Button.svelte';
     import Like from '$lib/supabase/studio/latent-shift/Like.svelte';
+    import { fade } from 'svelte/transition';
+    import { goto } from '$app/navigation';
 
     // Configuration for pagination
     const ITEMS_PER_PAGE = 20;
@@ -140,14 +142,38 @@
             likedResources = likedResources.filter(resource => resource.id !== resourceId);
         }
     }
+
+    function handleGenerateClick() {
+        goto('/studio/latent-shift');
+    }
 </script>
 
 {#if error}
     <p class="text-red-400 p-4">{error}</p>
+{:else if likedResources.length === 0 && !isLoading}
+    <div class="flex justify-center items-center p-36">
+        <div class="bg-white rounded-lg p-8 text-center max-w-md">
+            <h3 class="text-xl font-medium mb-4 mt-3">No Bookmarks Yet</h3>
+            <p class="text-neutral-600 mb-6">
+                If you see this, that means that you haven't bookmarked any images yet. 
+            </p>
+
+            <p class="text-neutral-600 mb-6">
+                Feel free to generate some images <a href="/studio/latent-shift" class="text-gray-900 hover:underline">here</a>.
+            </p>
+
+            <a href="/studio/latent-shift" class="text-neutral-600 pb-10 text-2xl">
+                🚀
+            </a>
+        </div>
+    </div>
 {:else}
     <div class={gridClass}>
         {#each likedResources as resource (resource.id)}
-            <div class="relative overflow-hidden rounded-lg group">
+            <div 
+                class="relative overflow-hidden rounded-lg group"
+                transition:fade={{ duration: 300 }}
+            >
                 <img
                     src={resource.image_url}
                     alt={resource.name || 'Liked image'}
@@ -186,5 +212,8 @@
 {/if}
 
 <style>
-    /* Add any additional styles here */
+    /* Ensure smooth transitions for grid items */
+    :global(.grid) {
+        transition: all 300ms ease-in-out;
+    }
 </style>
