@@ -6,6 +6,7 @@
     import Button from '$lib/atoms/Button.svelte';
     import Dropdown from '$lib/atoms/Dropdown.svelte'; // Import the Dropdown component
     import { fade } from 'svelte/transition';  // Add this import at the top
+    import Like from './Like.svelte';
 
     const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -20,6 +21,7 @@
         visibility?: boolean;
         type?: 'uploaded' | 'generated' | string;
         batch_name?: string;
+        liked?: boolean;
     }
 
     // Props - can receive full resource or just the ID
@@ -252,13 +254,18 @@
                     <span class="hidden md:block">🔮 Explore</span>
                 </Button>
 
+                <Like 
+                    resourceId={currentResource.id} 
+                    initialLiked={currentResource.liked || false}
+                />
+
                 <Button
                     variant="secondary"
                     size="sm"
                     onClick={() => dispatch('showVideo', { resource: currentResource })}
-                    >
-                    <span class="md:hidden">👀</span>
-                    <span class="hidden md:block">👀 Video</span>
+                >
+                    <span class="md:hidden">🎬</span>
+                    <span class="hidden md:block">🎬</span>
                 </Button>
                 
                 <!-- Use the slot-based Dropdown component with animated dropdown -->
