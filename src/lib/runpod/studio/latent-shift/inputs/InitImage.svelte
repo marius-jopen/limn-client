@@ -125,6 +125,12 @@
         
         if (!file) return;
 
+        // Clear the lineage at the start of upload
+        runState.update(state => ({
+            ...state,
+            connectedBatches: []
+        }));
+
         if (!userId) {
             error = "No userId provided for upload";
             status = "Upload failed";
@@ -288,6 +294,12 @@
         event.stopPropagation();
         isDragging = false;
         
+        // Clear the lineage at the start of drop
+        runState.update(state => ({
+            ...state,
+            connectedBatches: []
+        }));
+
         if (!userId) {
             error = "No userId provided for upload";
             status = "Upload failed";
