@@ -170,14 +170,16 @@
         // Set the selected image ID in the store
         selectedImageId.set(resource.id);
 
-        // Update runState with the workflow name and image ID
+        // Update runState with a fresh state, only including necessary info
         runState.update(state => ({
             ...state,
             workflow_name: 'deforum-latent-shift',
             imageId: resource.id,
+            // Reset connected batches to ensure no lineage is continued
+            connectedBatches: [],
             values: {
                 ...state.values,
-                init_image: resource.id // Make sure this matches the input name in your workflow
+                init_image: resource.id
             }
         }));
 
