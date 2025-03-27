@@ -55,7 +55,7 @@
     },
     {
       href: '/studio/latent-shift',
-      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/glass.png',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/latent.png',
       imageAlt: 'Glass',
       title: 'Latent Shift',
       visibleTo: ['limn', 'admin'] // Visible to limn users and admins
