@@ -235,7 +235,7 @@
                     on:load={handleImageLoad}
                     src={cdnImageUrl}
                     alt={currentResource.name || 'User uploaded image'} 
-                    class="h-[200px] md:h-[400px] cursor-pointer w-auto object-contain rounded-xl opacity-0 transition-opacity duration-500"
+                    class="h-[250px] md:h-[400px] cursor-pointer w-auto object-contain rounded-xl opacity-0 transition-opacity duration-500"
                     class:opacity-100={imageLoaded}
                     loading="lazy"
                 />
