@@ -5,6 +5,7 @@
     import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
     import Button from '$lib/atoms/Button.svelte';
     import Dropdown from '$lib/atoms/Dropdown.svelte'; // Import the Dropdown component
+    import { fade } from 'svelte/transition';  // Add this import at the top
 
     const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -33,6 +34,7 @@
     let error: string | null = null;
     let isLoading = false;
     let localResource: Resource | null = resource;
+    let imageLoaded = false;
     
     // Get user ID from store
     $: userId = $user?.id;
@@ -208,6 +210,10 @@
             imageUrl: currentResource.image_url
         });
     }
+
+    function handleImageLoad() {
+        imageLoaded = true;
+    }
 </script>
 
 {#if isLoading}
@@ -220,14 +226,18 @@
     <!-- Image container with hover effect for buttons -->
     <div class="flex flex-col w-auto group hover:scale-[1.03] transition-all duration-300 ease-in-out mt-2 md:mt-4">
         <!-- Image tile -->
-        <div class="h-[200px] md:h-[400px] overflow-hidden">
-            <img 
-                on:click={handlePreview}
-                src={cdnImageUrl}
-                alt={currentResource.name || 'User uploaded image'} 
-                class="cursor-pointer h-full w-auto object-contain rounded-xl"
-                loading="lazy"
-            />
+        <div class="h-[200px] md:h-[400px] overflow-hidden relative">
+            {#if cdnImageUrl}
+                <img 
+                    on:click={handlePreview}
+                    on:load={handleImageLoad}
+                    src={cdnImageUrl}
+                    alt={currentResource.name || 'User uploaded image'} 
+                    class="cursor-pointer h-full w-full object-contain rounded-xl opacity-0 transition-opacity duration-500"
+                    class:opacity-100={imageLoaded}
+                    loading="lazy"
+                />
+            {/if}
         </div>
         
         <!-- Button row with dropdown - simple fade in/out on hover with fly-in animation -->
