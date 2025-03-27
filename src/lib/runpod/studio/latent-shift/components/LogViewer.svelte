@@ -30,15 +30,6 @@
         }
     }
 
-    let logContainer: HTMLDivElement;
-
-    // Auto-scroll to bottom whenever logs update
-    afterUpdate(() => {
-        if (logContainer) {
-            logContainer.scrollTop = logContainer.scrollHeight;
-        }
-    });
-
     function formatTimestamp(timestamp) {
         if (!timestamp) return '';
         return new Date(timestamp).toLocaleTimeString();
@@ -54,44 +45,25 @@
 
 {#if logs.length > 0}
     <div class="mt-4 w-full">
-        <Label for_id={id} {label} />
-        
-        <div 
-            bind:this={logContainer}
-            class="log-container bg-black text-green-400 p-4 font-mono text-sm overflow-y-auto max-h-60"
-        >
-            {#if runpodStatus?.endpointId}
-                <div class="text-blue-400 mb-2">Endpoint ID: {runpodStatus.endpointId}</div>
-            {/if}
-
-            {#if runpodStatus?.workerId}
-                <div class="text-blue-400 mb-2">Worker ID: {runpodStatus.workerId}</div>
-            {/if}
-
-            {#each logs as log}
-                {#if log.type === 'worker'}
-                    <div class="text-yellow-400 whitespace-pre-wrap leading-relaxed">
-                        [{formatTimestamp(log.timestamp)}] [{log.level}] 
-
-                        <span class="text-white">
-                            {formatProgressBar(log.message)}
-                        </span>
-                    </div>
-                {:else if log.type === 'error'}
-                    <div class="text-red-400 whitespace-pre-wrap leading-relaxed">
-                        Error: {log.message}
-                    </div>
+        <div class="text-gray-500 p-2 text-sm overflow-hidden h-8 flex items-center justify-center">
+            {#if logs[logs.length - 1]}
+                {#if logs[logs.length - 1].type === 'worker'}
+                    <span class="text-gray-500 truncate text-center">
+                        {logs[logs.length - 1].message}
+                    </span>
+                {:else if logs[logs.length - 1].type === 'error'}
+                    <span class="text-red-500 truncate text-center">
+                        Error: {logs[logs.length - 1].message}
+                    </span>
                 {:else}
-                    <div class="text-green-400 whitespace-pre-wrap leading-relaxed">
-                        {log.message}
-                    </div>
+                    <span class="text-gray-500 truncate text-center">
+                        {logs[logs.length - 1].message}
+                    </span>
                 {/if}
-            {/each}
-
+            {/if}
+            
             {#if status !== 'Completed' && status !== 'Error'}
-                <div class="animate-pulse">
-                    ▋
-                </div>
+                <span class="animate-pulse ml-1 text-gray-500">▋</span>
             {/if}
         </div>
     </div>
