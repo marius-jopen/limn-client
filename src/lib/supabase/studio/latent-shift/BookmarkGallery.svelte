@@ -4,6 +4,7 @@
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { transformResourceUrls } from '$lib/bunny/BunnyClient';
     import Button from '$lib/atoms/Button.svelte';
+    import Like from '$lib/supabase/studio/latent-shift/Like.svelte';
 
     // Configuration for pagination
     const ITEMS_PER_PAGE = 20;
@@ -130,6 +131,15 @@
     $: if (userId) {
         resetAndFetch();
     }
+
+    // Add function to handle like changes
+    function handleLikeChanged(event: CustomEvent) {
+        const { resourceId, liked } = event.detail;
+        if (!liked) {
+            // Remove the unliked image from the gallery immediately
+            likedResources = likedResources.filter(resource => resource.id !== resourceId);
+        }
+    }
 </script>
 
 {#if error}
@@ -137,16 +147,19 @@
 {:else}
     <div class={gridClass}>
         {#each likedResources as resource (resource.id)}
-            <div class="relative group">
+            <div class="relative overflow-hidden rounded-lg group">
                 <img
                     src={resource.image_url}
                     alt={resource.name || 'Liked image'}
-                    class="w-full h-full object-cover rounded-lg"
+                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     loading="lazy"
                 />
-                <div class="absolute bottom-0 left-0 right-0 p-2 bg-black bg-opacity-50 text-white rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <p class="text-sm truncate">{resource.workflow_name}</p>
-                    <p class="text-xs opacity-75">{new Date(resource.created_at).toLocaleDateString()}</p>
+                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Like 
+                        resourceId={resource.id}
+                        initialLiked={true}
+                        on:likeChanged={handleLikeChanged}
+                    />
                 </div>
             </div>
         {/each}
