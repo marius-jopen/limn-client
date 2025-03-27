@@ -165,22 +165,24 @@
 </script>
 
 {#if error}
-    <p class="text-red-400 p-4">{error}</p>
+    <p class="text-red-400 md:p-4">{error}</p>
 {:else if likedResources.length === 0 && !isLoading}
-    <div class="flex justify-center items-center p-36">
-        <div class="bg-white rounded-lg p-8 text-center max-w-md">
-            <h3 class="text-xl font-medium mb-4 mt-3">No Bookmarks Yet</h3>
+    <div class="flex justify-center items-center pt-20 md:pt-36">
+        <div class="bg-white rounded-lg p-6 md:p-8 text-center w-full md:max-w-md md:mx-0">
+            <h3 class="text-lg md:text-xl font-medium mb-3 md:mb-4 mt-2 md:mt-3">
+                No Bookmarks Yet
+            </h3>
             
-            <p class="text-neutral-600 mb-6">
+            <p class="text-sm md:text-base text-neutral-600 mb-4 md:mb-6">
                 If you see this, that means that you haven't bookmarked any images yet. 
             </p>
 
-            <p class="text-neutral-600 mb-6">
+            <p class="text-sm md:text-base text-neutral-600 mb-4 md:mb-6">
                 Feel free to generate some images <a href="/studio/latent-shift" class="text-gray-900 hover:underline">here</a>.
             </p>
 
-            <a href="/studio/latent-shift" class="text-neutral-600 pb-10 group">
-                <div class="text-3xl smooth-float">
+            <a href="/studio/latent-shift" class="text-neutral-600 pb-6 md:pb-4 group inline-block">
+                <div class="text-2xl md:text-3xl smooth-float">
                     🚀
                 </div>
             </a>
@@ -217,7 +219,7 @@
                         on:click={() => handlePreview(resource)}
                     />
                     <div 
-                        class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        class="absolute top-2 right-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         on:click|stopPropagation
                     >
                         <Like 
