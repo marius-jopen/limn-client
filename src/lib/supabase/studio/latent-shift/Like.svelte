@@ -1,7 +1,10 @@
 <script>
   import { supabase } from '$lib/supabase/helper/SupabaseClient';
   import { user } from '$lib/supabase/helper/StoreSupabase';
+  import { createEventDispatcher } from 'svelte';
+  import Button from '$lib/atoms/Button.svelte';
   
+  const dispatch = createEventDispatcher();
   const serverUrl = import.meta.env.VITE_SERVER_URL;
 
   export let resourceId;
@@ -41,12 +44,23 @@
       const { data } = await response.json();
       console.log('Response data:', data);
       isLiked = data[0].liked;
+      
+      // Dispatch event with new like state
+      dispatch('likeChanged', {
+        resourceId,
+        liked: isLiked
+      });
 
     } catch (error) {
       console.error('Error toggling like:', error);
     } finally {
       isLoading = false;
     }
+  }
+
+  // Update local state when initialLiked prop changes
+  $: {
+    isLiked = initialLiked;
   }
 
   // Handle keyboard events for accessibility
@@ -58,21 +72,21 @@
   }
 </script>
 
-<button 
-  on:click={handleLike}
+<Button
+  variant="secondary"
+  size="sm"
+  onClick={handleLike}
   on:keydown={handleKeydown}
   disabled={isLoading}
-  class="like-button secondary"
-  class:liked={isLiked}
   aria-label={isLiked ? "Unlike image" : "Like image"}
   aria-pressed={isLiked}
 >
   {#if isLiked}
     ❤️
   {:else}
-    🤍
+  🩵
   {/if}
-</button>
+</Button>
 
 <style>
   .like-button {

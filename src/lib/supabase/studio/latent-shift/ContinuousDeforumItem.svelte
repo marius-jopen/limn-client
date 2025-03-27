@@ -257,6 +257,11 @@
                 <Like 
                     resourceId={currentResource.id} 
                     initialLiked={currentResource.liked || false}
+                    on:likeChanged={(event) => {
+                        if (currentResource) {
+                            currentResource.liked = event.detail.liked;
+                        }
+                    }}
                 />
 
                 <Button
