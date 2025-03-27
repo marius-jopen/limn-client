@@ -325,15 +325,10 @@
                         loading="lazy"
                         on:click={() => handlePreview(resource)}
                     />
-                    <div 
-                        class="absolute top-2 right-2 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        on:click|stopPropagation
-                    >
-                        <Like 
-                            resourceId={resource.id}
-                            initialLiked={true}
-                            on:likeChanged={handleLikeChanged}
-                        />
+                        <div 
+                            class="absolute top-2 right-2 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            on:click|stopPropagation
+                        >
                         <Button
                             variant="secondary"
                             size="sm"
@@ -341,6 +336,7 @@
                         >
                             🔮
                         </Button>
+                      
                         <Button
                             variant="secondary"
                             size="sm"
@@ -349,6 +345,12 @@
                             <span class="md:hidden">🎬</span>
                             <span class="hidden md:block">🎬</span>
                         </Button>
+
+                        <Like 
+                            resourceId={resource.id}
+                            initialLiked={true}
+                            on:likeChanged={handleLikeChanged}
+                        />
                     </div>
                 </div>
             {/each}
