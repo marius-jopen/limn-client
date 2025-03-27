@@ -170,6 +170,7 @@
     <div class="flex justify-center items-center p-36">
         <div class="bg-white rounded-lg p-8 text-center max-w-md">
             <h3 class="text-xl font-medium mb-4 mt-3">No Bookmarks Yet</h3>
+            
             <p class="text-neutral-600 mb-6">
                 If you see this, that means that you haven't bookmarked any images yet. 
             </p>
@@ -186,22 +187,39 @@
         </div>
     </div>
 {:else}
-    <div class="p-4">
-        <h2 class="text-2xl text-center font-medium text-neutral-800 pt-16 pb-10">Your Bookmarked Images. Yay!</h2>
+    <div class="">
+
+        <div class="flex justify-center pt-16 pb-24">
+            <Button
+                label="🔮 Explore"
+                variant="secondary"
+                size="lg"
+                onClick={handleGenerateClick}
+            />
+        </div>
+        
+        
+        <!-- <h2 class="text-2xl text-center font-medium text-neutral-800 pt-16 pb-10">
+            Images you liked 😀
+        </h2> -->
+
         <div class={gridClass}>
             {#each likedResources as resource (resource.id)}
                 <div 
-                    class="relative overflow-hidden rounded-lg group cursor-pointer"
+                    class="relative overflow-hidden rounded-lg group"
                     transition:fade={{ duration: 300 }}
-                    on:click={() => handlePreview(resource)}
                 >
                     <img
                         src={resource.image_url}
                         alt={resource.name || 'Liked image'}
-                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105 cursor-pointer"
                         loading="lazy"
+                        on:click={() => handlePreview(resource)}
                     />
-                    <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div 
+                        class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        on:click|stopPropagation
+                    >
                         <Like 
                             resourceId={resource.id}
                             initialLiked={true}
