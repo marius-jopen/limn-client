@@ -228,14 +228,14 @@
     <!-- Image container with hover effect for buttons -->
     <div class="flex flex-col w-auto group hover:scale-[1.03] transition-all duration-300 ease-in-out mt-2 md:mt-4">
         <!-- Image tile -->
-        <div class="h-[200px] md:h-[400px] overflow-hidden relative">
+        <div class=" overflow-hidden relative">
             {#if cdnImageUrl}
                 <img 
                     on:click={handlePreview}
                     on:load={handleImageLoad}
                     src={cdnImageUrl}
                     alt={currentResource.name || 'User uploaded image'} 
-                    class="cursor-pointer h-full w-full object-contain rounded-xl opacity-0 transition-opacity duration-500"
+                    class="h-[200px] md:h-[400px] cursor-pointer w-auto object-contain rounded-xl opacity-0 transition-opacity duration-500"
                     class:opacity-100={imageLoaded}
                     loading="lazy"
                 />
