@@ -162,8 +162,10 @@
                 Feel free to generate some images <a href="/studio/latent-shift" class="text-gray-900 hover:underline">here</a>.
             </p>
 
-            <a href="/studio/latent-shift" class="text-neutral-600 pb-10 text-2xl">
-                🚀
+            <a href="/studio/latent-shift" class="text-neutral-600 pb-10 group">
+                <div class="text-3xl smooth-float">
+                    🚀
+                </div>
             </a>
         </div>
     </div>
@@ -215,5 +217,32 @@
     /* Ensure smooth transitions for grid items */
     :global(.grid) {
         transition: all 300ms ease-in-out;
+    }
+
+    /* Add rocket animation styles */
+    @keyframes float {
+        0% {
+            transform: translateY(0) rotate(-2deg);
+        }
+        25% {
+            transform: translateY(-4px) rotate(2deg);
+        }
+        50% {
+            transform: translateY(-8px) rotate(-1deg);
+        }
+        75% {
+            transform: translateY(-4px) rotate(1deg);
+        }
+        100% {
+            transform: translateY(0) rotate(-2deg);
+        }
+    }
+
+    .smooth-float {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .group:hover .smooth-float {
+        animation: float 3s ease-in-out infinite;
     }
 </style>
