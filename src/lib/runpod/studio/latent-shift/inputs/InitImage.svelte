@@ -33,13 +33,12 @@
     
     const dispatch = createEventDispatcher();
     
-    async function fetchImage(idToFetch: string) {
+    async function fetchImage(idToFetch: string, preserveLineage: boolean = false) {
         if (!idToFetch) return;
         
-        console.log(`Fetching image with ID: ${idToFetch}`);
+        console.log(`Fetching image with ID: ${idToFetch}, preserveLineage: ${preserveLineage}`);
         
         try {
-            // Update the query to fetch additional fields
             const { data: imageData, error: supabaseError } = await supabase
                 .from('resource')
                 .select('id, image_url, service, batch_name, batches_connected')
@@ -50,13 +49,13 @@
             
             console.log('Image data fetched:', imageData);
             resource = imageData;
-            value = imageData.image_url; // Set the output value
+            value = imageData.image_url;
             
-            // Process lineage for Deforum images
-            if (imageData.service === 'deforum') {
-                processImageLineage(imageData);
+            // Only process lineage if we're preserving it or it's a new Deforum image
+            if (preserveLineage || imageData.service === 'deforum') {
+                processImageLineage(imageData, preserveLineage);
             } else {
-                // Clear any lineage data if not a Deforum image
+                // Clear lineage only if we're not preserving it
                 runState.update(state => ({
                     ...state,
                     connectedBatches: []
@@ -69,7 +68,7 @@
     }
     
     // Function to process the image lineage
-    function processImageLineage(imageData: Resource) {
+    function processImageLineage(imageData: Resource, preserveLineage: boolean = false) {
         if (!imageData.id || !imageData.batch_name) {
             console.warn('Image is missing ID or batch_name, cannot process lineage');
             return;
@@ -77,17 +76,23 @@
         
         let lineageArray = [];
         
-        // If the image has existing lineage, use it as the base
-        if (imageData.batches_connected && Array.isArray(imageData.batches_connected) && imageData.batches_connected.length > 0) {
+        // If we're preserving lineage, keep the existing connected batches
+        if (preserveLineage && $runState?.connectedBatches) {
+            lineageArray = [...$runState.connectedBatches];
+        }
+        // Otherwise, use the image's own batches_connected if available
+        else if (imageData.batches_connected && Array.isArray(imageData.batches_connected)) {
             lineageArray = [...imageData.batches_connected];
-            console.log('Found existing lineage:', lineageArray);
         }
         
-        // Add the current image to the lineage
-        lineageArray.push({
-            batch_name: imageData.batch_name,
-            id: imageData.id
-        });
+        // Add the current image to the lineage if it's not already the last item
+        const lastBatch = lineageArray[lineageArray.length - 1];
+        if (!lastBatch || lastBatch.id !== imageData.id) {
+            lineageArray.push({
+                batch_name: imageData.batch_name,
+                id: imageData.id
+            });
+        }
         
         console.log('Final lineage array:', lineageArray);
         
@@ -210,12 +215,12 @@
     // Force a refresh whenever selectedImageId changes
     let lastStoredId = $selectedImageId;
     
-    selectedImageId.subscribe(newId => {
+    selectedImageId.subscribe((newId, options = {}) => {
         console.log(`Store update: selectedImageId changed from ${lastStoredId} to ${newId}`);
         lastStoredId = newId;
         if (newId) {
-            // Directly trigger fetch when store changes
-            fetchImage(newId);
+            // Pass the preserve_lineage flag to fetchImage
+            fetchImage(newId, options?.preserve_lineage);
         }
     });
     

@@ -1,7 +1,9 @@
 <script>
     import Button from '$lib/atoms/Button.svelte';
     import { runState } from '$lib/runpod/helper/StoreRun.js';
+    import { createEventDispatcher } from 'svelte';
 
+    const dispatch = createEventDispatcher();
     const serverUrl = import.meta.env.VITE_SERVER_URL;
 
     let status = 'Ready to cancel';
@@ -33,6 +35,9 @@
             data = await response.json();
             status = 'Cancelled';
             error = null;
+            
+            // Immediately dispatch cancel event
+            dispatch('cancel', { batchName: $runState?.batchName });
         } catch (err) {
             console.error('Cancel error:', err);
             error = err.message;

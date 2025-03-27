@@ -14,7 +14,7 @@
         "seed_behavior": "iter",
         "seed_iter_N": 1,
         "use_init": true,
-        "strength": 0.95,
+        "strength": 0.9,
         "strength_0_no_init": true,
         "init_image": "${INIT_IMAGE}",
         "use_mask": false,

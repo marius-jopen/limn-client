@@ -10,6 +10,9 @@
     import CameraUi from '$lib/runpod/studio/latent-shift/inputs/CameraUi.svelte';
     import Dropdown from '$lib/atoms/Dropdown.svelte';
     import LogViewer from '$lib/runpod/studio/latent-shift/components/LogViewer.svelte';
+    import { supabase } from '$lib/supabase/helper/SupabaseClient';
+    import { selectedImageId } from '$lib/supabase/helper/StoreSupabase';
+    import { runState } from '$lib/runpod/helper/StoreRun.js';
 
     // Define types similar to InputRepeater
     type BaseField = {
@@ -91,6 +94,63 @@
                     statusText = "Status";
                 }
             }, 200);
+        }
+    }
+
+    async function handleCancel(event) {
+        console.log("Cancel handler triggered with event:", event);
+        
+        // Get current batch from runState or find most recent batch
+        let currentBatch = $runState?.batchName;
+        
+        if (!currentBatch) {
+            // Get the most recent batch from the lineage paths
+            const { data: batches, error: batchError } = await supabase
+                .from('resource')
+                .select('batch_name, created_at')
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (batches && batches.length > 0) {
+                currentBatch = batches[0].batch_name;
+            }
+        }
+        
+        console.log("Using batch:", currentBatch);
+        
+        if (!currentBatch) {
+            console.log("No batch found");
+            return;
+        }
+
+        try {
+            // Query for the latest image in this batch
+            const { data: latestImage, error } = await supabase
+                .from('resource')
+                .select('id, image_url')
+                .eq('batch_name', currentBatch)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (error) throw error;
+            if (!latestImage) {
+                console.log("No images found in batch");
+                return;
+            }
+
+            console.log("Found latest image:", latestImage);
+            
+            // Update both the selectedImageId and init_image value
+            await selectedImageId.set(latestImage.id, { preserve_lineage: true });
+            values = {
+                ...values,
+                init_image: latestImage.image_url
+            };
+            
+            console.log("Updated values:", values);
+        } catch (err) {
+            console.error('Error in handleCancel:', err);
         }
     }
 </script>
@@ -219,7 +279,9 @@
                     on:mouseenter={() => handleHover(true, 'cancel', undefined, BUTTON_INFO.cancel)}
                     on:mouseleave={() => handleHover(false, 'cancel')}
                 >
-                    <Cancel />   
+                    <Cancel 
+                        on:cancel={handleCancel}
+                    />   
                 </div>
         
                 <div
