@@ -38,6 +38,70 @@
         ]
     },
     {
+        "id": "cfg_scale_schedule",
+        "type": "int-dropdown",
+        "placeholder": "${CFG_SCALE_SCHEDULE}",
+        "label": "Creative",
+        "info": "How creatively the AI interprets the prompt",
+        "default": 15,
+        "display": {
+            "prefix": "🍄 ",
+            "suffix": " frames"
+        },
+        "options": [
+            {
+                "value": 15,
+                "label": "15"
+            },
+            {
+                "value": 30,
+                "label": "30"
+            },
+            {
+                "value": 60,
+                "label": "60"
+            },
+            {
+                "value": 120,
+                "label": "120"
+            }
+        ]
+    },
+    {
+        "id": "strenght_schedule",
+        "type": "int-dropdown",
+        "placeholder": "${STRENGTH_SCHEDULE}",
+        "label": "Chaos",
+        "info": "How close the generated image will be to the previous image",
+        "default": 0.7,
+        "display": {
+            "prefix": "💎 ",
+            "suffix": " Chaos"
+        },
+        "options": [
+            {
+                "value": 0.5,
+                "label": "Very Chaotic"
+            },
+            {
+                "value": 0.6,
+                "label": "Chaotic"
+            },
+            {
+                "value": 0.7,
+                "label": "Normal"
+            },
+            {
+                "value": 0.8,
+                "label": "Very Stable"
+            },
+            {
+                "value": 0.9,
+                "label": "Super Stable"
+            }
+        ]
+    },
+    {
         "id": "prompts",
         "type": "prompts",
         "placeholder": "${PROMPTS}",

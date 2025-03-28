@@ -234,6 +234,34 @@
                     </Button>
                 </div>
 
+                <div
+                    on:mouseenter={() => handleHover(true, 'cfg_scale_schedule')}
+                    on:mouseleave={() => handleHover(false, 'cfg_scale_schedule')}
+                >
+                    <IntDropdown
+                        id="cfg_scale_schedule"
+                        options={getField('cfg_scale_schedule')?.options}
+                        bind:value={values['cfg_scale_schedule']}
+                        hidden={getField('cfg_scale_schedule')?.hidden}
+                        prefix={getField('cfg_scale_schedule')?.display?.prefix || ''}
+                        suffix={getField('cfg_scale_schedule')?.display?.suffix || ''}
+                    />
+                </div>
+
+                <div
+                    on:mouseenter={() => handleHover(true, 'strenght_schedule')}
+                    on:mouseleave={() => handleHover(false, 'strenght_schedule')}
+                >
+                    <IntDropdown
+                        id="strenght_schedule"
+                        options={getField('strenght_schedule')?.options}
+                        bind:value={values['strenght_schedule']}
+                        hidden={getField('strenght_schedule')?.hidden}
+                        prefix={getField('strenght_schedule')?.display?.prefix || ''}
+                        suffix={getField('strenght_schedule')?.display?.suffix || ''}
+                    />
+                </div>
+
                 <Dropdown position="top">
                     <div 
                         slot="trigger"
