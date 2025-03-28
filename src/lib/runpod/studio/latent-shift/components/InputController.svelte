@@ -173,7 +173,7 @@
         info={getField('camera')?.info}
     />
 
-    <div class="bg-white p-3 rounded-lg max-w-[800px] mx-auto mt-8 ">
+    <div class="bg-white p-3 rounded-lg max-w-[900px] mx-auto mt-8 ">
         <div
             on:mouseenter={() => handleHover(true, 'prompts', 'prompts')}
             on:mouseleave={() => handleHover(false, 'prompts')}
@@ -245,15 +245,15 @@
                             size="sm"
                             classes=""
                         >
-                            <span class="md:hidden">{promptMode === 'clean' ? '🌸' : '🪨'}</span>
-                            <span class="hidden md:block">{promptMode === 'clean' ? '🌸 Enhanced' : '🪨 Original'}</span>
+                            <span class="md:hidden">{promptMode === 'clean' ? '🌸' : '✊'}</span>
+                            <span class="hidden md:block">{promptMode === 'clean' ? '🌸 Fine' : '✊ Raw'}</span>
                         </Button>
                     </div>
                     <div slot="content">
                         <Button 
                             variant="ghost"
                             size="sm"
-                            label="Clean"
+                            label="🌸 Fine"
                             onClick={() => {
                                 promptMode = 'clean';
                                 document.body.click();
@@ -263,7 +263,7 @@
                         <Button 
                             variant="ghost"
                             size="sm"
-                            label="Original"
+                            label="✊ Raw"
                             onClick={() => {
                                 promptMode = 'original';
                                 document.body.click();
