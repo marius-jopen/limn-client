@@ -57,10 +57,9 @@ export function prepareWorkflow(workflow, uiConfig, values) {
             return;
         }
         
-        // Skip prompts field for now - we'll handle it specially after initial parsing
+        // Skip prompts field for now
         if (field.type === 'prompts') {
             promptsField = field;
-            console.log('Found prompts field:', field);
             return;
         }
         
@@ -68,8 +67,15 @@ export function prepareWorkflow(workflow, uiConfig, values) {
             // Handle numeric values
             const value = Number(values[field.id]);
             
-            console.log(`Replacing ${placeholder} with number ${value}`);
-            workflowStr = workflowStr.replace(`"${placeholder}"`, value);
+            // Special handling for schedule parameters
+            if (field.id === 'strenght_schedule' || field.id === 'cfg_scale_schedule') {
+                const scheduleValue = `0: (${value})`;
+                console.log(`Replacing ${placeholder} with schedule string "${scheduleValue}"`);
+                workflowStr = workflowStr.replace(`"${placeholder}"`, `"${scheduleValue}"`);
+            } else {
+                console.log(`Replacing ${placeholder} with number ${value}`);
+                workflowStr = workflowStr.replace(`"${placeholder}"`, value);
+            }
         } else {
             // Handle string values
             const value = values[field.id].toString()

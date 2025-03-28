@@ -43,7 +43,7 @@
         "placeholder": "${CFG_SCALE_SCHEDULE}",
         "label": "Creative",
         "info": "How creatively the AI interprets the prompt",
-        "default": 7,
+        "default": 6,
         "display": {
             "prefix": "🍄 ",
             "suffix": " Creativity"
@@ -79,17 +79,17 @@
         "info": "How close the generated image will be to the previous image",
         "default": 0.7,
         "display": {
-            "prefix": "💎 ",
+            "prefix": "🐣 ",
             "suffix": " Chaos"
         },
         "options": [
             {
                 "value": 0.5,
-                "label": "Max"
+                "label": "Min"
             },
             {
                 "value": 0.6,
-                "label": "High"
+                "label": "Low"
             },
             {
                 "value": 0.7,
@@ -97,11 +97,11 @@
             },
             {
                 "value": 0.8,
-                "label": "Low"
+                "label": "High"
             },
             {
                 "value": 0.9,
-                "label": "Min"
+                "label": "Max"
             }
         ]
     },
