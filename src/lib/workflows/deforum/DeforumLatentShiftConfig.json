@@ -193,6 +193,20 @@
                 "trigger": "g1g3r",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/hr-giger.jpeg",
                 "description" : "Adds a HR Giger style image to the image"
+            },
+            { 
+                "value": "sdxl_celine-bags-v1", 
+                "label": "Celine bags V1", 
+                "trigger": "Celine Bag",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-v1.png",
+                "description" : "Adds a Celine bag to the image. V2"
+            },
+            { 
+                "value": "sdxl_celine-bags-003-v2", 
+                "label": "Celine bags 003", 
+                "trigger": "Celine Bag",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
+                "description" : "Adds a Celine bag to the image. V2"
             }
         ]
     },
