@@ -26,7 +26,9 @@
         isOpen = event.detail.isOpen;
     }
 
-    $: formattedValue = `${prefix}${value}${suffix}`;
+    // Get the current selected option's label
+    $: selectedOption = options.find(opt => opt.value === value);
+    $: formattedValue = `${prefix}${selectedOption?.label || value}${suffix}`;
 </script>
 
 <div 
@@ -37,7 +39,7 @@
     <Dropdown 
         position="top" 
         containerClass="left-0" 
-        width="w-[120px]" 
+        width="w-[160px]" 
         bind:this={dropdown}
         on:toggle={handleToggle}
     >
@@ -46,8 +48,7 @@
                 variant="quaternary" 
                 classes="text-sm {isOpen ? 'bg-gray-300' : ''}"
             >
-                <span class="hidden min-[280px]:block md:hidden">{prefix} {value}</span>
-                <span class="hidden md:block">{formattedValue}</span>
+                <span class="hidden min-[280px]:block">{formattedValue}</span>
                 <span class="min-[280px]:hidden">{prefix}</span>
             </Button>
         </div>
@@ -55,10 +56,10 @@
         <div slot="content">
             {#each options as option}
                 <button
-                    class="w-full px-4 py-2 text-left text-sm hover:bg-gray-300 transition-colors"
+                    class="w-full px-4 py-2 text-left text-sm hover:bg-gray-300 transition-colors {value === option.value ? 'bg-gray-200' : ''}"
                     on:click={() => handleSelect(option.value)}
                 >
-                    {option.value}{suffix}
+                    {option.label} ({option.value})
                 </button>
             {/each}
         </div>

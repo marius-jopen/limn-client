@@ -21,19 +21,19 @@
         "options": [
             {
                 "value": 15,
-                "label": "15"
+                "label": "15 frames"
             },
             {
                 "value": 30,
-                "label": "30"
+                "label": "30 frames"
             },
             {
                 "value": 60,
-                "label": "60"
+                "label": "60 frames"
             },
             {
                 "value": 120,
-                "label": "120"
+                "label": "120 frames"
             }
         ]
     },
@@ -46,24 +46,28 @@
         "default": 15,
         "display": {
             "prefix": "🍄 ",
-            "suffix": " frames"
+            "suffix": " Creativity"
         },
         "options": [
             {
-                "value": 15,
-                "label": "15"
+                "value": 5,
+                "label": "Very Creative"
             },
             {
-                "value": 30,
-                "label": "30"
+                "value": 6,
+                "label": "Creative"
             },
             {
-                "value": 60,
-                "label": "60"
+                "value": 7,
+                "label": "Normal"
             },
             {
-                "value": 120,
-                "label": "120"
+                "value": 8,
+                "label": "Conservative"
+            },
+            {
+                "value": 9,
+                "label": "More Conservative"
             }
         ]
     },
