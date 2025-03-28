@@ -43,7 +43,7 @@
         "placeholder": "${CFG_SCALE_SCHEDULE}",
         "label": "Creative",
         "info": "How creatively the AI interprets the prompt",
-        "default": 15,
+        "default": 7,
         "display": {
             "prefix": "🍄 ",
             "suffix": " Creativity"
@@ -59,7 +59,7 @@
             },
             {
                 "value": 7,
-                "label": "Normal"
+                "label": "Normal Creative"
             },
             {
                 "value": 8,

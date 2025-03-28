@@ -28,7 +28,7 @@
 
     // Get the current selected option's label
     $: selectedOption = options.find(opt => opt.value === value);
-    $: formattedValue = `${prefix}${selectedOption?.label || value}${suffix}`;
+    $: formattedValue = `${prefix}${selectedOption?.label || value}`;
 </script>
 
 <div 
@@ -59,7 +59,7 @@
                     class="w-full px-4 py-2 text-left text-sm hover:bg-gray-300 transition-colors {value === option.value ? 'bg-gray-200' : ''}"
                     on:click={() => handleSelect(option.value)}
                 >
-                    {option.label} ({option.value})
+                    {option.label} 
                 </button>
             {/each}
         </div>
