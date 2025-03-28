@@ -51,23 +51,23 @@
         "options": [
             {
                 "value": 5,
-                "label": "Very Creative"
+                "label": "Wild"
             },
             {
                 "value": 6,
-                "label": "Creative"
+                "label": "Free"
             },
             {
                 "value": 7,
-                "label": "Normal Creative"
+                "label": "Balanced"
             },
             {
                 "value": 8,
-                "label": "Conservative"
+                "label": "Strict"
             },
             {
                 "value": 9,
-                "label": "More Conservative"
+                "label": "Rigid"
             }
         ]
     },
@@ -85,23 +85,23 @@
         "options": [
             {
                 "value": 0.5,
-                "label": "Very Chaotic"
+                "label": "Max"
             },
             {
                 "value": 0.6,
-                "label": "Chaotic"
+                "label": "High"
             },
             {
                 "value": 0.7,
-                "label": "Normal"
+                "label": "Mid"
             },
             {
                 "value": 0.8,
-                "label": "Very Stable"
+                "label": "Low"
             },
             {
                 "value": 0.9,
-                "label": "Super Stable"
+                "label": "Min"
             }
         ]
     },

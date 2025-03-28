@@ -39,7 +39,7 @@
     <Dropdown 
         position="top" 
         containerClass="left-0" 
-        width="w-[160px]" 
+        width="" 
         bind:this={dropdown}
         on:toggle={handleToggle}
     >
