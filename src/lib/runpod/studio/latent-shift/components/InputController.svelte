@@ -173,7 +173,7 @@
         info={getField('camera')?.info}
     />
 
-    <div class="bg-white p-3 rounded-lg max-w-[900px] mx-auto mt-8 ">
+    <div class="bg-white p-3 rounded-lg max-w-[900px] mx-auto mt-4 md:mt-8 ">
         <div
             on:mouseenter={() => handleHover(true, 'prompts', 'prompts')}
             on:mouseleave={() => handleHover(false, 'prompts')}
@@ -306,32 +306,34 @@
         </div>
     </div>
 
-    <div class="bg-white p-3 rounded-full w-fit mx-auto mt-4 flex flex-row gap-2 justify-center">
+    <div class="bg-white p-3 rounded-lg md:rounded-full md:w-fit mx-auto mt-4 flex flex-col-reverse md:flex-row gap-2 justify-center">
         <LogViewer id="log-viewer" label="Generation Logs" />
 
-        <div
-            class="block"
-            on:mouseenter={() => handleHover(true, 'cancel', undefined, BUTTON_INFO.cancel)}
-            on:mouseleave={() => handleHover(false, 'cancel')}
-        >
-            <Cancel 
-                on:cancel={handleCancel}
-            />   
-        </div>
-
-        <div
-            class="block"
-            on:mouseenter={() => handleHover(true, 'generate', undefined, BUTTON_INFO.generate)}
-            on:mouseleave={() => handleHover(false, 'generate')}
-        >
-            <Button 
-                onClick={onGenerate} 
-                disabled={isGenerating}
-                variant="primary"
-                classes="text-sm"
+        <div class="flex flex-row gap-2 md:gap-2 justify-center sm:justify-start mb-1 md:mb-0">
+            <div
+                class="block"
+                on:mouseenter={() => handleHover(true, 'cancel', undefined, BUTTON_INFO.cancel)}
+                on:mouseleave={() => handleHover(false, 'cancel')}
             >
-            🚀 Generate
-            </Button>    
+                <Cancel 
+                    on:cancel={handleCancel}
+                />   
+            </div>
+    
+            <div
+                class="block"
+                on:mouseenter={() => handleHover(true, 'generate', undefined, BUTTON_INFO.generate)}
+                on:mouseleave={() => handleHover(false, 'generate')}
+            >
+                <Button 
+                    onClick={onGenerate} 
+                    disabled={isGenerating}
+                    variant="primary"
+                    classes="text-sm"
+                >
+                🚀 Generate
+                </Button>    
+            </div>
         </div>
     </div>
 

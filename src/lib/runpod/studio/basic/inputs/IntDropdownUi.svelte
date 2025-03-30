@@ -50,7 +50,8 @@
                 classes="text-sm {isOpen ? 'bg-gray-300' : ''}"
             >
                 <span class="hidden md:inline whitespace-nowrap">{displayText}</span>
-                <span class="md:hidden whitespace-nowrap">{mobileText}</span>
+                <span class="md:hidden whitespace-nowrap">{displayText}</span>
+                <!-- <span class="md:hidden whitespace-nowrap">{mobileText}</span> -->
             </Button>
         </div>
         
