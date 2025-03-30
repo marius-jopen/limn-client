@@ -12,7 +12,7 @@
     export let options: DropdownOption[] = [];
     export let hidden: boolean = false;
     export let prefix: string = "";
-    export let suffix: string = "";
+    export let label: string = "";
 
     let dropdown: Dropdown;
     let isOpen = false;
@@ -28,7 +28,8 @@
 
     // Get the current selected option's label
     $: selectedOption = options.find(opt => opt.value === value);
-    $: formattedValue = `${prefix}${selectedOption?.label || value}`;
+    $: displayText = `${prefix}${label}: ${selectedOption?.label || value}`;
+    $: mobileText = `${prefix}${label}`;
 </script>
 
 <div 
@@ -48,8 +49,8 @@
                 variant="quaternary" 
                 classes="text-sm {isOpen ? 'bg-gray-300' : ''}"
             >
-                <span class="hidden min-[280px]:block">{formattedValue}</span>
-                <span class="min-[280px]:hidden">{prefix}</span>
+                <span class="hidden md:inline whitespace-nowrap">{displayText}</span>
+                <span class="md:hidden whitespace-nowrap">{mobileText}</span>
             </Button>
         </div>
         

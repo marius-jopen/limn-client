@@ -7,6 +7,10 @@
     export let position: "top" | "bottom" | "left" | "right" = "top";
     export let width: string = "";
     export let containerClass: string = "";
+    export let isSmallScreen: boolean = false;
+    export let prefix: string = "";
+    export let label: string = "";
+    export let value: number = 0;
     
     // State
     let isOpen = false;
@@ -50,6 +54,11 @@
         left: "right-full mr-2",
         right: "left-full ml-2"
     }[position];
+
+    // Format display text
+    $: displayText = isSmallScreen 
+        ? `${prefix}${label}`
+        : `${prefix}${label}: ${value}`;
 </script>
 
 <div class="dropdown-container relative" bind:this={dropdownRef}>

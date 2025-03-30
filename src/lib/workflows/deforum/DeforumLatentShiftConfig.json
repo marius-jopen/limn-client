@@ -11,29 +11,29 @@
         "id": "max_frames",
         "type": "int-dropdown",
         "placeholder": "${MAX_FRAMES}",
-        "label": "Max Frames",
+        "label": "Frames",
         "info": "The maximum number of frames to generate",
         "default": 15,
         "display": {
             "prefix": "🕒 ",
-            "suffix": " frames"
+            "suffix": " "
         },
         "options": [
             {
                 "value": 15,
-                "label": "15 frames"
+                "label": "15"
             },
             {
                 "value": 30,
-                "label": "30 frames"
+                "label": "30"
             },
             {
                 "value": 60,
-                "label": "60 frames"
+                "label": "60"
             },
             {
                 "value": 120,
-                "label": "120 frames"
+                "label": "120"
             }
         ]
     },
@@ -75,12 +75,12 @@
         "id": "strenght_schedule",
         "type": "int-dropdown",
         "placeholder": "${STRENGTH_SCHEDULE}",
-        "label": "Chaos",
+        "label": "Morph",
         "info": "How close the generated image will be to the previous image",
         "default": 0.8,
         "display": {
             "prefix": "🐣 ",
-            "suffix": " Chaos"
+            "suffix": " Morph"
         },
         "options": [
             {

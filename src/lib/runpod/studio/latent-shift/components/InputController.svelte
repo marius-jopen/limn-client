@@ -191,7 +191,7 @@
         </div>
     
         <div class="flex flex-col sm:flex-row gap-1 md:gap-2 justify-between mt-1">
-            <div class="flex flex-row gap-1 md:gap-2 justify-center sm:justify-start mb-1 md:mb-0">
+            <div class="flex flex-row gap-2 md:gap-2 justify-center sm:justify-start mb-1 md:mb-0 flex-wrap">
                 <div
                     on:mouseenter={() => handleHover(true, 'max_frames')}
                     on:mouseleave={() => handleHover(false, 'max_frames')}
@@ -201,8 +201,8 @@
                         options={getField('max_frames')?.options}
                         bind:value={values['max_frames']}
                         hidden={getField('max_frames')?.hidden}
-                        prefix={getField('max_frames')?.display?.prefix || ''}
-                        suffix={getField('max_frames')?.display?.suffix || ''}
+                        prefix={getField('max_frames')?.display?.prefix}
+                        label={getField('max_frames')?.label}
                     />
                 </div>
         
@@ -215,7 +215,7 @@
                         variant="quaternary"
                         classes="text-sm"
                     >
-                        <span class="md:hidden">💥</span>
+                        <span class="md:hidden">💥 Style</span>
                         <span class="hidden md:block">💥 Style</span>
                     </Button>
                 </div>
@@ -229,9 +229,25 @@
                         variant="quaternary"
                         classes="text-sm"
                     >
-                        <span class="md:hidden">🎥</span>
+                        <span class="md:hidden">🎥 Camera</span>
                         <span class="hidden md:block">🎥 Camera</span>
                     </Button>
+                </div>
+
+                
+
+                <div
+                    on:mouseenter={() => handleHover(true, 'strenght_schedule')}
+                    on:mouseleave={() => handleHover(false, 'strenght_schedule')}
+                >
+                    <IntDropdown
+                        id="strenght_schedule"
+                        options={getField('strenght_schedule')?.options}
+                        bind:value={values['strenght_schedule']}
+                        hidden={getField('strenght_schedule')?.hidden}
+                        prefix={getField('strenght_schedule')?.display?.prefix}
+                        label={getField('strenght_schedule')?.label}
+                    />
                 </div>
 
                 <div
@@ -243,22 +259,8 @@
                         options={getField('cfg_scale_schedule')?.options}
                         bind:value={values['cfg_scale_schedule']}
                         hidden={getField('cfg_scale_schedule')?.hidden}
-                        prefix={getField('cfg_scale_schedule')?.display?.prefix || ''}
-                        suffix={getField('cfg_scale_schedule')?.display?.suffix || ''}
-                    />
-                </div>
-
-                <div
-                    on:mouseenter={() => handleHover(true, 'strenght_schedule')}
-                    on:mouseleave={() => handleHover(false, 'strenght_schedule')}
-                >
-                    <IntDropdown
-                        id="strenght_schedule"
-                        options={getField('strenght_schedule')?.options}
-                        bind:value={values['strenght_schedule']}
-                        hidden={getField('strenght_schedule')?.hidden}
-                        prefix={getField('strenght_schedule')?.display?.prefix || ''}
-                        suffix={getField('strenght_schedule')?.display?.suffix || ''}
+                        prefix={getField('cfg_scale_schedule')?.display?.prefix}
+                        label={getField('cfg_scale_schedule')?.label}
                     />
                 </div>
 
@@ -273,8 +275,8 @@
                             size="sm"
                             classes=""
                         >
-                            <span class="md:hidden">{promptMode === 'clean' ? '🌸' : '✊'}</span>
-                            <span class="hidden md:block">{promptMode === 'clean' ? '🌸 Fine' : '✊ Raw'}</span>
+                            <span class="md:hidden">{promptMode === 'clean' ? '🌸 Quality: Fine' : '✊ Quality: Raw'}</span>
+                            <span class="hidden md:block">{promptMode === 'clean' ? '🌸 Quality: Fine' : '✊ Quality: Raw'}</span>
                         </Button>
                     </div>
                     <div slot="content">
@@ -304,7 +306,7 @@
         </div>
     </div>
 
-    <div class="bg-white p-3 rounded-lg w-fit mx-auto mt-4 flex flex-row gap-2 justify-center">
+    <div class="bg-white p-3 rounded-full w-fit mx-auto mt-4 flex flex-row gap-2 justify-center">
         <LogViewer id="log-viewer" label="Generation Logs" />
 
         <div
@@ -328,7 +330,7 @@
                 variant="primary"
                 classes="text-sm"
             >
-                💥 Generate
+            🚀 Generate
             </Button>    
         </div>
     </div>
