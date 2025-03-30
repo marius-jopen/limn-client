@@ -941,10 +941,12 @@
                 class="px-4 flex overflow-x-auto pb-4 space-x-6 hide-scrollbar"
                 use:bindLatestContainer={index === 0}
             >
-                {#each rowResources as resource (resource.id)}
+                {#each rowResources as resource, resourceIndex (resource.id)}
                     <div class="flex-shrink-0">
                         <ContinuousDeforumItem 
-                            {resource} 
+                            {resource}
+                            rowResources={rowResources}
+                            currentIndex={resourceIndex}
                             on:imageDeleted={handleImageDeleted}
                             on:batchDeleted={handleBatchDeleted}
                             on:showVideo={() => {

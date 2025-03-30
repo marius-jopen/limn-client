@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { createEventDispatcher, onMount, onDestroy } from 'svelte';
     import { user, selectedImageId } from '$lib/supabase/helper/StoreSupabase';
     import { supabase } from '$lib/supabase/helper/SupabaseClient';
     import { transformToBunnyUrl } from '$lib/bunny/BunnyClient';
@@ -27,6 +27,8 @@
     // Props - can receive full resource or just the ID
     export let resource: Resource | null = null;
     export let resourceId: string | null = null;
+    export let rowResources: Resource[] = [];
+    export let currentIndex: number = 0;
     
     // Event dispatcher for parent component communication
     const dispatch = createEventDispatcher();
@@ -37,6 +39,7 @@
     let isLoading = false;
     let localResource: Resource | null = resource;
     let imageLoaded = false;
+    let currentImageIndex: number;
     
     // Get user ID from store
     $: userId = $user?.id;
@@ -84,11 +87,14 @@
     // Function to handle image click for preview
     function handlePreview(): void {
         isPreviewOpen = true;
+        currentImageIndex = rowResources.findIndex(r => r.id === localResource?.id);
+        window.addEventListener('keydown', handleKeydown);
     }
 
     // Function to close preview overlay
     function closePreview(): void {
         isPreviewOpen = false;
+        window.removeEventListener('keydown', handleKeydown);
     }
 
     // Function to delete image using Supabase directly
@@ -216,6 +222,41 @@
     function handleImageLoad() {
         imageLoaded = true;
     }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (!isPreviewOpen) return;
+        
+        switch(event.key) {
+            case 'ArrowLeft':
+                navigatePrev();
+                break;
+            case 'ArrowRight':
+                navigateNext();
+                break;
+            case 'Escape':
+                closePreview();
+                break;
+        }
+    }
+
+    function navigateNext() {
+        if (currentImageIndex < rowResources.length - 1) {
+            currentImageIndex++;
+        }
+    }
+
+    function navigatePrev() {
+        if (currentImageIndex > 0) {
+            currentImageIndex--;
+        }
+    }
+
+    // Clean up on component destroy
+    onDestroy(() => {
+        if (isPreviewOpen) {
+            window.removeEventListener('keydown', handleKeydown);
+        }
+    });
 </script>
 
 {#if isLoading}
@@ -311,16 +352,72 @@
     {#if isPreviewOpen}
         <div 
             class="fixed inset-0 bg-neutral-100/80 backdrop-blur-2xl z-50 flex items-center justify-center p-4 animate-fade-in"
-            on:click={closePreview}
+            on:click|self={closePreview}
         >
-            <div class="max-w-4xl max-h-[90vh] relative">
+            <!-- Navigation buttons - desktop only -->
+            <div class="hidden md:block">
+                {#if currentImageIndex > 0}
+                    <Button
+                        onClick={navigatePrev}
+                        variant="secondary"
+                        size="sm"
+                        classes="absolute left-4 top-1/2 -translate-y-1/2 !p-1.5 hover:scale-105 transition-all duration-200"
+                    >
+                        <span class="text-lg">←</span>
+                    </Button>
+                {/if}
+
+                {#if currentImageIndex < rowResources.length - 1}
+                    <Button
+                        onClick={navigateNext}
+                        variant="secondary"
+                        size="sm"
+                        classes="absolute right-4 top-1/2 -translate-y-1/2 !p-1.5 hover:scale-105 transition-all duration-200"
+                    >
+                        <span class="text-lg">→</span>
+                    </Button>
+                {/if}
+            </div>
+
+            <div class="max-w-4xl max-h-[90vh] relative flex flex-col items-center">
+                <!-- Image -->
                 <img 
-                    src={cdnImageUrl} 
-                    alt={currentResource.name || 'Preview'} 
+                    src={transformToBunnyUrl(rowResources[currentImageIndex].image_url)} 
+                    alt={rowResources[currentImageIndex].name || 'Preview'} 
                     class="max-w-full max-h-[90vh] object-contain rounded-xl"
                 />
                 
-                <!-- Using Button atom for the close button -->
+                <!-- Counter -->
+                <div class="mt-4 bg-gray-200 px-3 py-1 rounded-full text-sm">
+                    {currentImageIndex + 1} / {rowResources.length}
+                </div>
+
+                <!-- Mobile navigation buttons - fixed at bottom -->
+                <div class="md:hidden fixed bottom-6 left-0 right-0 flex justify-center items-center gap-8">
+                    {#if currentImageIndex > 0}
+                        <Button
+                            onClick={navigatePrev}
+                            variant="secondary"
+                            size="sm"
+                            classes="!p-1.5"
+                        >
+                            <span class="text-lg">←</span>
+                        </Button>
+                    {/if}
+
+                    {#if currentImageIndex < rowResources.length - 1}
+                        <Button
+                            onClick={navigateNext}
+                            variant="secondary"
+                            size="sm"
+                            classes="!p-1.5"
+                        >
+                            <span class="text-lg">→</span>
+                        </Button>
+                    {/if}
+                </div>
+                
+                <!-- Close button -->
                 <div class="fixed top-3 right-4">
                     <Button
                         label="Close"
