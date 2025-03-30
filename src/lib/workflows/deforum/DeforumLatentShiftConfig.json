@@ -77,7 +77,7 @@
         "placeholder": "${STRENGTH_SCHEDULE}",
         "label": "Chaos",
         "info": "How close the generated image will be to the previous image",
-        "default": 0.7,
+        "default": 0.8,
         "display": {
             "prefix": "🐣 ",
             "suffix": " Chaos"

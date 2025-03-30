@@ -52,6 +52,7 @@
         justify-center
         gap-2
         w-fit
+        whitespace-nowrap
         ${classes}
     `.trim().replace(/\s+/g, ' ');
 </script>

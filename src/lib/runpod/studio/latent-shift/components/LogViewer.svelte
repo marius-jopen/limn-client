@@ -56,21 +56,22 @@
     }
 </script>
 
-<!-- {#if logs.length > 0} -->
-    <div class="w-full">
-        <div class="text-gray-500 p-[10px] text-sm overflow-hidden h-8 flex items-center justify-center">
-            {#if logs[logs.length - 1]}
-                {#if logs[logs.length - 1].type === 'error'}
-                    <span class="text-red-500 truncate text-center">
-                        Error: {cleanMessage(logs[logs.length - 1].message)}
-                    </span>
-                {:else}
-                    <span class="text-gray-500 truncate text-center">
-                        {cleanMessage(logs[logs.length - 1].message)}
-                    </span>
-                {/if}
+<div class="w-full">
+    <div class="text-gray-500 bg-neutral-100 py-[10px] px-4 text-sm overflow-hidden h-[36px] flex items-center justify-center rounded-full">
+        {#if logs.length > 0 && logs[logs.length - 1]}
+            {#if logs[logs.length - 1].type === 'error'}
+                <span class="text-red-500 truncate text-center">
+                    Error: {cleanMessage(logs[logs.length - 1].message)}
+                </span>
+            {:else}
+                <span class="text-gray-500 truncate text-center">
+                    Status: {cleanMessage(logs[logs.length - 1].message)}
+                </span>
             {/if}
-
-        </div>
+        {:else}
+            <span class="text-gray-500 truncate text-center">
+                Status: Waiting for job
+            </span>
+        {/if}
     </div>
-<!-- {/if}  -->
+</div>

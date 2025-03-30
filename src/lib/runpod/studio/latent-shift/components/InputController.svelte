@@ -301,39 +301,41 @@
                     </div>
                 </Dropdown>
             </div>
+        </div>
+    </div>
 
-            <div class="flex flex-row gap-1 md:gap-2 justify-center sm:justify-start">
-                <div
-                    on:mouseenter={() => handleHover(true, 'cancel', undefined, BUTTON_INFO.cancel)}
-                    on:mouseleave={() => handleHover(false, 'cancel')}
-                >
-                    <Cancel 
-                        on:cancel={handleCancel}
-                    />   
-                </div>
-        
-                <div
-                    on:mouseenter={() => handleHover(true, 'generate', undefined, BUTTON_INFO.generate)}
-                    on:mouseleave={() => handleHover(false, 'generate')}
-                >
-                    <Button 
-                        onClick={onGenerate} 
-                        disabled={isGenerating}
-                        variant="primary"
-                        classes="text-sm"
-                    >
-                        💥 Generate
-                    </Button>    
-                </div>
-            </div>
+    <div class="bg-white p-3 rounded-lg w-fit mx-auto mt-4 flex flex-row gap-2 justify-center">
+        <LogViewer id="log-viewer" label="Generation Logs" />
+
+        <div
+            class="block"
+            on:mouseenter={() => handleHover(true, 'cancel', undefined, BUTTON_INFO.cancel)}
+            on:mouseleave={() => handleHover(false, 'cancel')}
+        >
+            <Cancel 
+                on:cancel={handleCancel}
+            />   
+        </div>
+
+        <div
+            class="block"
+            on:mouseenter={() => handleHover(true, 'generate', undefined, BUTTON_INFO.generate)}
+            on:mouseleave={() => handleHover(false, 'generate')}
+        >
+            <Button 
+                onClick={onGenerate} 
+                disabled={isGenerating}
+                variant="primary"
+                classes="text-sm"
+            >
+                💥 Generate
+            </Button>    
         </div>
     </div>
 
     <div class="flex justify-cente mt-12 md:mt-4 block relative  mb-4 md:mb-0">
       
-        <div class="absolute top-0 left-0 w-full  ">
-            <LogViewer id="log-viewer" label="Generation Logs" />
-        </div>
+        
 
         <div 
         class="hidden md:block pt-[6px] w-full text-center bg-gray-100 text-sm text-gray-500 px-4 z-20 relative transition-all duration-200 ease-in-out text-center"
