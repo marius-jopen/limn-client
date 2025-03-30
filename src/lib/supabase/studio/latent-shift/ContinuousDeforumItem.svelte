@@ -274,7 +274,7 @@
                 <img 
                     on:click={handlePreview}
                     on:load={handleImageLoad}
-                    src={cdnImageUrl}
+                    src={cdnImageUrl + "?width=1000"}
                     alt={currentResource.name || 'User uploaded image'} 
                     class="h-[250px] md:h-[400px] cursor-pointer w-auto object-contain rounded-xl opacity-0 transition-opacity duration-500"
                     class:opacity-100={imageLoaded}
@@ -382,7 +382,7 @@
             <div class="max-w-4xl max-h-[90vh] relative flex flex-col items-center">
                 <!-- Image -->
                 <img 
-                    src={transformToBunnyUrl(rowResources[currentImageIndex].image_url)} 
+                    src={transformToBunnyUrl(rowResources[currentImageIndex].image_url)+ "?width=1000"} 
                     alt={rowResources[currentImageIndex].name || 'Preview'} 
                     class="max-w-full max-h-[90vh] object-contain rounded-xl"
                 />

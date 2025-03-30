@@ -10,7 +10,7 @@
     
     // Configuration for pagination
     const INITIAL_BATCH_COUNT = 3; // Number of batches to load initially
-    const LOAD_MORE_BATCH_COUNT = 2; // Number of batches to load on each "Load More" click
+    const LOAD_MORE_BATCH_COUNT = 4; // Number of batches to load on each "Load More" click
     
     // Define interfaces for our data structures
     interface Resource {
@@ -290,12 +290,6 @@
     
     // Infinite scroll setup
     let loadingMore = false;
-    let scrollObserver: IntersectionObserver;
-    let observerTarget: HTMLDivElement;
-
-    // Add these variables near the top with other state variables
-    let lastInfiniteScrollTrigger = 0;
-    const INFINITE_SCROLL_COOLDOWN = 1000; // 1 second cooldown between infinite scroll triggers
 
     // Add these new variables near the top with other state variables
     let latestBatchContainer: HTMLDivElement;
@@ -333,38 +327,6 @@
         }, 100);
     }
 
-    // Update the setupInfiniteScroll function
-    function setupInfiniteScroll() {
-        if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
-            scrollObserver = new IntersectionObserver(
-                (entries) => {
-                    const [entry] = entries;
-                    const now = Date.now();
-                    if (entry.isIntersecting && hasMorePaths && !loadingMore && 
-                        (now - lastInfiniteScrollTrigger > INFINITE_SCROLL_COOLDOWN)) {
-                        lastInfiniteScrollTrigger = now;
-                        loadMore();
-                    }
-                },
-                { 
-                    rootMargin: '200px',
-                    threshold: 0.1
-                }
-            );
-            
-            if (observerTarget) {
-                scrollObserver.observe(observerTarget);
-            }
-        }
-    }
-
-    // Clean up observer when component is destroyed
-    function cleanupInfiniteScroll() {
-        if (scrollObserver) {
-            scrollObserver.disconnect();
-        }
-    }
-
     // Update onMount to setup infinite scrolling
     onMount(() => {
         console.log('GalleryImages component mounted with props:', {
@@ -376,10 +338,7 @@
         });
         
         // Set up an interval to refresh batch assignments
-        batchUpdateInterval = setInterval(updateBatchAssignments, 5000); // Check every 5 seconds
-        
-        // Set up infinite scrolling
-        setupInfiniteScroll();
+        batchUpdateInterval = setInterval(updateBatchAssignments, 5000);
     });
 
     // Update onDestroy to properly handle scrollTimeout
@@ -392,11 +351,7 @@
         if (batchUpdateInterval) {
             clearInterval(batchUpdateInterval);
         }
-        
-        // Clean up infinite scrolling
-        cleanupInfiniteScroll();
 
-        // Clean up the timeouts in onDestroy
         if (hoverTimeout) {
             clearTimeout(hoverTimeout);
         }
@@ -420,8 +375,6 @@
             await fetchMoreImages();
         }
         
-        // Small delay to prevent rapid consecutive loads
-        await new Promise(resolve => setTimeout(resolve, 100));
         loadingMore = false;
     }
     
@@ -960,13 +913,6 @@
         </div>
     {/each}
 
-    <!-- Add this invisible target element for infinite scroll detection -->
-    <div 
-        bind:this={observerTarget} 
-        class="invisible-target"
-        aria-hidden="true"
-    ></div>
-
     <!-- Only show the button if there are more paths to load and infinite scroll hasn't triggered recently -->
     {#if hasMorePaths && (visiblePathCount < lineagePaths.length || hasMoreToLoad)}
         <div class="py-6 flex justify-center">
@@ -1004,12 +950,6 @@
     }
     .hide-scrollbar::-webkit-scrollbar {
         display: none;  /* Chrome, Safari and Opera */
-    }
-    
-    /* Style for the invisible target - makes it take up space but be invisible */
-    .invisible-target {
-        height: 50px; /* Give it some height to trigger the observer */
-        opacity: 0;   /* Make it invisible */
     }
     
     /* Make sure loading indicators are visible */

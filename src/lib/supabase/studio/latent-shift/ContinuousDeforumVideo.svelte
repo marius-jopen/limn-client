@@ -69,7 +69,7 @@
     <div class="max-w-4xl max-h-[90vh] relative">
         {#if currentImage}
             <img 
-                src={currentImage} 
+                src={currentImage + "?width=1000"} 
                 alt="Animation frame" 
                 class="max-w-full max-h-[90vh] object-contain rounded-xl"
             />
