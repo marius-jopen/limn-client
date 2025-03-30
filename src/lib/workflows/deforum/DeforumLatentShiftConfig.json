@@ -85,11 +85,11 @@
         "options": [
             {
                 "value": 0.5,
-                "label": "Min"
+                "label": "Max"
             },
             {
                 "value": 0.6,
-                "label": "Low"
+                "label": "High"
             },
             {
                 "value": 0.7,
@@ -97,11 +97,11 @@
             },
             {
                 "value": 0.8,
-                "label": "High"
+                "label": "Low"
             },
             {
                 "value": 0.9,
-                "label": "Max"
+                "label": "Min"
             }
         ]
     },
