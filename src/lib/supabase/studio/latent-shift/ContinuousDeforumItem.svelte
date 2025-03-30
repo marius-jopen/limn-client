@@ -292,7 +292,17 @@
                     onClick={selectImage}
                 >
                     <span class="md:hidden">🔮</span>
-                    <span class="hidden md:block">🔮 Explore</span>
+                    <span class="hidden md:block">🔮 Continue</span>
+                </Button>
+
+
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => dispatch('showVideo', { resource: currentResource })}
+                >
+                    <span class="md:hidden">🎬</span>
+                    <span class="hidden md:block">🎬 Preview</span>
                 </Button>
 
                 <Like 
@@ -305,14 +315,6 @@
                     }}
                 />
 
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => dispatch('showVideo', { resource: currentResource })}
-                >
-                    <span class="md:hidden">🎬</span>
-                    <span class="hidden md:block">🎬</span>
-                </Button>
                 
                 <!-- Use the slot-based Dropdown component with animated dropdown -->
                 <Dropdown 

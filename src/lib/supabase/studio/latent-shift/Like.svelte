@@ -12,9 +12,17 @@
 
   let isLiked = initialLiked;
   let isLoading = false;
+  let isHovered = false;
 
   // Get user ID from store
   $: userId = $user?.id;
+
+  let buttonElement;
+  
+  $: if (buttonElement) {
+    buttonElement.addEventListener('mouseenter', () => isHovered = true);
+    buttonElement.addEventListener('mouseleave', () => isHovered = false);
+  }
 
   async function handleLike() {
     if (!userId) {
@@ -81,34 +89,22 @@
   aria-label={isLiked ? "Unlike image" : "Like image"}
   aria-pressed={isLiked}
 >
-  {#if isLiked}
-    ❤️
-  {:else}
-  🩵
-  {/if}
+  <span class="heart" class:liked={isLiked}>❤️</span>
 </Button>
 
 <style>
-  .like-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.5rem;
-    padding: 8px;
-    transition: transform 0.2s;
+  .heart {
+    display: inline-block;
+    filter: grayscale(1);
+    transition: filter 0.2s ease;
   }
 
-  .like-button:hover {
-    transform: scale(1.1);
+  .heart.liked {
+    filter: none;
   }
 
-  .like-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .like-button.secondary {
-    background-color: var(--color-neutral-100);
-    border-radius: 0.375rem;
+  /* Target the button element and its hover state */
+  :global(button:hover) .heart {
+    filter: none;
   }
 </style>
