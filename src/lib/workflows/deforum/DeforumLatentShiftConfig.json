@@ -125,6 +125,34 @@
         },
         "options": [
             { 
+                "value": "sdxl_celine-bags-v1", 
+                "label": "Celine bags V1", 
+                "trigger": "Celine Bag",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-v1.png",
+                "description" : "Adds a Celine bag to the image. V2"
+            },
+            { 
+                "value": "sdxl_celine-bags-003-v2", 
+                "label": "Celine bags V2", 
+                "trigger": "Celine Bag",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
+                "description" : "Adds a Celine bag to the image. V2"
+            },
+            { 
+                "value": "sdxl_celine-bag-v3", 
+                "label": "Celine bags V3", 
+                "trigger": "Celine Bag",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
+                "description" : "Adds a Celine bag to the image. V2"
+            },
+            { 
+                "value": "sdxl_LVMH_Paul_Lora", 
+                "label": "Celine Paul", 
+                "trigger": "Celine Bag",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
+                "description" : "Adds a Celine bag to the image. V2"
+            },
+            { 
                 "value": "Add_Detail_XL", 
                 "label": "Detail XL", 
                 "trigger": "Detail",
@@ -144,13 +172,6 @@
                 "trigger": "MS Paint",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ms-paint.jpeg",
                 "description" : "Adds a MS Paint portrait to the image"
-            },
-            { 
-                "value": "Prada_outfit_autumn_clothes-000006", 
-                "label": "Prada Outfit Autumn Clothes", 
-                "trigger": "Prada Outfit",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/prada-outfit-autumn.png",
-                "description" : "Adds a Prada outfit to the image"
             },
             { 
                 "value": "Crayon_Drawing", 
@@ -174,39 +195,11 @@
                 "description" : "Adds an iridescent foil to the image"
             },
             { 
-                "value": "sd_xl_Popovy_Dolls", 
-                "label": "Popovy Dolls", 
-                "trigger": "fashion doll",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/popoy-dolls.png",
-                "description" : "Adds a Popovy dolls to the image"
-            },
-            { 
                 "value": "sd_xl_Wake_Up", 
                 "label": "Wake Up", 
                 "trigger": "Wake Up",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/wake-up.jpeg",
                 "description" : "Adds a wake up to the image"
-            },
-            { 
-                "value": "sd_xl_HR_Giger", 
-                "label": "H R Giger", 
-                "trigger": "g1g3r",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/hr-giger.jpeg",
-                "description" : "Adds a HR Giger style image to the image"
-            },
-            { 
-                "value": "sdxl_celine-bags-v1", 
-                "label": "Celine bags V1", 
-                "trigger": "Celine Bag",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-v1.png",
-                "description" : "Adds a Celine bag to the image. V2"
-            },
-            { 
-                "value": "sdxl_celine-bags-003-v2", 
-                "label": "Celine bags 003", 
-                "trigger": "Celine Bag",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
-                "description" : "Adds a Celine bag to the image. V2"
             }
         ]
     },
