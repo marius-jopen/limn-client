@@ -143,14 +143,14 @@
                 "label": "Celine bags V3", 
                 "trigger": "Celine Bag",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
-                "description" : "Adds a Celine bag to the image. V2"
+                "description" : "Adds a Celine bag to the image. V3"
             },
             { 
                 "value": "sdxl_LVMH_Paul_Lora", 
                 "label": "Celine Paul", 
-                "trigger": "Celine Bag",
+                "trigger": "Paul",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
-                "description" : "Adds a Celine bag to the image. V2"
+                "description" : "Adds a Paul style image to the image"
             },
             { 
                 "value": "Add_Detail_XL", 
