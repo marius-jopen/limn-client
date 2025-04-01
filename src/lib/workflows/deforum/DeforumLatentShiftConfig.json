@@ -147,7 +147,7 @@
             },
             { 
                 "value": "sdxl_LVMH_Paul_Lora", 
-                "label": "Celine Paul", 
+                "label": "IMF Paul", 
                 "trigger": "Paul",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
                 "description" : "Adds a Paul style image to the image"
