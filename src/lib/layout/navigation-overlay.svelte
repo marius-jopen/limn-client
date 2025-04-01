@@ -15,7 +15,6 @@
   // Add state to track app source and admin status
   let appSource = '';
   let isAdmin = false;
-  let userEmail = '';
   
   // Navigation items array with explicit visibility rules
   const allNavigationItems = [
@@ -134,7 +133,6 @@
       
       if (userData?.user) {
         debugLog("User ID", userData.user.id);
-        userEmail = userData.user.email; // Set the user's email
         
         try {
           // Check if user is admin with better error handling
@@ -192,13 +190,11 @@
         debugLog("No user found in session", null);
         isAdmin = false;
         appSource = '';
-        userEmail = '';
       }
     } catch (error) {
       console.error('Error in navigation overlay mount:', error);
       isAdmin = false;
       appSource = '';
-      userEmail = '';
     }
   });
   
@@ -224,17 +220,7 @@
     <div class="fixed top-3 left-4 z-50">
         <Logout on:logout={handleLogout} />
     </div>
-
-    <!-- User email display -->
-    {#if userEmail}
-      <div class="fixed bottom-3 right-4 z-50 text-sm text-neutral-600">
-        {userEmail}
-      </div>
-    {/if}
-
-    <div class="fixed bottom-3 right-4 z-50">
-
-    </div>
+    
 
     <!-- Scrollable content area -->
     <div class="h-full overflow-y-auto">
