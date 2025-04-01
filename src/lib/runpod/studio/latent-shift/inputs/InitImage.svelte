@@ -33,6 +33,43 @@
     
     const dispatch = createEventDispatcher();
     
+    // Add canvas ref
+    let canvas: HTMLCanvasElement;
+    
+    // Function to crop image to square
+    function cropImageToSquare(file: File): Promise<Blob> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const size = Math.min(img.width, img.height);
+                const x = (img.width - size) / 2;
+                const y = (img.height - size) / 2;
+                
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                
+                if (!ctx) {
+                    reject(new Error('Could not get canvas context'));
+                    return;
+                }
+                
+                ctx.drawImage(img, x, y, size, size, 0, 0, size, size);
+                
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error('Could not create blob from canvas'));
+                    }
+                }, 'image/jpeg', 0.95);
+            };
+            
+            img.onerror = () => reject(new Error('Failed to load image'));
+            img.src = URL.createObjectURL(file);
+        });
+    }
+    
     async function fetchImage(idToFetch: string, preserveLineage: boolean = false) {
         if (!idToFetch) return;
         
@@ -123,7 +160,7 @@
         console.log("Image selection cleared");
     }
 
-    // Upload functionality
+    // Modify handleFileChange to use cropping
     async function handleFileChange(event: Event) {
         const input = event.target as HTMLInputElement;
         const file = input.files?.[0];
@@ -155,12 +192,16 @@
             userId: userId
         });
 
-        status = 'Starting upload...';
+        status = 'Processing image...';
         uploading = true;
 
         try {
+            // Crop the image first
+            const croppedBlob = await cropImageToSquare(file);
+            const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
+            
             const formData = new FormData();
-            formData.append('image', file);
+            formData.append('image', croppedFile);
             formData.append('userId', userId);
 
             status = 'Sending to server...';
@@ -294,6 +335,7 @@
         event.stopPropagation();
     }
     
+    // Modify handleDrop to use cropping
     async function handleDrop(event: DragEvent) {
         event.preventDefault();
         event.stopPropagation();
@@ -322,14 +364,17 @@
             return;
         }
         
-        // Don't clear existing states until we have the new image
         error = null;
-        status = 'Starting upload...';
+        status = 'Processing image...';
         uploading = true;
 
         try {
+            // Crop the image first
+            const croppedBlob = await cropImageToSquare(file);
+            const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
+            
             const formData = new FormData();
-            formData.append('image', file);
+            formData.append('image', croppedFile);
             formData.append('userId', userId);
 
             status = 'Sending to server...';
@@ -383,6 +428,9 @@
     {#if error}
         <p class="text-red-400">{error}</p>
     {/if}
+    
+    <!-- Add hidden canvas for cropping -->
+    <canvas bind:this={canvas} class="hidden"></canvas>
     
     <div 
         class="relative w-full min-h-[200px] max-h-[400px] mt-2 flex justify-center"
