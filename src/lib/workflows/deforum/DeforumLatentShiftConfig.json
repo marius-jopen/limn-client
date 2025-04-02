@@ -139,6 +139,20 @@
                 "description" : "Adds a Paul style image to the image"
             },
             { 
+                "value": "IFM_Marina", 
+                "label": "IMF Marina", 
+                "trigger": "Marina",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/marina.png",
+                "description" : "Adds a Marina style image to the image"
+            },
+            { 
+                "value": "IFM_Hawi", 
+                "label": "IMF Hawi", 
+                "trigger": "Hawi",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/hawi.png",
+                "description" : "Adds a Hawi style image to the image"
+            },
+            { 
                 "value": "Add_Detail_XL", 
                 "label": "Detail XL", 
                 "trigger": "Detail",
