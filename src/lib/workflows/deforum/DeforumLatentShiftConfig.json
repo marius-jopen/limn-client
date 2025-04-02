@@ -125,31 +125,17 @@
         },
         "options": [
             { 
-                "value": "sdxl_celine-bags-v1", 
-                "label": "Celine bags V1", 
-                "trigger": "Celine Bag",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-v1.png",
-                "description" : "Adds a Celine bag to the image. V2"
-            },
-            { 
-                "value": "sdxl_celine-bags-003-v2", 
-                "label": "Celine bags V2", 
-                "trigger": "Celine Bag",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
-                "description" : "Adds a Celine bag to the image. V2"
-            },
-            { 
                 "value": "sdxl_celine-bag-v3", 
-                "label": "Celine bags V3", 
+                "label": "Celine bags", 
                 "trigger": "Celine Bag",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
-                "description" : "Adds a Celine bag to the image. V3"
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-v3.png",
+                "description" : "Adds a Celine bag to the image."
             },
             { 
                 "value": "sdxl_LVMH_Paul_Lora", 
                 "label": "IMF Paul", 
                 "trigger": "Paul",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-bags-003-v2.png",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/paul.png",
                 "description" : "Adds a Paul style image to the image"
             },
             { 
