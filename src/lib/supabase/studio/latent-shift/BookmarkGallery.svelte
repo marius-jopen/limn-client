@@ -271,6 +271,12 @@
     }
 </script>
 
+<div>
+    <h1 class="text-center mb-4 md:mb-6 pt-8 bg-red-300 rounded-lg p-10 w-fit mx-auto mt-20 mb-8 floating-message">
+        👋 <br> Hello! <br> Image generation is currently deactivated! <br> 🫢
+    </h1>
+</div>
+
 {#if error}
     <p class="text-red-400 md:p-4">{error}</p>
 {:else if likedResources.length === 0 && !isLoading}
@@ -424,6 +430,23 @@
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
+    }
+
+    /* Add floating animation for the message */
+    .floating-message {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
     }
 
     /* Add rocket animation styles */
