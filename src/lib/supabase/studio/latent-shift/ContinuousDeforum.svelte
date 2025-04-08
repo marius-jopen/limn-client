@@ -49,6 +49,13 @@
     // Convert type to array if it's a string
     $: typeArray = typeof type === 'string' ? [type] : Array.isArray(type) ? type : [];
     
+    // Combine both props into a single array for internal use
+    $: workflowsToFetch = workflow_name 
+        ? [workflow_name] 
+        : workflow_names;
+        
+    $: console.log('workflowsToFetch updated:', workflowsToFetch);
+    
     // Grid layout state - using static classes based on defaultImagesPerRow
     $: gridClass = getGridClass(defaultImagesPerRow);
     
@@ -82,10 +89,15 @@
         }
     }
     
-    // Pagination state
+    // State variables
     let allResources: Resource[] = []; // All fetched resources
     let visiblePathCount = INITIAL_BATCH_COUNT; // Number of lineage paths currently visible
     let hasMoreToLoad = true; // Whether there are more resources to load
+    let isLoading = false;
+    let error: string | null = null;
+    let page = 0;
+    let selectedWorkflow = workflow_name;
+    let selectedType: string | null = null;
     
     // Variables for lineage paths
     let lineagePaths: LineagePath[] = [];
@@ -237,7 +249,13 @@
             console.log('Building lineage paths from', allResources.length, 'resources');
             lineagePaths = buildLineagePaths(allResources);
             console.log('Created', lineagePaths.length, 'lineage paths');
+            console.log('Lineage paths:', lineagePaths.map(p => ({
+                id: p.id,
+                batchName: p.batchName,
+                resourceCount: p.resources.length
+            })));
         } else {
+            console.log('No resources available to build lineage paths');
             lineagePaths = [];
         }
     }
@@ -281,6 +299,7 @@
     
     // Get visible lineage paths - show multiple paths but keep them separate
     $: visiblePaths = lineagePaths.slice(0, visiblePathCount);
+    $: console.log('Visible paths:', visiblePaths.length, 'out of', lineagePaths.length, 'total paths');
 
     // Check if there are more paths to load
     $: hasMorePaths = visiblePathCount < lineagePaths.length || hasMoreToLoad;
@@ -428,14 +447,6 @@
         }
     }
     
-    // Combine both props into a single array for internal use
-    $: workflowsToFetch = workflow_name 
-        ? [workflow_name] 
-        : workflow_names;
-        
-    $: console.log('workflowsToFetch updated:', workflowsToFetch);
-    
-    let error: string | null = null;
     let subscription: any; // Type will depend on your Supabase client type
 
     $: user_id = $user?.id;
@@ -511,41 +522,24 @@
             const { data, error } = await query;
             
             if (error) {
-                console.error(`Error fetching resources:`, error);
+                console.error('Error fetching resources:', error);
+                throw error;
+            }
+            
+            if (!data) {
+                console.warn('No data returned from query');
                 return [];
             }
             
-            console.log(`Fetched ${data?.length || 0} resources`);
+            console.log(`Successfully fetched ${data.length} resources`);
             
-            // Add post-query validation to ensure only the correct workflows are included
-            if (workflowsToFetch && workflowsToFetch.length > 0) {
-                const beforeCount = data?.length || 0;
-                const filteredData = (data || []).filter(r => {
-                    const match = workflowsToFetch.includes(r.workflow_name);
-                    if (!match) {
-                        console.error(`Removing resource with ID ${r.id}, workflow "${r.workflow_name}" which doesn't match filter ${workflowsToFetch.join(', ')}`);
-                    }
-                    return match;
-                });
-                
-                if (beforeCount !== filteredData.length) {
-                    console.log(`Post-query workflow filter: ${beforeCount} → ${filteredData.length} resources`);
-                }
-                
-                // Log the workflow names that were actually found
-                console.log('Workflow names after filtering:', 
-                    [...new Set(filteredData.map(r => r.workflow_name))]);
-                
-                // Transform S3 URLs to Bunny.net URLs
-                const transformedData = transformResourceUrls(filteredData);
-                return transformedData;
-            }
-            
-            // If no workflow filter, just transform and return
-            const transformedData = transformResourceUrls(data || []);
+            // Transform S3 URLs to Bunny.net URLs
+            const transformedData = transformResourceUrls(data);
             return transformedData;
+            
         } catch (e) {
             console.error('Error in fetchResourcesFromSupabase:', e);
+            error = e.message;
             return [];
         }
     }
@@ -752,14 +746,6 @@
         fetchUserImages();
     }
 
-    // State variables
-    let resources: Resource[] = [];
-    let isLoading = false;
-    let hasMore = true;
-    let page = 0;
-    let selectedWorkflow = workflow_name;
-    let selectedType: string | null = null;
-    
     // Get user ID from store
     $: userId = $user?.id;
     
@@ -771,15 +757,15 @@
     
     // Function to reset state and fetch images
     function resetAndFetch() {
-        resources = [];
+        allResources = [];
         page = 0;
-        hasMore = true;
+        hasMoreToLoad = true;
         fetchImages();
     }
     
     // Function to fetch images from Supabase
     async function fetchImages() {
-        if (!userId || isLoading || !hasMore) return;
+        if (!userId || isLoading || !hasMoreToLoad) return;
         
         isLoading = true;
         error = null;
@@ -822,11 +808,11 @@
             const transformedData = transformResourceUrls(data || []);
             
             // Update state
-            resources = [...resources, ...transformedData];
+            allResources = [...allResources, ...transformedData];
             page += 1;
-            hasMore = (data?.length || 0) === INITIAL_BATCH_COUNT * 40;
+            hasMoreToLoad = (data?.length || 0) === INITIAL_BATCH_COUNT * 40;
             
-            console.log(`Fetched ${data?.length} images, total now: ${resources.length}`);
+            console.log(`Fetched ${data?.length} images, total now: ${allResources.length}`);
             
         } catch (e) {
             error = e.message;
