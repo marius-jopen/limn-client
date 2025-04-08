@@ -15,7 +15,7 @@
     let isPlaying = true;
     let animationFrameId: number;
     let lastFrameTime = 0;
-    const FPS = 15;
+    const FPS = 10;
     const frameDelay = 1000 / FPS;
 
     function close() {

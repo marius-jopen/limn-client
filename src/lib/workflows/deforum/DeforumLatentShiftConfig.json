@@ -160,13 +160,6 @@
                 "description" : "Adds detail to the image"
             },
             { 
-                "value": "SDXL_ChalkBoard_Drawing_LoRA_r8", 
-                "label": "Chalkboard Drawing", 
-                "trigger": "ChalkBoardDrawing",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/chalkboard-drawing.jpeg",
-                "description" : "Adds a chalkboard drawing to the image"
-            },
-            { 
                 "value": "SDXL_MSPaint_Portrait", 
                 "label": "MS Paint Portrait", 
                 "trigger": "MS Paint",
@@ -186,13 +179,6 @@
                 "trigger": "James Turrell",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/james-turell.png",
                 "description" : "Adds a James Turrell style image to the image"
-            },
-            { 
-                "value": "sd_xl_Made_Of_Iridescent_Foil", 
-                "label": "Iridescent Foil", 
-                "trigger": "Iridescent Foil",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/iridescent-foil.png",
-                "description" : "Adds an iridescent foil to the image"
             },
             { 
                 "value": "sd_xl_Wake_Up", 
