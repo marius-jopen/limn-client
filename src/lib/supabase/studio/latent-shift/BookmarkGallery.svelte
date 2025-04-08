@@ -271,11 +271,11 @@
     }
 </script>
 
-<div>
+<!-- <div>
     <h1 class="text-center mb-4 md:mb-6 pt-8 bg-red-300 rounded-lg p-10 w-fit mx-auto mt-20 mb-8 floating-message">
         👋 <br> Hello! <br> Image generation is currently deactivated! <br> 🫢
     </h1>
-</div>
+</div> -->
 
 {#if error}
     <p class="text-red-400 md:p-4">{error}</p>
