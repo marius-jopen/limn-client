@@ -412,71 +412,24 @@
                         // This section processes any new logs or output images
                         // It adds them to the logs array and updates the images collection
                         if (data.stream && Array.isArray(data.stream)) {
-
-                            // Process each item in the stream
-                            // This iterates over any new logs or output images
-                            // For each item, it creates a log entry and adds it to the logs array
                             data.stream.forEach(streamItem => {
-
-                                // If the item has a log, create a log entry
-                                // This log entry is used to track the status of the job
-                                // It is added to the logs array
-                                // The log entry includes:
-                                //   - The type of log entry ("worker")
-                                //   - The timestamp of the log entry
-                                //   - The level of the log entry ("INFO")
-                                //   - The message of the log entry ("${streamItem.output.log}")
-                                // This log entry will be added to the logs array in the next line
-                                // and will appear in the log viewer component
-                                if (streamItem.output?.log) {
-                                    const logEntry = {
-                                        type: 'worker',
-                                        timestamp: new Date().toISOString(),
-                                        level: 'INFO',
-                                        message: streamItem.output.log
-                                    };
-                                    
-                                    // Add the log entry to the logs array
-                                    logs = [...logs, logEntry];
-                                }
-                            });
-                        }
-
-                        // Handle images
-                        // This section processes any new output images
-                        // It adds them to the images collection
-                        // and logs the new images to the console
-                        // This is done by checking if the stream item has images
-                        if (data.stream && Array.isArray(data.stream)) {
-
-                            // Process each item in the stream
-                            // This iterates over any new logs or output images
-                            // For each item, it creates a log entry and adds it to the logs array
-                            data.stream.forEach(streamItem => {
-
                                 // If the item has images, process them
                                 if (streamItem.output?.images && Array.isArray(streamItem.output.images)) {
-
                                     // Filter out any images that already exist in the images array
-                                    // This ensures we don't add duplicates to the images collection
                                     const newImages = streamItem.output.images.filter(img => !images.some(existing => existing.url === img.url));
 
                                     // If there are new images, add them to the images collection
-                                    // This is done by spreading the existing images array with the new images
-                                    // This ensures we don't add duplicates to the images collection
                                     if (newImages.length > 0) {
-
-                                        // Add the new images to the images collection
+                                        // Add the new images to the local images array
                                         images = [...images, ...newImages];
 
+                                        // Update the store with the new images
+                                        runState.update(state => ({
+                                            ...state,
+                                            images: [...state.images, ...newImages]
+                                        }));
+
                                         // Add log entries for new images
-                                        // This is done by iterating over the new images
-                                        // and adding a log entry for each one
-                                        // The log entry includes:
-                                        //   - The type of log entry ("worker")
-                                        //   - The timestamp of the log entry
-                                        //   - The level of the log entry ("INFO")
-                                        //   - The message of the log entry ("Generated new image: ${image.url}")
                                         newImages.forEach(image => {
                                             const imageLogEntry = {
                                                 type: 'worker',
@@ -484,8 +437,6 @@
                                                 level: 'INFO',
                                                 message: `Generated new image: ${image.url}`
                                             };
-
-                                            // Add the log entry to the logs array
                                             logs = [...logs, imageLogEntry];
                                         });
                                     }

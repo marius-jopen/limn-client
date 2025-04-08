@@ -136,21 +136,21 @@
                 "label": "IMF Paul", 
                 "trigger": "Paul",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/paul.png",
-                "description" : "Adds a Paul style image to the image"
+                "description" : "oversized motorcycle jacket, sunglasses with blue light, but also balloon trousers"
             },
             { 
                 "value": "IFM_Marina", 
                 "label": "IMF Marina", 
                 "trigger": "Marina",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/marina.png",
-                "description" : "Adds a Marina style image to the image"
+                "description" : "long draped skirt, deconstructed draped shirt, collar, maybe airport"
             },
             { 
                 "value": "IFM_Hawi", 
                 "label": "IMF Hawi", 
                 "trigger": "Hawi",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/hawi.png",
-                "description" : "Adds a Hawi style image to the image"
+                "description" : "Oversized jumper, shaved sheepskin, Velvet denim, acid washed (jacket), big collar , embroidery"
             },
             { 
                 "value": "Add_Detail_XL", 

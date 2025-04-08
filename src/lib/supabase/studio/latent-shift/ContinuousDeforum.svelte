@@ -12,6 +12,15 @@
     const INITIAL_BATCH_COUNT = 3; // Number of batches to load initially
     const LOAD_MORE_BATCH_COUNT = 4; // Number of batches to load on each "Load More" click
     
+    // Configuration for updates
+    const INITIAL_POLL_INTERVAL = 1000; // 1 second for active generation
+    const IDLE_POLL_INTERVAL = 5000;    // 5 seconds when idle
+    const MAX_CONSECUTIVE_EMPTY = 3;     // Switch to idle after 3 empty updates
+    
+    // Add these state variables near other state variables
+    let consecutiveEmptyUpdates = 0;
+    let isActiveGeneration = false;
+    
     // Define interfaces for our data structures
     interface Resource {
         id: string;
@@ -286,7 +295,7 @@
     $: hasMorePaths = visiblePathCount < lineagePaths.length || hasMoreToLoad;
     
     // Add a timer that periodically checks for batch name updates
-    let batchUpdateInterval: number;
+    let batchUpdateInterval: number | undefined;
     
     // Infinite scroll setup
     let loadingMore = false;
@@ -383,51 +392,49 @@
         if (!user_id) return;
         
         try {
-            console.log('Checking for batch name updates...');
+            console.log('Checking for updates...');
             
-            // Fetch current resources from database
             const fetchedResources = await fetchResourcesFromSupabase({});
+            const hasNewResources = fetchedResources.length > allResources.length;
             
-            // Create a map of image_url to batch_name from database resources
-            const batchMap = new Map();
-            fetchedResources.forEach(resource => {
-                if (resource.batch_name && workflowsToFetch.includes(resource.workflow_name)) {
-                    batchMap.set(resource.image_url, {
-                        batch_name: resource.batch_name,
-                        workflow_name: resource.workflow_name
-                    });
+            if (hasNewResources) {
+                console.log(`Found new resources: ${fetchedResources.length - allResources.length}`);
+                consecutiveEmptyUpdates = 0;
+                isActiveGeneration = true;
+                allResources = fetchedResources;
+                
+                // Reset to fast polling if we found new resources
+                resetPollingInterval(INITIAL_POLL_INTERVAL);
+            } else {
+                consecutiveEmptyUpdates++;
+                
+                // If we've had several empty updates, switch to slower polling
+                if (consecutiveEmptyUpdates >= MAX_CONSECUTIVE_EMPTY && isActiveGeneration) {
+                    console.log('Switching to idle polling rate');
+                    isActiveGeneration = false;
+                    resetPollingInterval(IDLE_POLL_INTERVAL);
                 }
-            });
-            
-            // Filter out resources with incorrect workflow_name
-            if (workflowsToFetch && workflowsToFetch.length > 0) {
-                const beforeCount = allResources.length;
-                allResources = allResources.filter(r => workflowsToFetch.includes(r.workflow_name));
-                if (beforeCount !== allResources.length) {
-                    console.log(`Removed ${beforeCount - allResources.length} resources with non-matching workflow names`);
-                }
-            }
-            
-            // Update any client-side resources with batch names from the database
-            let hasUpdates = false;
-            allResources = allResources.map(resource => {
-                if (!resource.batch_name && batchMap.has(resource.image_url)) {
-                    const info = batchMap.get(resource.image_url);
-                    hasUpdates = true;
-                    console.log(`Updating batch name for ${resource.image_url} to ${info.batch_name}`);
-                    return { ...resource, batch_name: info.batch_name, workflow_name: info.workflow_name };
-                }
-                return resource;
-            });
-            
-            if (hasUpdates) {
-                console.log('Updated batch assignments for existing resources');
             }
         } catch (e) {
             console.error('Error updating batch assignments:', e);
         }
     }
     
+    // Function to reset the polling interval
+    function resetPollingInterval(interval) {
+        if (batchUpdateInterval) {
+            clearInterval(batchUpdateInterval);
+        }
+        batchUpdateInterval = setInterval(updateBatchAssignments, interval);
+    }
+
+    // Watch runState for active generations
+    $: if ($runState?.status === 'running') {
+        isActiveGeneration = true;
+        consecutiveEmptyUpdates = 0;
+        resetPollingInterval(INITIAL_POLL_INTERVAL);
+    }
+
     // Combine both props into a single array for internal use
     $: workflowsToFetch = workflow_name 
         ? [workflow_name] 
@@ -672,41 +679,27 @@
         }
 
         if (user_id) {
-            console.log('Setting up subscription for resource changes');
+            console.log('Setting up real-time subscription');
             
             subscription = supabase
                 .channel(`resource_changes_${user_id}`)
                 .on(
                     'postgres_changes',
                     {
-                        event: 'INSERT',
+                        event: '*', // Listen for all changes
                         schema: 'public',
                         table: 'resource',
                         filter: `user_id=eq.${user_id}`
                     },
                     (payload) => {
-                        console.log('New resource inserted:', payload.new?.batch_name);
-                        lastNewImageTimestamp = Date.now(); // Update timestamp for new inserts
-                        // Refresh all resources on new inserts
-                        fetchUserImages();
+                        console.log('Received real-time update:', payload);
                         
-                        // Scroll if it's a new image and user isn't hovering
-                        if (!userHovering && latestBatchContainer) {
-                            scrollToEnd(latestBatchContainer);
-                        }
-                    }
-                )
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'resource',
-                        filter: `user_id=eq.${user_id}`
-                    },
-                    (payload) => {
-                        console.log('Resource updated:', payload.new?.batch_name);
-                        // Only refresh resources on updates, no scrolling needed
+                        // Reset to fast polling when we get real-time updates
+                        isActiveGeneration = true;
+                        consecutiveEmptyUpdates = 0;
+                        resetPollingInterval(INITIAL_POLL_INTERVAL);
+                        
+                        // Fetch latest data
                         fetchUserImages();
                     }
                 )
