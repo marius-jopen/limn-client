@@ -335,13 +335,13 @@
                             class="absolute bottom-2 left-0 w-full justify-center flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                             on:click|stopPropagation
                         >
-                        <Button
+                        <!-- <Button
                             variant="secondary"
                             size="sm"
                             onClick={() => handleExploreImage(resource)}
                         >
                             🔮
-                        </Button>
+                        </Button> -->
                       
                         <Button
                             variant="secondary"
