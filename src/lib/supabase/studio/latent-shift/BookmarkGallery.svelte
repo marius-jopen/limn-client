@@ -304,14 +304,14 @@
 {:else}
     <div class="">
 
-        <div class="flex justify-center pt-16 pb-24">
+        <!-- <div class="flex justify-center pt-16 pb-24">
             <Button
                 label="🔮 Explore"
                 variant="secondary"
                 size="lg"
                 onClick={handleGenerateClick}
             />
-        </div>
+        </div> -->
         
         
         <!-- <h2 class="text-2xl text-center font-medium text-neutral-800 pt-16 pb-10">
