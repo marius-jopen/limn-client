@@ -11,6 +11,8 @@ then:
 wget "https://huggingface.co/stabilityai/sdxl-turbo/resolve/main/sd_xl_turbo_1.0_fp16.safetensors?download=true" -O sd_xl_turbo_1.0_fp16.safetensors
 
 
+wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1nNvf0K7Sy8C8ZSVAfyq1LUPgwm20UNgq' -O wabi-illustration.safetensors
+
 workflow deforum
 
 Chaos

@@ -40,6 +40,13 @@
       visibleTo: ['admin'] // Only visible to admins
     },
     {
+      href: '/studio/comfyui-flux-lora',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/fashion.png',
+      imageAlt: 'Fashion',
+      title: 'ComfyUI Flux Lora',
+      visibleTo: ['admin'] // Only visible to admins
+    },
+    {
       href: '/studio/a1111',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/grab.png',
       imageAlt: 'Grab',
