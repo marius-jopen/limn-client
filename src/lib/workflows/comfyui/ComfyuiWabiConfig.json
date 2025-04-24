@@ -12,12 +12,5 @@
         "placeholder": "${SEED}",
         "label": "Seed (-1 for random)",
         "default": 1
-    },
-    {
-        "id": "batchSize",
-        "type": "int",
-        "placeholder": "${BATCH_SIZE}",
-        "label": "Batch Size",
-        "default": 1
     }
 ]

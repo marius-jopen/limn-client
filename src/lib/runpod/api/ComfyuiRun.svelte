@@ -5,6 +5,7 @@
     import Button from '$lib/atoms/Button.svelte';
     import InputRepeater from '$lib/runpod/studio/basic/components/InputRepeater.svelte';
     import { onMount } from 'svelte';
+    import InputController_Wabi from '$lib/runpod/studio/wabi/components/InputController.svelte';
 
     const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -70,6 +71,7 @@
     export let workflow_name: string;
     export let workflow = {};
     export let ui_config: UIConfigField[] = [];
+    export let inputLayout: 'repeater' | 'controller-wabi' = 'repeater'; // Default is repeater
     
     let values: Record<string, string | number> = Object.fromEntries(ui_config.map(field => [field.id, field.default]));
     
@@ -215,6 +217,17 @@
 </script>
 
 <div>
-    <InputRepeater UI={castUIConfig(ui_config)} bind:values />
-    <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
+    {#if inputLayout === 'controller-wabi'}
+        <InputController_Wabi 
+            UI={castUIConfig(ui_config)} 
+            bind:values 
+            onGenerate={runWorkflow}
+            isGenerating={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'}
+            includeButton={true}
+        />
+    {:else}
+        <!-- Default to repeater -->
+        <InputRepeater UI={castUIConfig(ui_config)} bind:values />
+        <Button onClick={runWorkflow} label="Generate" disabled={status === 'Running...' || status === 'Starting...' || status === 'IN_PROGRESS'} />
+    {/if}
 </div>
