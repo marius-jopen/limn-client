@@ -30,7 +30,8 @@
             {id}
             bind:value
             on:input={handleInput}
-            class="w-full p-2 border-none min-h-[100px] rounded-md focus:outline-none focus:ring-0 resize-none"
+            rows="4"
+            class="w-full p-3 border font-mono text-sm bg-gray-50 text-gray-600 rounded-md border-gray-300"
         ></textarea> 
     </div>
 </div>

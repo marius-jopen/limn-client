@@ -10,8 +10,6 @@
 <div class="px-4 pt-16">
     <div class="md:w-10/12 mx-auto">
         <div class="">
-            <OpenAiRun />
-
             <PreviewImages />
 
             <ComfyuiRun 
