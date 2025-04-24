@@ -47,6 +47,13 @@
       visibleTo: ['admin'] // Only visible to admins
     },
     {
+      href: '/studio/comfyui-wabi',
+      imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/wabi.png',
+      imageAlt: 'Fashion',
+      title: 'Wabi',
+      visibleTo: ['limn', 'wabi', 'admin'] 
+    },
+    {
       href: '/studio/a1111',
       imageSrc: 'https://limn-data.s3.eu-central-1.amazonaws.com/ui/navigation/grab.png',
       imageAlt: 'Grab',
