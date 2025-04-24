@@ -4,11 +4,14 @@
     import UI_CONFIG from '$lib/workflows/comfyui/ComfyuiWabiConfig.json';
     import WORKFLOW from '$lib/workflows/comfyui/ComfyuiWabi.json';
     import PreviewImages from '$lib/runpod/studio/wabi/components/PreviewImages.svelte';
+    import OpenAiRun from '$lib/openai/api/Openai-run.svelte';
 </script>
 
 <div class="px-4 pt-16">
     <div class="md:w-10/12 mx-auto">
         <div class="">
+            <OpenAiRun />
+
             <PreviewImages />
 
             <ComfyuiRun 
