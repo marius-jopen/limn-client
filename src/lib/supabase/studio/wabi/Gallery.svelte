@@ -396,11 +396,11 @@
                 />
             {/each}
         {:else if allResources.length === 0}
-            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
-                <p class="text-gray-500 text-lg">No images found in your account</p>
+            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-white mb-16 rounded-md">
+                <p class="text-gray-500 text-lg">No images generated yet</p>
             </div>
         {:else}
-            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-gray-50 border border-gray-200 rounded-md">
+            <div class="col-span-full min-h-[200px] flex items-center justify-center bg-white mb-16 rounded-md">
                 <p class="text-gray-500 text-lg">No images to display</p>
             </div>
         {/if}

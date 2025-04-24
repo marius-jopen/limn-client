@@ -1,7 +1,5 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import Label from '$lib/atoms/Label.svelte';
-    import Textarea from '$lib/atoms/InputTextarea.svelte';
 
     export let id: string;
     export let label: string;
@@ -21,6 +19,7 @@
     function handleInput(event: Event) {
         const target = event.target as HTMLTextAreaElement;
         value = target.value;
+        console.log('User input:', value);
         dispatch('change', value);
     }
 </script>

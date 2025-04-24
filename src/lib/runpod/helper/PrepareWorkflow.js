@@ -78,7 +78,14 @@ export function prepareWorkflow(workflow, uiConfig, values) {
             }
         } else {
             // Handle string values
-            const value = values[field.id].toString()
+            let value = values[field.id].toString();
+            
+            // Add prefix if it exists in the field config
+            if (field.prefix) {
+                value = `${field.prefix} ${value}`;
+            }
+            
+            value = value
                 .replace(/\\/g, '\\\\')    // Escape backslashes
                 .replace(/"/g, '\\"');      // Escape quotes
             

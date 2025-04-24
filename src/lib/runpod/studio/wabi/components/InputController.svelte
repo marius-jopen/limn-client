@@ -4,7 +4,6 @@
     import Button from '$lib/atoms/Button.svelte';
     import RandomNumberUi from '$lib/runpod/studio/basic/inputs/RandomNumberUi.svelte';
     import PromptsUi from '$lib/runpod/studio/wabi/inputs/PromptsUi.svelte';
-    import IntDropdown from '$lib/runpod/studio/basic/inputs/IntDropdownUi.svelte';
     import LogViewer from '$lib/runpod/studio/wabi/components/LogViewer.svelte';
 
     // Define types similar to InputRepeater
@@ -14,6 +13,7 @@
         hidden?: boolean;
         default?: any;
         placeholder?: string;
+        prefix?: string;
     };
 
     type Field = BaseField & {
@@ -47,6 +47,16 @@
 
     // Get user ID for upload components
     $: user_id = $user?.id;
+
+    // Handle changes from PromptsUi
+    function handlePromptChange(event: CustomEvent) {
+        const field = getField('userPrompt');
+        if (field?.prefix) {
+            values['userPrompt'] = `${field.prefix} ${event.detail}`;
+        } else {
+            values['userPrompt'] = event.detail;
+        }
+    }
 </script>
 
 <div class="input-controller pt-8 pb-16 px-3">

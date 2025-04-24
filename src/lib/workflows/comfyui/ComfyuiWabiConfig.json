@@ -4,7 +4,8 @@
         "type": "string",
         "placeholder": "${INPUT_PROMPT}",
         "label": "Prompt 1",
-        "default": "A hyper-detailed, hand-drawn illustration in colored pencil style, showing a biological cell captured in the middle of mitosis — just beginning to divide. Symbolizes learning through dynamic steps. Clean, precise, centered, and minimal, like a scientific diagram."
+        "prefix": "",
+        "default": "A hyper-detailed, hand-drawn illustration in colored pencil style. Clean, precise, centered, and minimal. Showing a biological cell captured in the middle of mitosis — just beginning to divide. Symbolizes learning through dynamic steps. "
     },
     {
         "id": "seed",
