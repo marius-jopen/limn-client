@@ -1,6 +1,6 @@
 <script lang="ts">
     import { runState } from '$lib/runpod/helper/StoreRun.js';
-    import GalleryBasic from '$lib/layout/ui/GalleryBasic.svelte';
+    import ImageSingle from '$lib/layout/ui/ImageSingle.svelte';
     import type { ImageInput, ImageObject } from '$lib/layout/ui/GalleryBasic.svelte';
 
     // DEFINE VARIABLES
@@ -36,9 +36,8 @@
 </script>
 
 <div>
-    <GalleryBasic 
+    <ImageSingle 
         images={filteredImages}
         useBunnyCdn={false}
-        gridCols="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
     />
 </div> 
