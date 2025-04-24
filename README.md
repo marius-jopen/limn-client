@@ -9,6 +9,10 @@ ssh ikj45g6hubikuh-64411745@ssh.runpod.io -i ~/.ssh/id_ed25519
 upload model to jupiternotebook. jupiternotebook terminal:
 cd /workspace/models/Stable-diffusion/xl/
 
+
+mariusjopen@Mariuss-MBP ~ % ssh ikj45g6hubikuh-64411745@ssh.runpod.io -i ~/.ssh/id_ed25519
+
+
 then:
 wget "https://huggingface.co/stabilityai/sdxl-turbo/resolve/main/sd_xl_turbo_1.0_fp16.safetensors?download=true" -O sd_xl_turbo_1.0_fp16.safetensors
 
