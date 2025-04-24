@@ -28,7 +28,7 @@
   },
   "4": {
     "inputs": {
-      "ckpt_name": "${CKPT_NAME}"
+      "ckpt_name": "flux/flux1-dev.safetensors"
     },
     "class_type": "CheckpointLoaderSimple"
   },
@@ -36,7 +36,7 @@
     "inputs": {
       "width": 1024,
       "height": 1024,
-      "batch_size": 1
+      "batch_size": "${BATCH_SIZE}"
     },
     "class_type": "EmptyLatentImage"
   },
@@ -85,7 +85,7 @@
   },
   "18": {
     "inputs": {
-      "text": "${LORAS}",
+      "text": "<lora:flux-wabi:1>",
       "model": [
         "4",
         0

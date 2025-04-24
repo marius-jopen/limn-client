@@ -1,16 +1,5 @@
 [
     {
-        "id": "selectedCheckpoint",
-        "type": "select",
-        "placeholder": "${CKPT_NAME}",
-        "label": "Checkpoint Model",
-        "default": "flux/flux1-dev.safetensors",
-        "hidden": true,
-        "options": [
-            { "value": "flux/flux1-dev.safetensors", "label": "Flux 1 Dev" }
-        ]
-    },
-    {
         "id": "userPrompt",
         "type": "string",
         "placeholder": "${INPUT_PROMPT}",
@@ -18,17 +7,17 @@
         "default": "A hyper-detailed, hand-drawn illustration in colored pencil style, showing a biological cell captured in the middle of mitosis — just beginning to divide. Symbolizes learning through dynamic steps. Clean, precise, centered, and minimal, like a scientific diagram."
     },
     {
-        "id": "loras",
-        "type": "string",
-        "placeholder": "${LORAS}",
-        "label": "Loras (<lora:flux-wabi:1>, <lora:flux-etch:1>)",
-        "default": ""
-    },
-    {
         "id": "seed",
         "type": "int",
         "placeholder": "${SEED}",
         "label": "Seed (-1 for random)",
+        "default": 1
+    },
+    {
+        "id": "batchSize",
+        "type": "int",
+        "placeholder": "${BATCH_SIZE}",
+        "label": "Batch Size",
         "default": 1
     }
 ]
