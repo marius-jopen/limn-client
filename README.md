@@ -14,7 +14,7 @@ mariusjopen@Mariuss-MBP ~ % ssh ikj45g6hubikuh-64411745@ssh.runpod.io -i ~/.ssh/
 
 
 # Using Python and CivitAI
-curl -L -H "Authorization: Bearer 400a06d1f1584d4e3e435a5feadc4d79" "https://civitai.com/api/download/models/236248?type=Model&format=SafeTensor" -o claymate.safetensors
+curl -L -H "Authorization: Bearer 400a06d1f1584d4e3e435a5feadc4d79" "https://civitai.com/api/download/models/286771?type=Model&format=SafeTensor" -o PS1Redmond.safetensors
 
 
 wget "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors" -O sd_xl_turbo_1.0_fp16.safetensors
