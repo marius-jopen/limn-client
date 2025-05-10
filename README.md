@@ -13,6 +13,12 @@ cd /workspace/models/Stable-diffusion/xl/
 mariusjopen@Mariuss-MBP ~ % ssh ikj45g6hubikuh-64411745@ssh.runpod.io -i ~/.ssh/id_ed25519
 
 
+# Using Python and CivitAI
+curl -L -H "Authorization: Bearer 400a06d1f1584d4e3e435a5feadc4d79" "https://civitai.com/api/download/models/236248?type=Model&format=SafeTensor" -o claymate.safetensors
+
+
+wget "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors" -O sd_xl_turbo_1.0_fp16.safetensors
+
 then:
 wget "https://huggingface.co/stabilityai/sdxl-turbo/resolve/main/sd_xl_turbo_1.0_fp16.safetensors?download=true" -O sd_xl_turbo_1.0_fp16.safetensors
 
