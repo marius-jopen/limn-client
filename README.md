@@ -17,7 +17,7 @@ mariusjopen@Mariuss-MBP ~ % ssh ikj45g6hubikuh-64411745@ssh.runpod.io -i ~/.ssh/
 curl -L -H "Authorization: Bearer 400a06d1f1584d4e3e435a5feadc4d79" "https://civitai.com/api/download/models/286771?type=Model&format=SafeTensor" -o PS1Redmond.safetensors
 
 
-wget "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors" -O sd_xl_turbo_1.0_fp16.safetensors
+wget "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/thibaud_xl_openpose.safetensors?download=true" -O thibaud_xl_openpose.safetensors.safetensors
 
 then:
 wget "https://huggingface.co/stabilityai/sdxl-turbo/resolve/main/sd_xl_turbo_1.0_fp16.safetensors?download=true" -O sd_xl_turbo_1.0_fp16.safetensors
@@ -33,7 +33,7 @@ resume curl
 curl -C - -L "https://www.dropbox.com/scl/fi/n45txsn6kzxapm5l06i71/flux_1Dev.safetensors?rlkey=m7gs0knoxxothdlog9jqdqd9l&st=wniokh13&dl=1" -o flux_1Dev.safetensors
 
 with aria super fast:
-aria2c -x 16 -s 16 "https://www.dropbox.com/scl/fi/n45txsn6kzxapm5l06i71/flux_1Dev.safetensors?rlkey=m7gs0knoxxothdlog9jqdqd9l&st=wniokh13&dl=1" -o flux_1Dev.safetensors
+aria2c -x 16 -s 16 "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/thibaud_xl_openpose.safetensors?download=true" -o thibaud_xl_openpose.safetensors
 
 workflow deforum
 
