@@ -24,7 +24,18 @@ wget "https://huggingface.co/stabilityai/sdxl-turbo/resolve/main/sd_xl_turbo_1.0
 
 
 
-wget "https://www.dropbox.com/scl/fi/j2yt9yworeifi9g1tt34v/ae.safetensors?rlkey=apqk3dt094uhisrjz03sf1mx4&st=zjnbciop&dl=1" -O ae.safetensors
+wget "https://www.dropbox.com/scl/fi/0o70007ia1d2479tda5qc/Edward_Curtis_Lora-000002.safetensors?rlkey=vzl7eplm341spdbh1s7vjdi1m&st=tb7413v6&dl=0" -O Edward_Curtis_Lora-000002.safetensors
+
+
+wget "https://www.dropbox.com/scl/fi/zc69ayw2a3yftlmnbuerl/Edward_Curtis_Lora-000004.safetensors?rlkey=2ltyga70osh0m1myh1i8dbtl7&st=wkb3t4aq&dl=0" -O Edward_Curtis_Lora-000004.safetensors
+
+wget "https://www.dropbox.com/scl/fi/rsyfq5bqvjhv0m9bybmnu/Edward_Curtis_Lora-000006.safetensors?rlkey=6dsqni3j020c7941yo8vmxvau&st=bmsbs4nl&dl=0" -O Edward_Curtis_Lora-000006.safetensors
+
+wget "https://www.dropbox.com/scl/fi/cuo0aw44g5kftoa3z2brv/Edward_Curtis_General-000008.safetensors?rlkey=1q8ge3sindnu1e6x248ybu97v&st=1czl1fgu&dl=0" -O Edward_Curtis_General-000008.safetensors
+
+wget "https://www.dropbox.com/scl/fi/89qer3376yd73hec0dwub/Edward_Curtis_General.safetensors?rlkey=kkbwr27sowa1kthrvpcbf12oi&st=131lqyr1&dl=0" -O Edward_Curtis_General-000000.safetensors
+
+
 
 or with curl
 curl -L "https://www.dropbox.com/scl/fi/n45txsn6kzxapm5l06i71/flux_1Dev.safetensors?rlkey=m7gs0knoxxothdlog9jqdqd9l&st=wniokh13&dl=1" -o flux_1Dev.safetensors

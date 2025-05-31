@@ -125,6 +125,41 @@
         },
         "options": [
             { 
+                "value": "Edward_Curtis_Lora-000002", 
+                "label": "Edward Curtis Categories 2", 
+                "trigger": "Edward Curtis Portrait, landscape, Objects, huts, masks",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed1.png",
+                "description" : "Adds an Edward Curtis style to the image."
+            },
+            { 
+                "value": "Edward_Curtis_Lora-000004", 
+                "label": "Edward Curtis Categories 4", 
+                "trigger": "Edward Curtis Portrait, landscape, Objects, huts, masks",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed2.png",
+                "description" : "Adds an Edward Curtis style to the image."
+            },
+            { 
+                "value": "Edward_Curtis_Lora-000006", 
+                "label": "Edward Curtis Categories 6", 
+                "trigger": "Edward Curtis Portrait, landscape, Objects, huts, masks",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed3.png",
+                "description" : "Adds an Edward Curtis style to the image."
+            },
+            { 
+                "value": "Edward_Curtis_General-000008", 
+                "label": "Edward Curtis General Style 8", 
+                "trigger": "Edward Curtis",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed4.png",
+                "description" : "Adds an Edward Curtis style to the image."
+            },
+            { 
+                "value": "Edward_Curtis_General-000000", 
+                "label": "Edward Curtis General Style 0", 
+                "trigger": "Edward Curtis",
+                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed5.png",
+                "description" : "Adds an Edward Curtis style to the image."
+            },
+            { 
                 "value": "sdxl_celine-bag-v3", 
                 "label": "Celine bags", 
                 "trigger": "Celine Bag",
