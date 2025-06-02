@@ -126,101 +126,101 @@
         "options": [
             { 
                 "value": "Edward_Curtis_Lora-000002", 
-                "label": "Edward Curtis Categories 2", 
-                "trigger": "Edward Curtis Portrait, landscape, Objects, huts, masks",
+                "label": "Edward Curtis Categories 2 ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed1.png",
-                "description" : "Adds an Edward Curtis style to the image."
+                "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis Portrait, landscape, Objects, huts, masks"
             },
             { 
                 "value": "Edward_Curtis_Lora-000004", 
-                "label": "Edward Curtis Categories 4", 
-                "trigger": "Edward Curtis Portrait, landscape, Objects, huts, masks",
+                "label": "Edward Curtis Categories 4 ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed2.png",
-                "description" : "Adds an Edward Curtis style to the image."
+                "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis Portrait, landscape, Objects, huts, masks"
             },
             { 
                 "value": "Edward_Curtis_Lora-000006", 
-                "label": "Edward Curtis Categories 6", 
-                "trigger": "Edward Curtis Portrait, landscape, Objects, huts, masks",
+                "label": "Edward Curtis Categories 6 ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed3.png",
-                "description" : "Adds an Edward Curtis style to the image."
+                "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis Portrait, landscape, Objects, huts, masks"
             },
             { 
                 "value": "Edward_Curtis_General-000008", 
-                "label": "Edward Curtis General Style 8", 
-                "trigger": "Edward Curtis",
+                "label": "Edward Curtis General Style 8 ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed4.png",
-                "description" : "Adds an Edward Curtis style to the image."
+                "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis"
             },
             { 
                 "value": "Edward_Curtis_General-000000", 
-                "label": "Edward Curtis General Style 0", 
-                "trigger": "Edward Curtis",
+                "label": "Edward Curtis General Style 0 ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed5.png",
-                "description" : "Adds an Edward Curtis style to the image."
+                "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis"
             },
             { 
                 "value": "sdxl_celine-bag-v3", 
-                "label": "Celine bags", 
-                "trigger": "Celine Bag",
+                "label": "Celine bags ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/celine-v3.png",
-                "description" : "Adds a Celine bag to the image."
+                "description" : "Adds a Celine bag to the image. Trigger Words: Celine Bag"
             },
             { 
                 "value": "sdxl_LVMH_Paul_Lora", 
-                "label": "IMF Paul", 
-                "trigger": "Paul",
+                "label": "IMF Paul ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/paul.png",
-                "description" : "oversized motorcycle jacket, sunglasses with blue light, but also balloon trousers"
+                "description" : "Adds an IMF Paul style to the image. Trigger Words: Paul"
             },
             { 
                 "value": "IFM_Marina", 
-                "label": "IMF Marina", 
-                "trigger": "Marina",
+                "label": "IMF Marina ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/marina.png",
-                "description" : "long draped skirt, deconstructed draped shirt, collar, maybe airport"
+                "description" : "Adds an IMF Marina style to the image. Trigger Words: Marina"
             },
             { 
                 "value": "IFM_Hawi", 
-                "label": "IMF Hawi", 
-                "trigger": "Hawi",
+                "label": "IMF Hawi ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/hawi.png",
-                "description" : "Oversized jumper, shaved sheepskin, Velvet denim, acid washed (jacket), big collar , embroidery"
+                "description" : "Trigger Words: Hawi Oversized jumper, shaved sheepskin, Velvet denim, acid washed (jacket), big collar , embroidery"
             },
             { 
                 "value": "Add_Detail_XL", 
-                "label": "Detail XL", 
-                "trigger": "Detail",
+                "label": "Detail XL ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/add-detail-xl.jpeg",
-                "description" : "Adds detail to the image"
+                "description" : "Adds detail to the image. Trigger Words: Detail"
             },
             { 
                 "value": "SDXL_MSPaint_Portrait", 
-                "label": "MS Paint Portrait", 
-                "trigger": "MS Paint",
+                "label": "MS Paint Portrait ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ms-paint.jpeg",
-                "description" : "Adds a MS Paint portrait to the image"
+                "description" : "Adds a MS Paint portrait to the image. Trigger Words: MS Paint"
             },
             { 
                 "value": "Crayon_Drawing", 
-                "label": "Crayon Drawing", 
-                "trigger": "Crayon Drawing",
+                "label": "Crayon Drawing ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/crayon-drawing.jpeg",
-                "description" : "Adds a crayon drawing to the image"
+                "description" : "Adds a crayon drawing to the image. Trigger Words: Crayon Drawing"
             },
             { 
                 "value": "sd_xl_James_Turrell_Style", 
-                "label": "James Turrell", 
-                "trigger": "James Turrell",
+                "label": "James Turrell ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/james-turell.png",
-                "description" : "Adds a James Turrell style image to the image"
+                "description" : "Adds a James Turrell style image to the image. Trigger Words: James Turrell"
             },
             { 
                 "value": "sd_xl_Wake_Up", 
-                "label": "Wake Up", 
-                "trigger": "Wake Up",
+                "label": "Wake Up ", 
+                "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/wake-up.jpeg",
-                "description" : "Adds a wake up to the image"
+                "description" : "Adds a wake up to the image Trigger Words: Wake Up"
             }
         ]
     },
