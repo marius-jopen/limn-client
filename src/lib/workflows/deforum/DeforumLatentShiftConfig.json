@@ -125,32 +125,11 @@
         },
         "options": [
             { 
-                "value": "Edward_Curtis_Lora-000002", 
-                "label": "Edward Curtis Categories 2 ", 
-                "trigger": "",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed1.png",
-                "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis Portrait, landscape, Objects, huts, masks"
-            },
-            { 
                 "value": "Edward_Curtis_Lora-000004", 
                 "label": "Edward Curtis Categories 4 ", 
                 "trigger": "",
                 "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed2.png",
                 "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis Portrait, landscape, Objects, huts, masks"
-            },
-            { 
-                "value": "Edward_Curtis_Lora-000006", 
-                "label": "Edward Curtis Categories 6 ", 
-                "trigger": "",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed3.png",
-                "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis Portrait, landscape, Objects, huts, masks"
-            },
-            { 
-                "value": "Edward_Curtis_General-000008", 
-                "label": "Edward Curtis General Style 8 ", 
-                "trigger": "",
-                "image" : "https://limn-data.s3.eu-central-1.amazonaws.com/ui/loras/ed4.png",
-                "description" : "Adds an Edward Curtis style to the image. Trigger Words: Edward Curtis"
             },
             { 
                 "value": "Edward_Curtis_General-000000", 
